@@ -23,10 +23,11 @@ public class STO implements ActionListener, KeyListener {
 	public Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 	public static final int worldSize = 4;
 	public int worldX, worldY;
-	public int tick = 0, score = 0, playerMovement = 2, berryBonus, chase;
+	public int tick = 0, score = 0, playerMovement = 2, berryBonus, chase, rWood;
 	public float changeSpeed, maxSpeed, changeDirection, wolveRadius, wolveAggression, wolveDriftRadius;
 	public int condition, hungry, thirsty;
-	public int nLakes, nWolves, nBerries;
+	public int nLakes, nWolves, nBerries, nWoods, nTrees;
+	public float pPine1, pPine2, pFir, pTree, pDeath;
 	public float berryRespawn;
 	public boolean over = false, run = false;
 	
@@ -36,6 +37,11 @@ public class STO implements ActionListener, KeyListener {
 	public ArrayList<Integer> radiusLakes = new ArrayList<Integer>();
 	public ArrayList<Point> berries = new ArrayList<Point>();
 	public ArrayList<Boolean> berryStats = new ArrayList<Boolean>();
+	public ArrayList<Point> woods = new ArrayList<Point>();
+	public ArrayList<Boolean> woodStats = new ArrayList<Boolean>();
+	public ArrayList<Point> trees = new ArrayList<Point>();
+	public ArrayList<Integer> treeType = new ArrayList<Integer>();
+	public ArrayList<Boolean> treeDeath = new ArrayList<Boolean>();
 	public Point player = new Point(0, 0);
 	public String direction = new String();
 	public Random random;
@@ -44,12 +50,10 @@ public class STO implements ActionListener, KeyListener {
 	
 	public STO(){
 		jframe = new JFrame("Survive the outdoors");
+		jframe.setSize(dim.width / 2, dim.height / 2);
+		jframe.setExtendedState(JFrame.MAXIMIZED_BOTH); 
+		jframe.setUndecorated(true);
 		jframe.setVisible(true);
-		jframe.setSize(dim.width, dim.height);
-		System.out.println(dim.width);
-		System.out.println(dim.height);
-		//jframe.setLocation(dim.width / 2 - jframe.getWidth() / 2, 
-		//		dim.height / 2 - jframe.getHeight() / 2);
 		jframe.add(renderPanel = new RenderPanel());
 		jframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		jframe.addKeyListener(this);
@@ -92,6 +96,58 @@ public class STO implements ActionListener, KeyListener {
 			}
 		}
 		
+		// Set trees
+		nTrees = 500;
+		pPine1 = (float) 0.3;
+		pPine2 = (float) 0.1;
+		pFir = (float) 0.4;
+		pTree = (float) 0.2;
+		pDeath = (float) 0.1;
+		
+		for (int i = 0; i < nTrees; i++) {
+			boolean looping = true;
+			while (looping == true) {
+				int startX = random.nextInt(worldX);
+				int startY = random.nextInt(worldY);
+				if (checkLake(startX, startY) == false) {
+					trees.add(new Point(startX, startY));
+					float pCheck = random.nextFloat();
+					if (pCheck < pPine1)
+						treeType.add(0);
+					else if (pCheck < pPine1 + pPine2)
+						treeType.add(1);
+					else if (pCheck < pPine1 + pPine2 + pFir)
+						treeType.add(2);
+					else
+						treeType.add(3);
+					if (random.nextFloat() < pDeath)
+						treeDeath.add(true);
+					else
+						treeDeath.add(false);
+					looping = false;
+				}
+			}
+		}
+		
+		// Set wood
+		nWoods = 10;
+		rWood = 30;
+		for (int i = 0; i < nWoods; i++) {
+			boolean looping = true;
+			while (looping == true) {
+				int startX = random.nextInt(worldX);
+				int startY = random.nextInt(worldY);
+				if (checkLake(startX, startY) == false && checkTree(startX, startY) == true) {
+					woods.add(new Point(startX, startY));
+					if (random.nextFloat() < 0.5)
+						woodStats.add(true);
+					else
+						woodStats.add(false);
+					looping = false;
+				}
+			}
+		}
+		
 		// Set wolve behaviour
 		nWolves = 50;
 		changeSpeed = (float) 0.1;
@@ -116,7 +172,7 @@ public class STO implements ActionListener, KeyListener {
 		
 		// Set player start
 		direction = "Down";
-		for (int i = 0; true; i++) {
+		while (true) {
 			int startX = random.nextInt(worldX / 3) + worldX / 3;
 			int startY = random.nextInt(worldY / 3) + worldY / 3;
 			player = new Point(startX, startY);
@@ -258,7 +314,7 @@ public class STO implements ActionListener, KeyListener {
 		for (int i = 0; i < nLakes; i++) {
 			float dis_x = lakes.get(i).x - x;
 			float dis_y = lakes.get(i).y - y;		
-			if (dis_x * dis_x + 4 * dis_y * dis_y < radiusLakes.get(i) * radiusLakes.get(i)) {
+			if (Math.sqrt(dis_x * dis_x + 4 * dis_y * dis_y) < radiusLakes.get(i)) {
 				return true;
 			}
 		}
@@ -274,6 +330,17 @@ public class STO implements ActionListener, KeyListener {
 			}
 		}
 		return -1;
+	}
+	
+	public boolean checkTree(int x, int y) {
+		for (int i = 0; i < nTrees; i++) {
+			float dis_x = trees.get(i).x - x;
+			float dis_y = trees.get(i).y - y;		
+			if (Math.sqrt(dis_x * dis_x + dis_y * dis_y) < rWood) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	public static void main(String[] args){
@@ -310,14 +377,10 @@ public class STO implements ActionListener, KeyListener {
 
 	@Override
 	public void keyReleased(KeyEvent arg0) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void keyTyped(KeyEvent arg0) {
-		// TODO Auto-generated method stub
-		
 	}
 	
 }
