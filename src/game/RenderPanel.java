@@ -37,8 +37,8 @@ public class RenderPanel extends JPanel {
 		g.setColor(new Color(0, 204, 0, 150));
 		g.fillRect(0, 0, sto.dim.width, sto.dim.height);
 		
-		int cornerX = Math.min(Math.max(sto.player.x - sto.dim.width / 2, 0), sto.worldX - sto.dim.width);
-		int cornerY = Math.min(Math.max(sto.player.y - sto.dim.height / 2, 0), sto.worldY - sto.dim.height);
+		int cornerX = (int) Math.min(Math.max(sto.player.x - sto.dim.width / 2, 0), sto.worldX - sto.dim.width);
+		int cornerY = (int) Math.min(Math.max(sto.player.y - sto.dim.height / 2, 0), sto.worldY - sto.dim.height);
 		
 		// Draw lakes
 		g.setColor(Color.BLUE);
@@ -46,7 +46,16 @@ public class RenderPanel extends JPanel {
 			int radius = sto.radiusLakes.get(i);
 			g.fillOval(sto.lakes.get(i).x - radius - cornerX, sto.lakes.get(i).y - radius / 2 - cornerY, 2 * radius, radius);
 		}
-
+		
+		/*
+		// Draw wolve radius
+		for (int i = 0; i < sto.nWolves; i++) {
+			g.setColor(new Color(213, 134, 145, 60));
+			g.fillOval(sto.wolves.get(i).x - (int) sto.wolveRadius - cornerX, sto.wolves.get(i).y - (int) sto.wolveRadius - cornerY, 
+					 (int) (2 * sto.wolveRadius), (int) (2 * sto.wolveRadius));
+		}
+		*/
+		
 		try {
 			Pine1 = ImageIO.read(new File(imagePath + "pine1.gif"));
 			Pine1_Death = ImageIO.read(new File(imagePath + "pine1_death.gif"));;
@@ -66,13 +75,6 @@ public class RenderPanel extends JPanel {
 			wolve_right = ImageIO.read(new File(imagePath + "wolve_right.gif"));
 		} catch (IOException e1) {
 			e1.printStackTrace();
-		}
-		
-		// Draw wolve radius
-		for (int i = 0; i < sto.nWolves; i++) {
-			g.setColor(new Color(213, 134, 145, 60));
-			g.fillOval(sto.wolves.get(i).x - (int) sto.wolveRadius - cornerX, sto.wolves.get(i).y - (int) sto.wolveRadius - cornerY + wolve_left.getHeight() / 2, 
-					 (int) (2 * sto.wolveRadius), (int) (2 * sto.wolveRadius));
 		}
 
 		for (int pix = Math.max(0, cornerY - 100); pix < Math.min(sto.worldY, cornerY + sto.dim.height + 100); pix++) {
@@ -127,54 +129,78 @@ public class RenderPanel extends JPanel {
 			
 			// Draw wolves
 			for (int i = 0; i < sto.nWolves; i++) {
-				if (sto.wolves.get(i).y == pix){
+				int wolveX = (int) sto.wolves.get(i).x, wolveY = (int) sto.wolves.get(i).y;
+				if (wolveY == pix){
 					if (sto.wolveSpeed.get(i).x < 0)
-						g.drawImage(wolve_left, sto.wolves.get(i).x  - cornerX - wolve_left.getWidth() / 2, sto.wolves.get(i).y - cornerY - wolve_left.getHeight(), this);
+						g.drawImage(wolve_left, wolveX - cornerX - wolve_left.getWidth() / 2, wolveY - cornerY - wolve_left.getHeight(), this);
 					else
-						g.drawImage(wolve_right, sto.wolves.get(i).x  - cornerX - wolve_right.getHeight(), sto.wolves.get(i).y - cornerY - wolve_right.getHeight(), this);
+						g.drawImage(wolve_right, wolveX  - cornerX - wolve_right.getWidth() / 2, wolveY - cornerY - wolve_right.getHeight(), this);
 				}
 			}
 
 			// Draw figure
-			if (sto.player.y == pix) {
+			if ((int) sto.player.y == pix) {
 				try {
 					figure = ImageIO.read(new File(imagePath + "woman_" + sto.direction + ".gif"));
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-				g.drawImage(figure, sto.player.x - cornerX - figure.getWidth() / 2, sto.player.y - cornerY - figure.getHeight() + 10, this);
+				g.drawImage(figure, (int) sto.player.x - cornerX - figure.getWidth() / 2, (int) sto.player.y - cornerY - figure.getHeight() + 10, this);
 			}
 		}
 		
+		/*
+		// Draw Day/Night Cycle
+		int bright = (int)  (120 * (1 - Math.cos((float) sto.tick / sto.dayLength)));
+		g.setColor(new Color(0, 0, 0, bright));
+		g.fillRect(0, 0, sto.dim.width, sto.dim.height);
+		*/
+		
 		// Draw stats
-		if (sto.condition == 0)
+		g.setFont(new Font("TimesRoman", Font.PLAIN, 22));
+		
+		String health = "Condition: " + sto.condition;
+		g.setColor(Color.WHITE);
+		g.drawString(health, sto.dim.width - 199, sto.dim.height - 169);
+		if (sto.condition < 10)
 			g.setColor(Color.RED);
 		else
 			g.setColor(Color.BLACK);
-		String health = "Condition: " + sto.condition;
-		g.setFont(new Font("TimesRoman", Font.PLAIN, 20));
 		g.drawString(health, sto.dim.width - 200, sto.dim.height - 170);
 		
+		String tired = "Tired: " + sto.tired;
+		g.setColor(Color.WHITE);
+		g.drawString(tired, sto.dim.width - 199, sto.dim.height - 139);
+		if (sto.tired == 0)
+			g.setColor(Color.RED);
+		else
+			g.setColor(Color.BLACK);
+		g.drawString(tired, sto.dim.width - 200, sto.dim.height - 140);	
+
+		String hungry = "Hungry: " + sto.hungry;
+		g.setColor(Color.WHITE);
+		g.drawString(hungry, sto.dim.width - 199, sto.dim.height - 109);
 		if (sto.hungry == 0)
 			g.setColor(Color.RED);
 		else
 			g.setColor(Color.BLACK);
-		String hungry = "Hungry: " + sto.hungry;
-		g.setFont(new Font("TimesRoman", Font.PLAIN, 20));
-		g.drawString(hungry, sto.dim.width - 200, sto.dim.height - 140);
-		
+		g.drawString(hungry, sto.dim.width - 200, sto.dim.height - 110);
+
+		String thirsty = "Thirsty: " + sto.thirsty;
+		g.setColor(Color.WHITE);
+		g.drawString(thirsty, sto.dim.width - 199, sto.dim.height - 79);
 		if (sto.thirsty == 0)
 			g.setColor(Color.RED);
 		else
 			g.setColor(Color.BLACK);
-		String thirsty = "Thirsty: " + sto.thirsty;
-		g.setFont(new Font("TimesRoman", Font.PLAIN, 20));
-		g.drawString(thirsty, sto.dim.width - 200, sto.dim.height - 110);	
+		g.drawString(thirsty, sto.dim.width - 200, sto.dim.height - 80);	
 		
 		String score = "Score: " + sto.score;
+		g.setColor(Color.WHITE);
+		g.drawString(score, 11, 21);
 		g.setColor(Color.BLACK);
-		g.setFont(new Font("TimesRoman", Font.PLAIN, 20));
 		g.drawString(score, 10, 20);
+
 		
 		if (sto.run == true) {
 			String run = "Running...";
@@ -189,7 +215,10 @@ public class RenderPanel extends JPanel {
 			g.drawString(gameover, sto.dim.width / 2 - 8 * gameover.length(), sto.dim.height / 2 - 13);		
 			g.setColor(Color.BLACK);
 			g.drawString(gameover, sto.dim.width / 2 - 8 * gameover.length() + 1, sto.dim.height / 2 - 13 + 1);
-			return;
+			
+			String restart = "Press 'R' for restart.";
+			g.setFont(new Font("TimesRoman", Font.PLAIN, 22));
+			g.drawString(restart, sto.dim.width / 2 - 82, sto.dim.height / 2 + 10);
 		}
 	}
 }
