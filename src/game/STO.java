@@ -8,12 +8,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.geom.Point2D;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Random;
-import java.util.Set;
-
 import javax.swing.JFrame;	// Modul um Fenster zu erzeugen
 import javax.swing.Timer;
 
@@ -28,15 +24,16 @@ public class STO implements ActionListener, KeyListener {
 	public static final int worldSize = 4;
 	public float dayLength;
 	public int worldX, worldY;
-	public int tick = 0, score, berryBonus, rWood, seedForests;
+	public int tick = 0, score, searchTime, berryBonus, rWood, rStone, seedForests, seedRocks, seedPlants;
 	public float changeSpeed, chase, maxSpeed, changeDirection, wolveRadius, wolveAggression, wolveDriftRadius;
 	public int condition, tired, hungry, thirsty;
-	public int woodCollected;
-	public int nLakes, nWolves, nBerries, nWoods, nTrees;
-	public float pPine1, pPine2, pFir, pTree, pDeath;
-	public float berryRespawn;
+	public int woodCollected, stoneCollected, leaveCollected, lianaCollected, berryCollected;
+	public int nLakes, nWolves, nBerries, nWoods, nRocks, nStones, nTrees, nPlants;
+	public float pPine1, pPine2, pFir1, pFir2, pTree, pDeath, pPlant1, pPlant2, pPlant3, pPlant4, pRock1, pRock2;
+	public float berryRespawn, woodSpawn, stoneSpawn;
 	public float pTired, playerMovement;
-	public boolean over, run;
+	public boolean over, search, menu, run;
+	
 	
 	public ArrayList<Point2D.Float> wolves = new ArrayList<Point2D.Float>();
 	public ArrayList<Point2D.Float> wolveSpeed = new ArrayList<Point2D.Float>();
@@ -45,10 +42,15 @@ public class STO implements ActionListener, KeyListener {
 	public ArrayList<Point> berries = new ArrayList<Point>();
 	public ArrayList<Boolean> berryStats = new ArrayList<Boolean>();
 	public ArrayList<Point> woods = new ArrayList<Point>();
+	public ArrayList<Point> stones = new ArrayList<Point>();
 	public ArrayList<Boolean> woodStats = new ArrayList<Boolean>();
 	public ArrayList<Point> trees = new ArrayList<Point>();
 	public ArrayList<Integer> treeType = new ArrayList<Integer>();
+	public ArrayList<Point> rocks = new ArrayList<Point>();
+	public ArrayList<Integer> rockType = new ArrayList<Integer>();
 	public ArrayList<Boolean> treeDeath = new ArrayList<Boolean>();
+	public ArrayList<Point> plants = new ArrayList<Point>();
+	public ArrayList<Integer> plantType = new ArrayList<Integer>();
 	public Point2D.Float player = new Point2D.Float(0, 0);
 	public String direction = new String();
 	public Random random;
@@ -71,10 +73,13 @@ public class STO implements ActionListener, KeyListener {
 		
 		random = new Random();
 		over = false;
+		search = false;
+		menu = false;
 		run = false;
 		
 		// Set initial stats
 		score = 0;
+		searchTime = 0;
 		
 		condition = 100;
 		tired = 100;
@@ -82,7 +87,14 @@ public class STO implements ActionListener, KeyListener {
 		thirsty = 100;
 		
 		pTired = (float) 0.001;
-		playerMovement = (float) 1.2;
+		playerMovement = (float) 1.4;
+		
+		// Set inventory
+		woodCollected = 0;
+		berryCollected = 0;
+		stoneCollected = 0;
+		leaveCollected = 0;
+		lianaCollected = 0;
 		
 		// Set environment
 		worldX = worldSize * dim.width;
@@ -114,12 +126,13 @@ public class STO implements ActionListener, KeyListener {
 		}
 		
 		// Set trees
-		nTrees = 3000;
+		nTrees = 2000;
 		seedForests = 20;
 		pPine1 = (float) 0.3;
-		pPine2 = (float) 0.1;
-		pFir = (float) 0.4;
-		pTree = (float) 0.2;
+		pPine2 = (float) 0.2;
+		pFir1 = (float) 0.2;
+		pFir2 = (float) 0.2;
+		pTree = (float) 0.1;
 		pDeath = (float) 0.1;
 		
 		for (int i = 0; i < nTrees; i++) {
@@ -141,10 +154,39 @@ public class STO implements ActionListener, KeyListener {
 				}
 			}
 		}
+
+		// Set plants
+		nPlants = 500;
+		seedPlants = 10;
+		pPlant1 = (float) 0.6;
+		pPlant2 = (float) 0.35;
+		pPlant3 = (float) 0.04;
+		pPlant4 = (float) 0.01;
+		
+		for (int i = 0; i < nPlants; i++) {
+			boolean looping = true;
+			while (looping == true) {
+				int startX = random.nextInt(worldX);
+				int startY = random.nextInt(worldY);
+				if (checkLake(startX, startY) == false) {
+					if (i < seedPlants) {
+						addPlant(startX, startY);
+						looping = false;
+					}
+					else {
+						if ((checkPlant(startX, startY, 100) == true && checkTree(startX, startY, 30) == false) || random.nextFloat() < 0.01){
+							addPlant(startX, startY);
+							looping = false;
+						}
+					}
+				}
+			}
+		}
 		
 		// Set wood
-		nWoods = 10;
+		nWoods = 20;
 		rWood = 30;
+		woodSpawn = (float) 0.02;
 		for (int i = 0; i < nWoods; i++) {
 			boolean looping = true;
 			while (looping == true) {
@@ -161,10 +203,52 @@ public class STO implements ActionListener, KeyListener {
 			}
 		}
 		
+		// Set rocks
+		nRocks = 80;
+		seedRocks = 5;
+		pRock1 = (float) 0.7;
+		pRock2 = (float) 0.3;
+		
+		for (int i = 0; i < nRocks; i++) {
+			boolean looping = true;
+			while (looping == true) {
+				int startX = random.nextInt(worldX);
+				int startY = random.nextInt(worldY);
+				if (checkLake(startX, startY) == false && checkTree(startX, startY, 60) == false && checkPlant(startX, startY, 60) == false) {
+					if (i < seedRocks) {
+						addRock(startX, startY);
+						looping = false;
+					}
+					else {
+						if ((checkRock(startX, startY, 200) == true && checkRock(startX, startY, 40) == false) || random.nextFloat() < 0.01){
+							addRock(startX, startY);
+							looping = false;
+						}
+					}
+				}
+			}
+		}
+		
+		// Set stones
+		nStones = 40;
+		rStone = 30;
+		stoneSpawn = (float) 0.01;
+		for (int i = 0; i < nStones; i++) {
+			boolean looping = true;
+			while (looping == true) {
+				int startX = random.nextInt(worldX);
+				int startY = random.nextInt(worldY);
+				if (checkLake(startX, startY) == false && (checkRock(startX, startY, 300) || random.nextFloat() < 0.05)) {
+					stones.add(new Point(startX, startY));
+					looping = false;
+				}
+			}
+		}		
+
 		// Set wolve behaviour
 		nWolves = 50;
-		changeSpeed = (float) 0.02;
-		maxSpeed = (float) 0.5;
+		changeSpeed = (float) 0.05;
+		maxSpeed = (float) 0.6;
 		changeDirection = (float) 0.02;
 		wolveRadius = 300; 
 		wolveDriftRadius = 20 * wolveRadius; 
@@ -200,6 +284,11 @@ public class STO implements ActionListener, KeyListener {
 		tick++;
 		if (over == true)
 			timer.stop();
+		
+		if (search == true)
+			searchTime -= 1;
+		if (search == true & searchTime == 0)
+			search = false;
 		
 		// Wolve settings
 		for (int i = 0; i < sto.nWolves; i++) {
@@ -256,23 +345,17 @@ public class STO implements ActionListener, KeyListener {
 		}
 
 
-		if (tick % 10 == 0) {
+		if (tick % 15 == 0) {
 			float pval = random.nextFloat();
-			if (pval < 0.35){
+			if (pval < 0.4){
 				if (hungry > 0)
 					hungry-=1;
 				else
 					condition -= 1;
 			}
-			else if (pval < 0.95) {
+			else {
 				if (thirsty > 0)
 					thirsty-=1;
-				else
-					condition -= 1;
-			}
-			else {
-				if (tired > 0)
-					tired-=1;
 				else
 					condition -= 1;
 			}
@@ -286,27 +369,57 @@ public class STO implements ActionListener, KeyListener {
 			thirsty = 100;
 		}
 		
-		if (tick % 500 == 0) {
+		if (tick % 100 == 0) {
 			for (int i = 0; i < nBerries; i++) {
 				if (berryStats.get(i) == false && random.nextFloat() < berryRespawn)
 					berryStats.set(i, true);
+			}
+			if (random.nextFloat() < woodSpawn) {
+				nWoods += 1;
+				boolean looping = true;
+				while (looping == true) {
+					int startX = random.nextInt(worldX);
+					int startY = random.nextInt(worldY);
+					if (checkLake(startX, startY) == false && checkTree(startX, startY, rWood) == true) {
+						woods.add(new Point(startX, startY));
+						if (random.nextFloat() < 0.5)
+							woodStats.add(true);
+						else
+							woodStats.add(false);
+						looping = false;
+					}
+				}
 			}
 		}
 		
 		int berryIndex = checkBerry(player.x, player.y);
 		if (berryIndex >= 0 && berryStats.get(berryIndex) == true) {
-			if (hungry < 100) {
-				hungry = Math.min(100, hungry + berryBonus);
-				berryStats.set(berryIndex, false);
-			}
+			berryStats.set(berryIndex, false);
+			berryCollected += 3;
 		}
 		
-		if (tick % 20 == 0 && run == true) {
+		int woodIndex = checkWood(player.x, player.y);
+		if (woodIndex >= 0) {
+			nWoods -= 1;
+			woods.remove(woodIndex);
+			woodStats.remove(woodIndex);
+			woodCollected += 1;
+		}
+		
+		int stoneIndex = checkStone(player.x, player.y);
+		if (stoneIndex >= 0) {
+			nStones -= 1;
+			stones.remove(stoneIndex);
+			stoneCollected += 1;
+		}
+		
+		if (tick % 5 == 0 && run == true) {
 			if (tired > 0)
 				tired -= 1;
-			else
-				run = false;
 		}
+		
+		if (tick % 50 == 0 && tired < 100)
+			tired += 1;
 			
 		if (tick % 100 == 0)
 			score += 1;
@@ -314,7 +427,10 @@ public class STO implements ActionListener, KeyListener {
 		if (condition <= 0)
 			over = true;
 		
-		updateMovement();
+		if (search == false) {
+			updateMovement();
+			searching();
+		}
 		
 		renderPanel.repaint();
 	}
@@ -357,7 +473,29 @@ public class STO implements ActionListener, KeyListener {
 		for (int i = 0; i < nBerries; i++) {
 			float dis_x = berries.get(i).x - x;
 			float dis_y = berries.get(i).y - y;		
-			if (Math.sqrt(dis_x * dis_x + dis_y * dis_y) < 15) {
+			if (Math.sqrt(dis_x * dis_x + dis_y * dis_y) < 20) {
+				return i;
+			}
+		}
+		return -1;
+	}
+	
+	public int checkWood(float x, float y) {
+		for (int i = 0; i < nWoods; i++) {
+			float dis_x = woods.get(i).x - x;
+			float dis_y = woods.get(i).y - y;		
+			if (Math.sqrt(dis_x * dis_x + dis_y * dis_y) < 20) {
+				return i;
+			}
+		}
+		return -1;
+	}
+	
+	public int checkStone(float x, float y) {
+		for (int i = 0; i < nStones; i++) {
+			float dis_x = stones.get(i).x - x;
+			float dis_y = stones.get(i).y - y;		
+			if (Math.sqrt(dis_x * dis_x + dis_y * dis_y) < 20) {
 				return i;
 			}
 		}
@@ -375,6 +513,28 @@ public class STO implements ActionListener, KeyListener {
 		return false;
 	}
 	
+	public boolean checkPlant(float x, float y, int r) {
+		for (int i = 0; i < plants.size(); i++) {
+			float dis_x = plants.get(i).x - x;
+			float dis_y = plants.get(i).y - y;		
+			if (Math.sqrt(dis_x * dis_x + dis_y * dis_y) < r) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public boolean checkRock(float x, float y, int r) {
+		for (int i = 0; i < rocks.size(); i++) {
+			float dis_x = rocks.get(i).x - x;
+			float dis_y = rocks.get(i).y - y;		
+			if (Math.sqrt(dis_x * dis_x + dis_y * dis_y) < r) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	public void addTree(int x, int y) {
 		
 		trees.add(new Point(x, y));
@@ -383,20 +543,39 @@ public class STO implements ActionListener, KeyListener {
 			treeType.add(0);
 		else if (pCheck < pPine1 + pPine2)
 			treeType.add(1);
-		else if (pCheck < pPine1 + pPine2 + pFir)
+		else if (pCheck < pPine1 + pPine2 + pFir1)
 			treeType.add(2);
-		else
+		else if (pCheck < pPine1 + pPine2 + pFir1 + pFir2)
 			treeType.add(3);
+		else
+			treeType.add(4);
 		if (random.nextFloat() < pDeath)
 			treeDeath.add(true);
 		else
 			treeDeath.add(false);
 	}
 	
-	public void getTired() {
+	public void addPlant(int x, int y) {
 		
-		if (random.nextFloat() < pTired && tired > 0)
-			tired -= 1;
+		plants.add(new Point(x, y));
+		float pCheck = random.nextFloat();
+		if (pCheck < pPlant1)
+			plantType.add(1);
+		else if (pCheck < pPlant1 + pPlant2)
+			plantType.add(2);
+		else if (pCheck < pPlant1 + pPlant2 + pPlant3)
+			plantType.add(3);
+		else
+			plantType.add(4);
+	}
+	
+	public void addRock(int x, int y) {
+		
+		rocks.add(new Point(x, y));
+		float pCheck = random.nextFloat();
+		if (pCheck < pRock1)
+			rockType.add(1);
+			rockType.add(2);
 	}
 	
 	public static void main(String[] args){
@@ -404,8 +583,13 @@ public class STO implements ActionListener, KeyListener {
 	}
 	
 	public void keyPressed(KeyEvent e) {
-		if (e.getKeyCode() == 16)
-			run = true;
+		
+		// eating berries
+		if (e.getKeyCode() == 69 && berryCollected > 0) {
+			berryCollected -= 1;
+			hungry = Math.min(100, hungry + 5);
+		}
+		
 		if (over && e.getKeyCode() == 82)
 			startGame();
 	    keys[e.getKeyCode()] = true;
@@ -423,8 +607,11 @@ public class STO implements ActionListener, KeyListener {
 	public void updateMovement() {
 		
 		float movement = playerMovement;
-		if (keys[KeyEvent.VK_SHIFT])
-			movement += 0.5;
+		run = false;
+		if (keys[KeyEvent.VK_SHIFT] && tired > 0) {
+			run = true;
+			movement += 0.6;
+		}
 		
 		if((keys[KeyEvent.VK_W] && keys[KeyEvent.VK_A]) || (keys[KeyEvent.VK_W] && keys[KeyEvent.VK_D]) || 
 				(keys[KeyEvent.VK_A] && keys[KeyEvent.VK_S]) || (keys[KeyEvent.VK_S] && keys[KeyEvent.VK_D]) ||
@@ -452,5 +639,15 @@ public class STO implements ActionListener, KeyListener {
 	    	direction = "Right";
 	    	player.x += movement;
 	    }
+	}
+	
+	public void searching() {
+		
+		if (keys[KeyEvent.VK_SPACE]) {
+			search = true;
+			run = false;
+			searchTime = 200;
+		}
+		
 	}
 }
