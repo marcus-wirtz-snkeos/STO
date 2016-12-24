@@ -16,6 +16,8 @@ public class RenderPanel extends JPanel {
 	public BufferedImage figure;
 	public BufferedImage wolve_left;
 	public BufferedImage wolve_right;
+	public BufferedImage rabbit_left;
+	public BufferedImage rabbit_right;
 	public BufferedImage berryFull;
 	public BufferedImage berryEmpty;
 	public BufferedImage Pine1;
@@ -29,6 +31,9 @@ public class RenderPanel extends JPanel {
 	public BufferedImage Tree_Death;
 	public BufferedImage wood;
 	public BufferedImage berry;
+	public BufferedImage cooked_meat;
+	public BufferedImage raw_meat;
+	public BufferedImage fish;
 	public BufferedImage wood1;
 	public BufferedImage wood2;
 	public BufferedImage plant1;
@@ -40,12 +45,32 @@ public class RenderPanel extends JPanel {
 	public BufferedImage rock2;
 	public BufferedImage leafe;
 	public BufferedImage liana;
+
+	public BufferedImage snare;
+	public BufferedImage snare_shot;
+	public BufferedImage fire1;
+	public BufferedImage fire2;
+	public BufferedImage fire3;
+	public BufferedImage fire4;
+	public BufferedImage fire5;
+	public BufferedImage fire6;
+	
+	public BufferedImage button1;
+	public BufferedImage button2;
+	public BufferedImage button3;
+	public BufferedImage button4;
+	public BufferedImage button1_low;
+	public BufferedImage button2_low;
+	public BufferedImage button3_low;
+	public BufferedImage button4_low;
 	
 	public String imagePath = "/home/marcus/Documents/Java/STO/src/game/img/";
 
 	protected void paintComponent(Graphics g) {
+
 		super.paintComponent(g);
 		STO sto = STO.sto;
+		
 		g.setColor(new Color(0, 204, 0, 150));
 		g.fillRect(0, 0, sto.dim.width, sto.dim.height);
 		
@@ -58,15 +83,6 @@ public class RenderPanel extends JPanel {
 			int radius = sto.radiusLakes.get(i);
 			g.fillOval(sto.lakes.get(i).x - radius - cornerX, sto.lakes.get(i).y - radius / 2 - cornerY, 2 * radius, radius);
 		}
-		
-		/*
-		// Draw wolve radius
-		for (int i = 0; i < sto.nWolves; i++) {
-			g.setColor(new Color(213, 134, 145, 60));
-			g.fillOval(sto.wolves.get(i).x - (int) sto.wolveRadius - cornerX, sto.wolves.get(i).y - (int) sto.wolveRadius - cornerY, 
-					 (int) (2 * sto.wolveRadius), (int) (2 * sto.wolveRadius));
-		}
-		*/
 		
 		try {
 			Pine1 = ImageIO.read(new File(imagePath + "pine1.gif"));
@@ -92,51 +108,92 @@ public class RenderPanel extends JPanel {
 			wolve_left = ImageIO.read(new File(imagePath + "wolve_left.gif"));
 			wolve_right = ImageIO.read(new File(imagePath + "wolve_right.gif"));
 			
+			rabbit_left = ImageIO.read(new File(imagePath + "rabbit_left.gif"));
+			rabbit_right = ImageIO.read(new File(imagePath + "rabbit_right.gif"));
+			
 			stone = ImageIO.read(new File(imagePath + "stone.gif"));
 			rock1 = ImageIO.read(new File(imagePath + "rock1.gif"));
 			rock2 = ImageIO.read(new File(imagePath + "rock2.gif"));
+			
+			wood = ImageIO.read(new File(imagePath + "wood.gif"));
+			stone = ImageIO.read(new File(imagePath + "stone2.gif"));
+			leafe = ImageIO.read(new File(imagePath + "leafe.gif"));
+			liana = ImageIO.read(new File(imagePath + "liana.gif"));
+			
+			berry = ImageIO.read(new File(imagePath + "berry.gif"));
+			cooked_meat = ImageIO.read(new File(imagePath + "cooked_meat.gif"));
+			raw_meat = ImageIO.read(new File(imagePath + "raw_meat.gif"));
+			fish = ImageIO.read(new File(imagePath + "fish.gif"));
+
+			button1 = ImageIO.read(new File(imagePath + "button1.png"));
+			button2 = ImageIO.read(new File(imagePath + "button2.png"));
+			button3 = ImageIO.read(new File(imagePath + "button2.png"));
+			button4 = ImageIO.read(new File(imagePath + "button2.png"));
+			button1_low = ImageIO.read(new File(imagePath + "button1_low.png"));
+			button2_low = ImageIO.read(new File(imagePath + "button2_low.png"));
+			button3_low = ImageIO.read(new File(imagePath + "button2_low.png"));
+			button4_low = ImageIO.read(new File(imagePath + "button2_low.png"));
+			
+			snare = ImageIO.read(new File(imagePath + "snare.gif"));
+			snare_shot = ImageIO.read(new File(imagePath + "snare_shot.gif"));
+			fire1 = ImageIO.read(new File(imagePath + "fire1.gif"));
+			fire2 = ImageIO.read(new File(imagePath + "fire2.gif"));
+			fire3 = ImageIO.read(new File(imagePath + "fire3.gif"));
+			fire4 = ImageIO.read(new File(imagePath + "fire4.gif"));
+			fire5 = ImageIO.read(new File(imagePath + "fire5.gif"));
+			fire6 = ImageIO.read(new File(imagePath + "fire6.gif"));
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
-
+		
+		int treeInd = 0, plantInd = 0, stoneInd = 0, rockInd = 0, berryInd = 0;
 		for (int pixY = Math.max(0, cornerY - 100); pixY < Math.min(sto.worldY, cornerY + sto.dim.height + 100); pixY++) {
-			// Draw trees
 			
-			for (int i = 0; i < sto.nTrees; i++) {
-				int x = sto.trees.get(i).x;
-				if (sto.trees.get(i).y == pixY){
-					if (sto.treeType.get(i) == 0) {
-						if (sto.treeDeath.get(i) == true)
+			// Draw trees
+			if (treeInd == 0) {
+				while (sto.trees.get(treeInd).y < pixY)
+					treeInd++;
+			}
+			if (treeInd < sto.trees.size()) {
+				while (sto.trees.get(treeInd).y == pixY) {
+					int x = sto.trees.get(treeInd).x;
+					if (x < cornerX -100 && x > cornerX + sto.dim.width + 100)
+						continue;
+					if (sto.treeType.get(treeInd) == 0) {
+						if (sto.treeDeath.get(treeInd) == true)
 							g.drawImage(Pine1_Death, x - cornerX - Pine1_Death.getWidth() / 2, pixY - cornerY - Pine1_Death.getHeight(), this);
 						else
 							g.drawImage(Pine1, x - cornerX - Pine1.getWidth() / 2, pixY - cornerY - Pine1.getHeight(), this);
 					}
-					if (sto.treeType.get(i) == 1) {
-						if (sto.treeDeath.get(i) == true)
-							g.drawImage(Pine2_Death, x - cornerX - Pine2_Death.getWidth() / 2, sto.trees.get(i).y - cornerY - Pine2_Death.getHeight(), this);
+					if (sto.treeType.get(treeInd) == 1) {
+						if (sto.treeDeath.get(treeInd) == true)
+							g.drawImage(Pine2_Death, x - cornerX - Pine2_Death.getWidth() / 2, pixY - cornerY - Pine2_Death.getHeight(), this);
 						else
 							g.drawImage(Pine2, x - cornerX - Pine2.getWidth() / 2, pixY - cornerY - Pine2.getHeight(), this);
 					}
-					else if (sto.treeType.get(i) == 2) {
+					else if (sto.treeType.get(treeInd) == 2) {
 						g.drawImage(Fir1, x - cornerX - Fir1.getWidth() / 2, pixY - cornerY - Fir1.getHeight(), this);
 					}
-					else if (sto.treeType.get(i) == 3) {
+					else if (sto.treeType.get(treeInd) == 3) {
 						g.drawImage(Fir2, x - cornerX - Fir1.getWidth() / 2, pixY - cornerY - Fir2.getHeight(), this);
 					}
 					else{
-						if (sto.treeDeath.get(i) == true)
+						if (sto.treeDeath.get(treeInd) == true)
 							g.drawImage(Tree_Death, x - cornerX - Tree_Death.getWidth() / 2, pixY - cornerY - Tree_Death.getHeight(), this);
 						else
 							g.drawImage(Tree, x - cornerX - Tree.getWidth() / 2, pixY - cornerY - Tree.getHeight(), this);
 					}
+					treeInd++;
+					if (treeInd == sto.trees.size())
+						break;
 				}
 			}
 			
 			// Draw woods
-			for (int i = 0; i < sto.nWoods; i++) {
-				int x = sto.woods.get(i).x;
-				if (sto.woods.get(i).y == pixY){
-					if (sto.woodStats.get(i) == true)
+			for (int woodInd = 0; woodInd < sto.woods.size(); woodInd++) {
+				int x = sto.woods.get(woodInd).x;
+				if (sto.woods.get(woodInd).y == pixY) {
+					if (sto.woodStats.get(woodInd) == true)
 						g.drawImage(wood1, x - cornerX - wood1.getWidth() / 2, pixY - cornerY - wood1.getHeight(), this);
 					else
 						g.drawImage(wood2, x - cornerX - wood2.getWidth() / 2, pixY - cornerY - wood2.getWidth() / 2, this);
@@ -144,62 +201,143 @@ public class RenderPanel extends JPanel {
 			}
 			
 			// Draw plants
-			for (int i = 0; i < sto.nPlants; i++) {
-				int x = sto.plants.get(i).x;
-				if (sto.plants.get(i).y == pixY){
-					if (sto.plantType.get(i) == 1)
+			if (plantInd == 0) {
+				while (sto.plants.get(plantInd).y < pixY)
+					plantInd++;
+			}
+			if (plantInd < sto.plants.size()) {
+				while (sto.plants.get(plantInd).y == pixY) {
+					int x = sto.plants.get(plantInd).x;
+					if (x < cornerX -100 && x > cornerX + sto.dim.width + 100)
+						continue;
+					if (sto.plantType.get(plantInd) == 1)
 						g.drawImage(plant1, x - cornerX - plant1.getWidth() / 2, pixY - cornerY - plant1.getHeight(), this);
-					if (sto.plantType.get(i) == 2)
+					if (sto.plantType.get(plantInd) == 2)
 						g.drawImage(plant2, x - cornerX - plant2.getWidth() / 2, pixY - cornerY - plant2.getHeight(), this);
-					if (sto.plantType.get(i) == 3)
+					if (sto.plantType.get(plantInd) == 3)
 						g.drawImage(plant3, x - cornerX - plant3.getWidth() / 2, pixY - cornerY - plant3.getHeight(), this);
-					if (sto.plantType.get(i) == 4)
+					if (sto.plantType.get(plantInd) == 4)
 						g.drawImage(plant4, x - cornerX - plant4.getWidth() / 2, pixY - cornerY - plant4.getHeight(), this);
+					plantInd++;
+					if (plantInd == sto.plants.size())
+						break;
 				}
 			}
 			
 			// Draw stones
-			for (int i = 0; i < sto.nStones; i++) {
-				int x = sto.stones.get(i).x;
-				if (sto.stones.get(i).y == pixY){
+			if (stoneInd == 0) {
+				while (sto.stones.get(stoneInd).y < pixY)
+					stoneInd++;
+			}
+			if (stoneInd < sto.stones.size()) {
+				while (sto.stones.get(stoneInd).y == pixY) {
+					int x = sto.stones.get(stoneInd).x;
+					if (x < cornerX -100 && x > cornerX + sto.dim.width + 100)
+						continue;
 					g.drawImage(stone, x - cornerX - stone.getWidth() / 2, pixY - cornerY - stone.getHeight(), this);
+					stoneInd++;
+					if (stoneInd == sto.stones.size())
+						break;
 				}
 			}
 			
 			// Draw rocks
-			for (int i = 0; i < sto.nRocks; i++) {
-				int x = sto.rocks.get(i).x;
-				if (sto.rocks.get(i).y == pixY){
-					if (sto.rockType.get(i) == 1)
+			if (rockInd == 0) {
+				while (sto.rocks.get(rockInd).y < pixY) {
+					rockInd++;
+				}
+			}
+			if (rockInd < sto.rocks.size()) {			
+				while (sto.rocks.get(rockInd).y == pixY) {
+					int x = sto.rocks.get(rockInd).x;
+					if (x < cornerX -100 && x > cornerX + sto.dim.width + 100)
+						continue;
+					if (sto.rockType.get(rockInd) == 1)
 						g.drawImage(rock1, x - cornerX - rock1.getWidth() / 2, pixY - cornerY - rock1.getHeight(), this);
 					else
-						g.drawImage(rock2, x - cornerX - rock2.getWidth() / 2, pixY - cornerY - rock2.getWidth() / 2, this);
+						g.drawImage(rock2, x - cornerX - rock2.getWidth() / 2, pixY - cornerY - rock2.getHeight(), this);
+					rockInd++;
+					if (rockInd == sto.rocks.size())
+						break;
 				}
 			}
 			
 			// Draw berries
-			for (int i = 0; i < sto.nBerries; i++) {
-				int x = sto.berries.get(i).x;
-				if (sto.berries.get(i).y == pixY){
-					if (sto.berryStats.get(i) == true)
+			if (berryInd == 0) {
+				while (sto.berries.get(berryInd).y < pixY)
+					berryInd++;
+			}
+			if  (berryInd < sto.berries.size()) {
+				while (sto.berries.get(berryInd).y == pixY) {
+					int x = sto.berries.get(berryInd).x;
+					if (x < cornerX -100 && x > cornerX + sto.dim.width + 100)
+						continue;
+					if (sto.berryStats.get(berryInd) == true)
 						g.drawImage(berryFull, x - cornerX - berryFull.getWidth() / 2, pixY - cornerY - berryFull.getHeight(), this);
 					else
 						g.drawImage(berryEmpty, x - cornerX - berryEmpty.getWidth() / 2, pixY - cornerY - berryEmpty.getHeight(), this);
+					berryInd++;
+					if (berryInd == sto.berries.size())
+						break;
 				}
 			}
 			
-			
 			// Draw wolves
-			for (int i = 0; i < sto.nWolves; i++) {
-				int wolveX = (int) sto.wolves.get(i).x, wolveY = (int) sto.wolves.get(i).y;
-				if (wolveY == pixY){
-					if (sto.wolveSpeed.get(i).x < 0)
+			for (int wolveInd = 0; wolveInd < sto.nWolves; wolveInd++) {
+				if ((int) sto.wolves.get(wolveInd).y == pixY) {
+					int wolveX = (int) sto.wolves.get(wolveInd).x, wolveY = (int) sto.wolves.get(wolveInd).y;
+					if (sto.wolveSpeed.get(wolveInd).x < 0)
 						g.drawImage(wolve_left, wolveX - cornerX - wolve_left.getWidth() / 2, wolveY - cornerY - wolve_left.getHeight(), this);
 					else
 						g.drawImage(wolve_right, wolveX  - cornerX - wolve_right.getWidth() / 2, wolveY - cornerY - wolve_right.getHeight(), this);
 				}
 			}
 
+			// Draw rabbits
+			for (int rabbitInd = 0; rabbitInd < sto.rabbits.size(); rabbitInd++) {
+				if ((int) sto.rabbits.get(rabbitInd).y == pixY) {
+					int rabbitX = (int) sto.rabbits.get(rabbitInd).x, rabbitY = (int) sto.rabbits.get(rabbitInd).y;
+					if (sto.rabbitStats.get(rabbitInd) == false)
+						continue;
+					if (sto.rabbitVel.get(rabbitInd).x < 0)
+						g.drawImage(rabbit_left, rabbitX - cornerX - rabbit_left.getWidth() / 2, rabbitY - cornerY - rabbit_left.getHeight(), this);
+					else
+						g.drawImage(rabbit_right, rabbitX  - cornerX - rabbit_right.getWidth() / 2, rabbitY - cornerY - rabbit_right.getHeight(), this);
+				}
+			}
+			
+			// Draw craftables
+			for (int craftInd = 0; craftInd < sto.craftables.size(); craftInd++) {
+				if (sto.craftables.get(craftInd).y == pixY) {
+					int x = sto.craftables.get(craftInd).x;
+					if (sto.craftableType.get(craftInd) == 1) {
+						int k = sto.random.nextInt(6) + 1;
+						if (k == 1)
+							g.drawImage(fire1, x - cornerX - fire1.getWidth() / 2, pixY - cornerY - fire1.getHeight(), this);
+						else if (k == 2)
+							g.drawImage(fire2, x - cornerX - fire1.getWidth() / 2, pixY - cornerY - fire1.getHeight(), this);
+						else if (k == 3)
+							g.drawImage(fire3, x - cornerX - fire1.getWidth() / 2, pixY - cornerY - fire1.getHeight(), this);
+						else if (k == 4)
+							g.drawImage(fire4, x - cornerX - fire1.getWidth() / 2, pixY - cornerY - fire1.getHeight(), this);
+						else if (k == 5)
+							g.drawImage(fire5, x - cornerX - fire1.getWidth() / 2, pixY - cornerY - fire1.getHeight(), this);
+						else if (k == 6)
+							g.drawImage(fire6, x - cornerX - fire1.getWidth() / 2, pixY - cornerY - fire1.getHeight(), this);
+					}
+					if (sto.craftableType.get(craftInd) == 2) {
+						if (sto.craftableStat.get(craftInd) == true)
+							g.drawImage(snare, x - cornerX - snare.getWidth() / 2, pixY - cornerY - snare.getHeight(), this);
+						else
+							g.drawImage(snare_shot, x - cornerX - snare.getWidth() / 2, pixY - cornerY - snare.getHeight(), this);
+					}
+					if (sto.craftableType.get(craftInd) == 3)
+						g.drawImage(snare, x - cornerX - snare.getWidth() / 2, pixY - cornerY - snare.getHeight(), this);
+					if (sto.craftableType.get(craftInd) == 4)
+						g.drawImage(snare, x - cornerX - snare.getWidth() / 2, pixY - cornerY - snare.getHeight(), this);
+				}
+			}
+			
 			// Draw figure
 			if ((int) sto.player.y == pixY) {
 				try {
@@ -207,7 +345,7 @@ public class RenderPanel extends JPanel {
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-				g.drawImage(figure, (int) sto.player.x - cornerX - figure.getWidth() / 2, (int) sto.player.y - cornerY - figure.getHeight() + 10, this);
+				g.drawImage(figure, (int) sto.player.x - cornerX - figure.getWidth() / 2, (int) sto.player.y - cornerY - figure.getHeight() + 5, this);
 			}
 		}
 		
@@ -265,8 +403,6 @@ public class RenderPanel extends JPanel {
 		g.drawString(score, 10, 20);
 		
 		// Draw inventory
-		String berries = sto.berryCollected + " x         (e)";
-		g.drawString(berries, 15, sto.dim.height - 240);
 		String woods = sto.woodCollected + " x ";
 		g.drawString(woods, 15, sto.dim.height - 200);
 		String stones = sto.stoneCollected + " x ";
@@ -275,34 +411,56 @@ public class RenderPanel extends JPanel {
 		g.drawString(leaves, 15, sto.dim.height - 120);
 		String lianas = sto.lianaCollected + " x ";
 		g.drawString(lianas, 15, sto.dim.height - 80);
+		String berries = sto.berryCollected + " x           (e)";
+		g.drawString(berries, 130, sto.dim.height - 200);
+		String meat = sto.meatCollected + " x           (r)";
+		g.drawString(meat, 130, sto.dim.height - 160);
+		String rawmeat = sto.rawMeatCollected + " x ";
+		g.drawString(rawmeat, 130, sto.dim.height - 120);
+		String fishes = sto.fishCollected + " x ";
+		g.drawString(fishes, 130, sto.dim.height - 80);
 		
-		try {
-			berry = ImageIO.read(new File(imagePath + "berry.gif"));
-			wood = ImageIO.read(new File(imagePath + "wood.gif"));
-			stone = ImageIO.read(new File(imagePath + "stone2.gif"));
-			leafe = ImageIO.read(new File(imagePath + "leafe.gif"));
-			liana = ImageIO.read(new File(imagePath + "liana.gif"));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		g.drawImage(berry, 65, sto.dim.height - 263, this);
 		g.drawImage(wood, 60, sto.dim.height - 224, this);
 		g.drawImage(stone, 65, sto.dim.height - 182, this);
 		g.drawImage(leafe, 65, sto.dim.height - 142, this);
 		g.drawImage(liana, 63, sto.dim.height - 96, this);
+		g.drawImage(berry, 184, sto.dim.height - 224, this);
+		g.drawImage(cooked_meat, 180, sto.dim.height - 182, this);
+		g.drawImage(raw_meat, 180, sto.dim.height - 142, this);
+		g.drawImage(fish, 180, sto.dim.height - 96, this);
+		
+		// Draw craftable system
+		if (sto.woodCollected >= 5 && sto.stoneCollected >= 8)
+			g.drawImage(button1, sto.dim.width / 2 - 200, 20, this);
+		else
+			g.drawImage(button1_low, sto.dim.width / 2 - 200, 20, this);
+		if (sto.woodCollected >= 3 && sto.lianaCollected >= 1)
+			g.drawImage(button2, sto.dim.width / 2 - 100, 20, this);
+		else
+			g.drawImage(button2_low, sto.dim.width / 2 - 100, 20, this);
+		g.drawImage(button3_low, sto.dim.width / 2 - 0, 20, this);
+		g.drawImage(button4_low, sto.dim.width / 2 + 100, 20, this);
+		
+		if (sto.craft == true) {
+			String craft = "Crafting...";
+			g.setColor(Color.WHITE);
+			g.drawString(craft, sto.dim.width / 2 - 50, sto.dim.height - 100);
+			for (int i = 0; i < 200-sto.craftTime; i++)
+				g.fillRect(sto.dim.width / 2 - 200 + 2*i, sto.dim.height - 90, 2, 10);
+		}
 		
 		if (sto.run == true && sto.tired > 0) {
 			String run = "Running...";
 			g.setColor(Color.RED);
-			g.drawString(run, sto.dim.width / 2 - 40, sto.dim.height - 100);
+			g.drawString(run, sto.dim.width / 2 - 50, sto.dim.height - 100);
 		}
 		
 		if (sto.search == true) {
 			String run = "Searching...";
 			g.setColor(Color.WHITE);
-			g.drawString(run, sto.dim.width / 2 - 40, sto.dim.height - 100);
-			for (int i = 0; i < 200-sto.searchTime; i++)
-				g.fillRect(sto.dim.width / 2 - 200 + 2*i, sto.dim.height - 90, 2, 10);
+			g.drawString(run, sto.dim.width / 2 - 50, sto.dim.height - 100);
+			for (int i = 0; i < 150-sto.searchTime; i++)
+				g.fillRect(sto.dim.width / 2 - 150 + 2*i, sto.dim.height - 90, 2, 10);
 		}
 		
 		if (sto.over == true) {
