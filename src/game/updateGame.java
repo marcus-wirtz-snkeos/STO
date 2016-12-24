@@ -2,6 +2,7 @@ package game;
 
 import java.awt.Point;
 import java.awt.event.KeyEvent;
+import java.awt.geom.Point2D;
 import java.util.Random;
 
 public class updateGame {
@@ -14,12 +15,12 @@ public class updateGame {
 		int tick = sto.tick;
 		
 
-		if (sto.checkLake(sto.player.x - (sto.playerMovement + 1), sto.player.y) == true || sto.checkLake(sto.player.x + (sto.playerMovement + 1), sto.player.y) == true || 
-				sto.checkLake(sto.player.x, sto.player.y + (sto.playerMovement + 1)) == true || sto.checkLake(sto.player.x, sto.player.y - (sto.playerMovement + 1)) == true) {
+		if (sto.checkLake(sto.player.x - (sto.playerMovement + 1), sto.player.y, 0) == true || sto.checkLake(sto.player.x + (sto.playerMovement + 1), sto.player.y, 0) == true || 
+				sto.checkLake(sto.player.x, sto.player.y + (sto.playerMovement + 1), 0) == true || sto.checkLake(sto.player.x, sto.player.y - (sto.playerMovement + 1), 0) == true) {
 			sto.thirsty = 100;
 		}
 		
-		if (tick % 20 == 0) {
+		if (tick % 50 == 0) {
 			float pval = random.nextFloat();
 			if (pval < 0.4){
 				if (sto.hungry > 0)
@@ -56,7 +57,7 @@ public class updateGame {
 	
 	public static void move() {
 		
-		if (sto.search == false && sto.craft == false) {
+		if (sto.search == false && sto.craft == false && sto.cook == false && sto.harvest == false) {
 		float movement = sto.playerMovement;
 		movement -= (0.03 * sto.stoneCollected + 0.01 * sto.woodCollected + 0.001 * sto.leaveCollected + 
 				0.002 * sto.lianaCollected + 0.001 * sto.berryCollected);
@@ -74,25 +75,25 @@ public class updateGame {
 				(sto.keys[KeyEvent.VK_LEFT] && sto.keys[KeyEvent.VK_DOWN]) || (sto.keys[KeyEvent.VK_DOWN] && sto.keys[KeyEvent.VK_RIGHT]))
 				movement /= Math.sqrt(2);
 		
-	    if((sto.keys[KeyEvent.VK_W] || sto.keys[KeyEvent.VK_UP]) && sto.player.y > 0 && sto.checkLake(sto.player.x, sto.player.y - movement) == false
+	    if((sto.keys[KeyEvent.VK_W] || sto.keys[KeyEvent.VK_UP]) && sto.player.y > 0 && sto.checkLake(sto.player.x, sto.player.y - movement, 0) == false
 	    		&& sto.checkRock(sto.player.x, sto.player.y - movement, 50, true) == false){
 	    	sto.direction = "Up";
 	    	sto.player.y -= movement;
 	    }
 
-	    if((sto.keys[KeyEvent.VK_S] || sto.keys[KeyEvent.VK_DOWN]) && sto.player.y < sto.worldY && sto.checkLake(sto.player.x, sto.player.y + movement) == false
+	    if((sto.keys[KeyEvent.VK_S] || sto.keys[KeyEvent.VK_DOWN]) && sto.player.y < sto.worldY && sto.checkLake(sto.player.x, sto.player.y + movement, 0) == false
 	    		&& sto.checkRock(sto.player.x, sto.player.y + movement, 50, true) == false){
 	    	sto.direction = "Down";
 	    	sto.player.y += movement;
 	    }
 
-	    if((sto.keys[KeyEvent.VK_A] || sto.keys[KeyEvent.VK_LEFT]) && sto.player.x > 0 && sto.checkLake(sto.player.x - movement, sto.player.y) == false
+	    if((sto.keys[KeyEvent.VK_A] || sto.keys[KeyEvent.VK_LEFT]) && sto.player.x > 0 && sto.checkLake(sto.player.x - movement, sto.player.y, 0) == false
 	    		&& sto.checkRock(sto.player.x - movement, sto.player.y, 50, true) == false){
 	    	sto.direction = "Left";
 	    	sto.player.x -= movement;
 	    }
 
-	    if((sto.keys[KeyEvent.VK_D] || sto.keys[KeyEvent.VK_RIGHT]) && sto.player.x < sto.worldX && sto.checkLake(sto.player.x + movement, sto.player.y) == false
+	    if((sto.keys[KeyEvent.VK_D] || sto.keys[KeyEvent.VK_RIGHT]) && sto.player.x < sto.worldX && sto.checkLake(sto.player.x + movement, sto.player.y, 0) == false
 	    		&& sto.checkRock(sto.player.x + movement, sto.player.y, 50, true) == false){
 	    	sto.direction = "Right";
 	    	sto.player.x += movement;
@@ -100,17 +101,90 @@ public class updateGame {
 		}
 	}
 	
-	public static void searching() {
+	public static void cooking() {
 		
-		if (sto.search == false) {
-			if (sto.keys[KeyEvent.VK_SPACE]) {
-				sto.search = true;
-				sto.searchTime = 150;
+		if (sto.cook == false) {
+			if (sto.keys[KeyEvent.VK_SPACE] && sto.craft == false && sto.search == false && sto.harvest == false) {
+				for (int i = 0; i < sto.craftables.size(); i++) {
+					float disx = sto.craftables.get(i).x - sto.player.x;
+					float disy = sto.craftables.get(i).y - sto.player.y;
+					if (sto.craftableType.get(i) == 1 && sto.craftableStat.get(i) == true && Math.sqrt(disx * disx + disy * disy) < 50
+							&& (sto.rawMeatCollected > 0 || sto.fishCollected > 0)) {
+						sto.cook = true;
+						sto.action = i;
+					}
+				}
 			}
 		}
 		else {
-			if (sto.searchTime == 0)
+			if (sto.cookTime == 0) {
+				sto.cook = false;
+				sto.cookTime = 300;
+				if (sto.rawMeatCollected > 0)
+					sto.rawMeatCollected -= 1;
+				else
+					sto.fishCollected -= 1;
+				sto.meatCollected += 1;
+				if (random.nextFloat() < 0.2)
+					sto.craftableStat.set(sto.action, false);
+			}
+			else
+				sto.cookTime -= 1;
+		}
+		
+	}	
+	
+	public static void harvesting() {
+		
+		if (sto.harvest == false) {
+			if (sto.keys[KeyEvent.VK_SPACE] && sto.cook == false && sto.search == false && sto.craft == false) {
+				for (int i = 0; i < sto.craftables.size(); i++) {
+					float disx = sto.craftables.get(i).x - sto.player.x;
+					float disy = sto.craftables.get(i).y - sto.player.y;
+					if ((sto.craftableType.get(i) == 2 || sto.craftableType.get(i) == 3) && 
+							sto.craftableStat.get(i) == false && Math.sqrt(disx * disx + disy * disy) < 50) {
+						sto.harvest = true;
+						sto.action = i;
+					}
+				}
+			}
+		}
+		else {
+			if (sto.harvestTime == 0) {
+				sto.harvest = false;
+				sto.harvestTime = 200;
+	
+				if (sto.craftableType.get(sto.action) == 2) 
+					sto.rawMeatCollected += 1;
+				else if (sto.craftableType.get(sto.action) == 3)
+					sto.fishCollected += 1;
+
+				if (random.nextFloat() < 0.2) {
+					sto.craftables.remove(sto.action);
+					sto.craftableType.remove(sto.action);
+					sto.craftableStat.remove(sto.action);
+				}
+				else
+					sto.craftableStat.set(sto.action, true);
+			}
+			else
+				sto.harvestTime -= 1;
+		}
+		
+	}
+	
+	public static void searching() {
+		
+		if (sto.search == false) {
+			if (sto.keys[KeyEvent.VK_SPACE] && sto.harvest==false && sto.cook == false && sto.craft == false) {
+				sto.search = true;
+			}
+		}
+		else {
+			if (sto.searchTime == 0) {
 				sto.search = false;
+				sto.searchTime = 150;
+			}
 			else
 				sto.searchTime -= 1;
 		
@@ -121,11 +195,11 @@ public class updateGame {
 				if (Math.sqrt(dis_x * dis_x + dis_y * dis_y) < 50) {
 					if (sto.treeDeath.get(i) == true) {
 						pWood += 0.003;
-						pLiana += 0.0002;
+						pLiana += 0.001;
 					}
 					else {
 						pWood += 0.001;
-						pLiana += 0.0005;
+						pLiana += 0.002;
 					}
 				}
 			}
@@ -160,32 +234,45 @@ public class updateGame {
 	public static void crafting() {
 		
 		if (sto.craft == true) {
-			if (sto.craftTime == 0)
+			if (sto.craftTime == 0) {
 				sto.craft = false;
+				sto.craftTime = 400;
+			}
 			else
 				sto.craftTime -= 1;
 		}
 		
 		if (sto.craft == false && sto.keys[KeyEvent.VK_1] && sto.woodCollected >= 5 && sto.stoneCollected >= 1) {
 			sto.craft = true;
-			sto.craftTime = 200;
 			
 			sto.woodCollected -= 5;
 			sto.stoneCollected -= 8;
 			sto.craftableType.add(1);
 			sto.craftableStat.add(true);
-			addCraftable();
+			addCraftable(20);
 		}
 		
 		if (sto.craft == false && sto.keys[KeyEvent.VK_2] && sto.woodCollected >= 3 && sto.lianaCollected >= 1) {
 			sto.craft = true;
-			sto.craftTime = 200;
 			
 			sto.woodCollected -= 3;
 			sto.lianaCollected -= 1;
 			sto.craftableType.add(2);
 			sto.craftableStat.add(true);
-			addCraftable();
+			addCraftable(20);
+		}
+		
+		if (sto.craft == false && sto.keys[KeyEvent.VK_3] && sto.woodCollected >= 3 && sto.lianaCollected >= 8 ) {
+
+			if (sto.checkLake(sto.player.x, sto.player.y, -20)) {
+				sto.craft = true;
+				
+				sto.woodCollected -= 3;
+				sto.lianaCollected -= 8;
+				sto.craftableType.add(3);
+				sto.craftableStat.add(true);
+				addCraftable(50);
+			}
 		}
 	}
 	
@@ -203,7 +290,7 @@ public class updateGame {
 			while (looping == true) {
 				int startX = random.nextInt(sto.worldX);
 				int startY = random.nextInt(sto.worldY);
-				if (sto.checkLake(startX, startY) == false && sto.checkTree(startX, startY, sto.rWood) == true) {
+				if (sto.checkLake(startX, startY, -5) == false && sto.checkTree(startX, startY, sto.rWood) == true) {
 					sto.woods.add(new Point(startX, startY));
 					if (random.nextFloat() < 0.5)
 						sto.woodStats.add(true);
@@ -213,19 +300,55 @@ public class updateGame {
 				}
 			}
 		}
+		
+		
 		if (random.nextFloat() < sto.stoneSpawn) {
 			sto.nStones += 1;
 			boolean looping = true;
 			while (looping == true) {
 				int startX = random.nextInt(sto.worldX);
 				int startY = random.nextInt(sto.worldY);
-				if (sto.checkLake(startX, startY) == false && sto.checkRock(startX, startY, 300, false) && sto.checkRock(startX, startY, 30, false) == false) {
+				if (sto.checkLake(startX, startY, -5) == false && sto.checkRock(startX, startY, 300, false) && sto.checkRock(startX, startY, 30, false) == false) {
 					sto.stones.add(new Point(startX, startY));
 					looping = false;
 				}
 			}
 			sto.stones.sort(sto.byY);
 		}
+		if (sto.tick % 100 == 0 && random.nextFloat() < sto.rabbitSpawn) {
+			for (int i = 0; i < sto.rabbits.size(); i++) {
+				if (sto.rabbitStats.get(i) == false) {
+					sto.rabbitStats.set(i, true);
+					while (true) {
+						float startX = random.nextInt(sto.worldX);
+						float startY = random.nextInt(sto.worldY);
+						if (sto.checkLake(startX, startY, -5) == false && sto.checkRock(startX, startY, 40, true) == false) {
+							sto.rabbits.set(i, new Point2D.Float(startX, startY));
+							break;
+						}
+					}
+					break;
+				}
+			}
+		}
+		
+		if (sto.tick % 100 == 0 && random.nextFloat() < sto.fishSpawn) {
+			for (int i = 0; i < sto.fishes.size(); i++) {
+				if (sto.fishStats.get(i) == false) {
+					sto.fishStats.set(i, true);
+					while (true) {
+						float startX = random.nextInt(sto.worldX);
+						float startY = random.nextInt(sto.worldY);
+						if (sto.checkLake(startX, startY, 20) == true) {
+							sto.fishes.set(i, new Point2D.Float(startX, startY));
+							break;
+						}
+					}
+					break;
+				}
+			}
+		}
+		
 		}
 	}
 	
@@ -252,15 +375,15 @@ public class updateGame {
 		}
 	}
 	
-	public static void addCraftable() {
+	public static void addCraftable(int dis) {
 
 		if (sto.direction == "Up")
-			sto.craftables.add(new Point((int) sto.player.x, (int) sto.player.y - 10));
+			sto.craftables.add(new Point((int) sto.player.x, (int) sto.player.y - dis));
 		else if (sto.direction == "Down")
-			sto.craftables.add(new Point((int) sto.player.x, (int) sto.player.y + 10));
+			sto.craftables.add(new Point((int) sto.player.x, (int) sto.player.y + dis));
 		else if (sto.direction == "Left")
-			sto.craftables.add(new Point((int) sto.player.x - 10, (int) sto.player.y));
+			sto.craftables.add(new Point((int) sto.player.x - dis, (int) sto.player.y));
 		else
-			sto.craftables.add(new Point((int) sto.player.x + 10, (int) sto.player.y));
+			sto.craftables.add(new Point((int) sto.player.x + dis, (int) sto.player.y));
 	}
 }

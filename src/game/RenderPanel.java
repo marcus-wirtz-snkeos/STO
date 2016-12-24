@@ -18,6 +18,8 @@ public class RenderPanel extends JPanel {
 	public BufferedImage wolve_right;
 	public BufferedImage rabbit_left;
 	public BufferedImage rabbit_right;
+	public BufferedImage fish_left;
+	public BufferedImage fish_right;
 	public BufferedImage berryFull;
 	public BufferedImage berryEmpty;
 	public BufferedImage Pine1;
@@ -40,6 +42,13 @@ public class RenderPanel extends JPanel {
 	public BufferedImage plant2;
 	public BufferedImage plant3;
 	public BufferedImage plant4;
+	
+	public BufferedImage reed;
+	public BufferedImage lily1;
+	public BufferedImage lily2;
+	public BufferedImage lily3;
+	
+	
 	public BufferedImage stone;
 	public BufferedImage rock1;
 	public BufferedImage rock2;
@@ -48,6 +57,8 @@ public class RenderPanel extends JPanel {
 
 	public BufferedImage snare;
 	public BufferedImage snare_shot;
+	public BufferedImage fish_trap;
+	public BufferedImage fish_trap_shot;
 	public BufferedImage fire1;
 	public BufferedImage fire2;
 	public BufferedImage fire3;
@@ -102,14 +113,20 @@ public class RenderPanel extends JPanel {
 			plant3 = ImageIO.read(new File(imagePath + "plant3.gif"));
 			plant4 = ImageIO.read(new File(imagePath + "plant4.gif"));
 			
+			reed = ImageIO.read(new File(imagePath + "reed.png"));
+			lily1 = ImageIO.read(new File(imagePath + "lily1.gif"));
+			lily2 = ImageIO.read(new File(imagePath + "lily2.gif"));
+			lily3 = ImageIO.read(new File(imagePath + "lily3.gif"));
+			
 			berryFull = ImageIO.read(new File(imagePath + "berry_full.gif"));
 			berryEmpty = ImageIO.read(new File(imagePath + "berry_empty.gif"));
 			
 			wolve_left = ImageIO.read(new File(imagePath + "wolve_left.gif"));
 			wolve_right = ImageIO.read(new File(imagePath + "wolve_right.gif"));
-			
 			rabbit_left = ImageIO.read(new File(imagePath + "rabbit_left.gif"));
 			rabbit_right = ImageIO.read(new File(imagePath + "rabbit_right.gif"));
+			fish_left = ImageIO.read(new File(imagePath + "fish_left.png"));
+			fish_right = ImageIO.read(new File(imagePath + "fish_right.png"));
 			
 			stone = ImageIO.read(new File(imagePath + "stone.gif"));
 			rock1 = ImageIO.read(new File(imagePath + "rock1.gif"));
@@ -127,15 +144,17 @@ public class RenderPanel extends JPanel {
 
 			button1 = ImageIO.read(new File(imagePath + "button1.png"));
 			button2 = ImageIO.read(new File(imagePath + "button2.png"));
-			button3 = ImageIO.read(new File(imagePath + "button2.png"));
+			button3 = ImageIO.read(new File(imagePath + "button3.png"));
 			button4 = ImageIO.read(new File(imagePath + "button2.png"));
 			button1_low = ImageIO.read(new File(imagePath + "button1_low.png"));
 			button2_low = ImageIO.read(new File(imagePath + "button2_low.png"));
-			button3_low = ImageIO.read(new File(imagePath + "button2_low.png"));
+			button3_low = ImageIO.read(new File(imagePath + "button3_low.png"));
 			button4_low = ImageIO.read(new File(imagePath + "button2_low.png"));
 			
 			snare = ImageIO.read(new File(imagePath + "snare.gif"));
 			snare_shot = ImageIO.read(new File(imagePath + "snare_shot.gif"));
+			fish_trap = ImageIO.read(new File(imagePath + "fish_trap.png"));
+			fish_trap_shot = ImageIO.read(new File(imagePath + "fish_trap_shot.png"));
 			fire1 = ImageIO.read(new File(imagePath + "fire1.gif"));
 			fire2 = ImageIO.read(new File(imagePath + "fire2.gif"));
 			fire3 = ImageIO.read(new File(imagePath + "fire3.gif"));
@@ -146,7 +165,7 @@ public class RenderPanel extends JPanel {
 			e1.printStackTrace();
 		}
 		
-		int treeInd = 0, plantInd = 0, stoneInd = 0, rockInd = 0, berryInd = 0;
+		int treeInd = 0, plantInd = 0, stoneInd = 0, rockInd = 0, berryInd = 0, lilyInd = 0, reedInd = 0;
 		for (int pixY = Math.max(0, cornerY - 100); pixY < Math.min(sto.worldY, cornerY + sto.dim.height + 100); pixY++) {
 			
 			// Draw trees
@@ -306,6 +325,58 @@ public class RenderPanel extends JPanel {
 				}
 			}
 			
+			// Draw fishes
+			for (int fishInd = 0; fishInd < sto.fishes.size(); fishInd++) {
+				if ((int) sto.fishes.get(fishInd).y == pixY) {
+					int fishX = (int) sto.fishes.get(fishInd).x, fishY = (int) sto.fishes.get(fishInd).y;
+					if (sto.fishStats.get(fishInd) == false)
+						continue;
+					if (sto.fishVel.get(fishInd).x < 0)
+						g.drawImage(fish_left, fishX - cornerX - fish_left.getWidth() / 2, fishY - cornerY - fish_left.getHeight(), this);
+					else
+						g.drawImage(fish_right, fishX  - cornerX - fish_right.getWidth() / 2, fishY - cornerY - fish_right.getHeight(), this);
+				}
+			}
+			
+			// Draw lilies
+			if (lilyInd == 0) {
+				while (sto.lilies.get(lilyInd).y < pixY)
+					lilyInd++;
+			}
+			if (lilyInd < sto.lilies.size()) {
+				while (sto.lilies.get(lilyInd).y == pixY) {
+					int x = sto.lilies.get(lilyInd).x;
+					if (x < cornerX -100 && x > cornerX + sto.dim.width + 100)
+						continue;
+					if (sto.lilyType.get(lilyInd) == 1)
+						g.drawImage(lily1, x - cornerX - lily1.getWidth() / 2, pixY - cornerY - lily1.getHeight(), this);
+					if (sto.lilyType.get(lilyInd) == 2)
+						g.drawImage(lily2, x - cornerX - lily2.getWidth() / 2, pixY - cornerY - lily2.getHeight(), this);
+					if (sto.lilyType.get(lilyInd) == 3)
+						g.drawImage(lily3, x - cornerX - lily3.getWidth() / 2, pixY - cornerY - lily3.getHeight(), this);
+					lilyInd++;
+					if (lilyInd == sto.lilies.size())
+						break;
+				}
+			}
+			
+			// Draw reeds
+			if (reedInd == 0) {
+				while (sto.reeds.get(reedInd).y < pixY)
+					reedInd++;
+			}
+			if (reedInd < sto.reeds.size()) {
+				while (sto.reeds.get(reedInd).y == pixY) {
+					int x = sto.reeds.get(reedInd).x;
+					if (x < cornerX -100 && x > cornerX + sto.dim.width + 100)
+						continue;
+					reedInd++;
+					g.drawImage(reed, x - cornerX - reed.getWidth() / 2 + 20, pixY - cornerY - reed.getHeight() + 20, this);
+					if (reedInd == sto.reeds.size())
+						break;
+				}
+			}
+			
 			// Draw craftables
 			for (int craftInd = 0; craftInd < sto.craftables.size(); craftInd++) {
 				if (sto.craftables.get(craftInd).y == pixY) {
@@ -332,7 +403,10 @@ public class RenderPanel extends JPanel {
 							g.drawImage(snare_shot, x - cornerX - snare.getWidth() / 2, pixY - cornerY - snare.getHeight(), this);
 					}
 					if (sto.craftableType.get(craftInd) == 3)
-						g.drawImage(snare, x - cornerX - snare.getWidth() / 2, pixY - cornerY - snare.getHeight(), this);
+						if (sto.craftableStat.get(craftInd) == true)
+							g.drawImage(fish_trap, x - cornerX - fish_trap.getWidth() / 2, pixY - cornerY - fish_trap.getHeight(), this);
+						else
+							g.drawImage(fish_trap_shot, x - cornerX - fish_trap_shot.getWidth() / 2, pixY - cornerY - fish_trap_shot.getHeight(), this);
 					if (sto.craftableType.get(craftInd) == 4)
 						g.drawImage(snare, x - cornerX - snare.getWidth() / 2, pixY - cornerY - snare.getHeight(), this);
 				}
@@ -438,29 +512,87 @@ public class RenderPanel extends JPanel {
 			g.drawImage(button2, sto.dim.width / 2 - 100, 20, this);
 		else
 			g.drawImage(button2_low, sto.dim.width / 2 - 100, 20, this);
-		g.drawImage(button3_low, sto.dim.width / 2 - 0, 20, this);
+		if (sto.woodCollected >= 3 && sto.lianaCollected >= 8)
+			g.drawImage(button3, sto.dim.width / 2, 20, this);
+		else
+			g.drawImage(button3_low, sto.dim.width / 2, 20, this);
 		g.drawImage(button4_low, sto.dim.width / 2 + 100, 20, this);
+		
+		// Show craft options
+		if (sto.cook == false) {
+			if (sto.craft == false && sto.search == false && sto.harvest == false) {
+				for (int i = 0; i < sto.craftables.size(); i++) {
+					float disx = sto.craftables.get(i).x - sto.player.x;
+					float disy = sto.craftables.get(i).y - sto.player.y;
+					if (sto.craftableType.get(i) == 1 && sto.craftableStat.get(i) == true && Math.sqrt(disx * disx + disy * disy) < 50
+							&& (sto.rawMeatCollected > 0 || sto.fishCollected > 0)) {
+						String cook = "Press [Space] for cooking";
+						g.setColor(Color.BLACK);
+						g.drawString(cook, sto.dim.width / 2 - 150, sto.dim.height - 140);
+					}
+				}
+			}
+		}
+		
+		if (sto.harvest == false) {
+			if (sto.cook == false && sto.search == false && sto.craft == false) {
+				for (int i = 0; i < sto.craftables.size(); i++) {
+					float disx = sto.craftables.get(i).x - sto.player.x;
+					float disy = sto.craftables.get(i).y - sto.player.y;
+					if ((sto.craftableType.get(i) == 2 || sto.craftableType.get(i) == 3) && 
+							sto.craftableStat.get(i) == false && Math.sqrt(disx * disx + disy * disy) < 50) {
+						String harvest = "";
+						if (sto.craftableType.get(i) == 2)
+							harvest = "Press [Space] for harvesting";
+						else if (sto.craftableType.get(i) == 2)
+							harvest = "Press [Space] for collecting";
+						g.setColor(Color.BLACK);
+						g.drawString(harvest, sto.dim.width / 2 - 150, sto.dim.height - 140);
+					}
+				}
+			}
+		}
+
+		if (sto.search == true) {
+			String search = "Searching...";
+			g.setColor(Color.WHITE);
+			g.drawString(search, sto.dim.width / 2 - 80, sto.dim.height - 100);
+			for (int i = 0; i < 150-sto.searchTime; i++)
+				g.fillRect(sto.dim.width / 2 - 200 + (int) ((float) 400 / 150) *i, sto.dim.height - 90, (int) ((float) 400 / 150), 10);
+		}
 		
 		if (sto.craft == true) {
 			String craft = "Crafting...";
 			g.setColor(Color.WHITE);
-			g.drawString(craft, sto.dim.width / 2 - 50, sto.dim.height - 100);
-			for (int i = 0; i < 200-sto.craftTime; i++)
+			g.drawString(craft, sto.dim.width / 2 - 70, sto.dim.height - 100);
+			for (int i = 0; i < 400-sto.craftTime; i++)
+				g.fillRect(sto.dim.width / 2 - 200 + i, sto.dim.height - 90, 1, 10);
+		}
+		
+		if (sto.cook == true) {
+			String cook = "Cooking...";
+			g.setColor(Color.WHITE);
+			g.drawString(cook, sto.dim.width / 2 - 70, sto.dim.height - 100);
+			for (int i = 0; i < 300-sto.cookTime; i++)
+				g.fillRect(sto.dim.width / 2 - 200 + (int) ((float) 400 / 300) *i, sto.dim.height - 90, (int) ((float) 400 / 300), 10);
+		}
+		
+		if (sto.harvest == true) {
+			String harvest = "";
+			if (sto.craftableType.get(sto.action) == 2)
+				harvest = "Harvesting rabbit...";
+			else
+				harvest = "Collecting fish...";
+			g.setColor(Color.WHITE);
+			g.drawString(harvest, sto.dim.width / 2 - 120, sto.dim.height - 100);
+			for (int i = 0; i < 200-sto.harvestTime; i++)
 				g.fillRect(sto.dim.width / 2 - 200 + 2*i, sto.dim.height - 90, 2, 10);
 		}
 		
 		if (sto.run == true && sto.tired > 0) {
 			String run = "Running...";
 			g.setColor(Color.RED);
-			g.drawString(run, sto.dim.width / 2 - 50, sto.dim.height - 100);
-		}
-		
-		if (sto.search == true) {
-			String run = "Searching...";
-			g.setColor(Color.WHITE);
-			g.drawString(run, sto.dim.width / 2 - 50, sto.dim.height - 100);
-			for (int i = 0; i < 150-sto.searchTime; i++)
-				g.fillRect(sto.dim.width / 2 - 150 + 2*i, sto.dim.height - 90, 2, 10);
+			g.drawString(run, sto.dim.width / 2 - 70, sto.dim.height - 100);
 		}
 		
 		if (sto.over == true) {
