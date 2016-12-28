@@ -305,7 +305,7 @@ public class STO implements ActionListener, KeyListener {
 		System.out.println("Stones Set!");
 
 		// Set wolve behaviour
-		nWolves = 20;
+		nWolves = 10;
 		changeSpeed = (float) 0.05;
 		maxSpeed = (float) 1.5;
 		changeDirection = (float) 0.05;

@@ -65,6 +65,7 @@ public class RenderPanel extends JPanel {
 	public BufferedImage fire4;
 	public BufferedImage fire5;
 	public BufferedImage fire6;
+	public BufferedImage shelter;
 	
 	public BufferedImage button1;
 	public BufferedImage button2;
@@ -145,11 +146,11 @@ public class RenderPanel extends JPanel {
 			button1 = ImageIO.read(new File(imagePath + "button1.png"));
 			button2 = ImageIO.read(new File(imagePath + "button2.png"));
 			button3 = ImageIO.read(new File(imagePath + "button3.png"));
-			button4 = ImageIO.read(new File(imagePath + "button2.png"));
+			button4 = ImageIO.read(new File(imagePath + "button4.png"));
 			button1_low = ImageIO.read(new File(imagePath + "button1_low.png"));
 			button2_low = ImageIO.read(new File(imagePath + "button2_low.png"));
 			button3_low = ImageIO.read(new File(imagePath + "button3_low.png"));
-			button4_low = ImageIO.read(new File(imagePath + "button2_low.png"));
+			button4_low = ImageIO.read(new File(imagePath + "button4_low.png"));
 			
 			snare = ImageIO.read(new File(imagePath + "snare.gif"));
 			snare_shot = ImageIO.read(new File(imagePath + "snare_shot.gif"));
@@ -161,6 +162,7 @@ public class RenderPanel extends JPanel {
 			fire4 = ImageIO.read(new File(imagePath + "fire4.gif"));
 			fire5 = ImageIO.read(new File(imagePath + "fire5.gif"));
 			fire6 = ImageIO.read(new File(imagePath + "fire6.gif"));
+			shelter = ImageIO.read(new File(imagePath + "shelter.png"));
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
@@ -408,7 +410,7 @@ public class RenderPanel extends JPanel {
 						else
 							g.drawImage(fish_trap_shot, x - cornerX - fish_trap_shot.getWidth() / 2, pixY - cornerY - fish_trap_shot.getHeight(), this);
 					if (sto.craftableType.get(craftInd) == 4)
-						g.drawImage(snare, x - cornerX - snare.getWidth() / 2, pixY - cornerY - snare.getHeight(), this);
+						g.drawImage(shelter, x - cornerX - shelter.getWidth() / 2, pixY - cornerY - shelter.getHeight(), this);
 				}
 			}
 			
@@ -516,7 +518,10 @@ public class RenderPanel extends JPanel {
 			g.drawImage(button3, sto.dim.width / 2, 20, this);
 		else
 			g.drawImage(button3_low, sto.dim.width / 2, 20, this);
-		g.drawImage(button4_low, sto.dim.width / 2 + 100, 20, this);
+		if (sto.woodCollected >= 8 && sto.lianaCollected >= 4 && sto.leaveCollected >= 10)
+			g.drawImage(button4, sto.dim.width / 2 + 100, 20, this);
+		else
+			g.drawImage(button4_low, sto.dim.width / 2 + 100, 20, this);
 		
 		// Show craft options
 		if (sto.cook == false) {

@@ -214,7 +214,7 @@ public class updateGame {
 				float dis_x = sto.rocks.get(i).x - sto.player.x;
 				float dis_y = sto.rocks.get(i).y - sto.player.y;		
 				if (Math.sqrt(dis_x * dis_x + dis_y * dis_y) < 50)
-					pStones += 0.005;
+					pStones += 0.003;
 			}
 			if (random.nextFloat() < pStones)
 				sto.stoneCollected += 1;
@@ -224,7 +224,7 @@ public class updateGame {
 				float dis_x = sto.plants.get(i).x - sto.player.x;
 				float dis_y = sto.plants.get(i).y - sto.player.y;		
 				if (Math.sqrt(dis_x * dis_x + dis_y * dis_y) < 50)
-					pLeave += 0.001;
+					pLeave += 0.004;
 			}
 			if (random.nextFloat() < pLeave)
 				sto.leaveCollected += 1;
@@ -273,6 +273,17 @@ public class updateGame {
 				sto.craftableStat.add(true);
 				addCraftable(50);
 			}
+		}
+		
+		if (sto.craft == false && sto.keys[KeyEvent.VK_4] && sto.woodCollected >= 8 && sto.lianaCollected >= 4 && sto.leaveCollected >= 10) {
+				sto.craft = true;
+				
+				sto.woodCollected -= 8;
+				sto.lianaCollected -= 4;
+				sto.leaveCollected -= 10;
+				sto.craftableType.add(4);
+				sto.craftableStat.add(true);
+				addCraftable(50);
 		}
 	}
 	
