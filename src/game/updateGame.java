@@ -20,7 +20,7 @@ public class updateGame {
 			sto.thirsty = 100;
 		}
 		
-		if (tick % 50 == 0) {
+		if (tick % 30 == 0) {
 			float pval = random.nextFloat();
 			if (pval < 0.4){
 				if (sto.hungry > 0)

@@ -283,7 +283,7 @@ public class STO implements ActionListener, KeyListener {
 		}
 		rocks.sort(byY);
 		System.out.println("Wocks Set!");
-		
+
 		// Set stones
 		nStones = 15;
 		rStone = 40;
@@ -307,9 +307,9 @@ public class STO implements ActionListener, KeyListener {
 		// Set wolve behaviour
 		nWolves = 10;
 		changeSpeed = (float) 0.05;
-		maxSpeed = (float) 1.5;
+		maxSpeed = (float) 1.45;
 		changeDirection = (float) 0.05;
-		wolveRadius = 300; 
+		wolveRadius = 500; 
 		wolveDriftRadius = 20 * wolveRadius; 
 		wolveAggression = (float) 0.5;
 		chase = (float) 0.8;
