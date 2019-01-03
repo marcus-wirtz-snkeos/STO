@@ -76,7 +76,7 @@ public class RenderPanel extends JPanel {
 	public BufferedImage button3_low;
 	public BufferedImage button4_low;
 	
-	public String imagePath = "/home/marcus/Documents/Java/STO/src/game/img/";
+	public String imagePath = System.getProperty("user.dir") + "/img/";
 
 	protected void paintComponent(Graphics g) {
 

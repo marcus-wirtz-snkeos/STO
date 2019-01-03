@@ -2,7 +2,6 @@ package game;
 
 import java.awt.Dimension;
 import java.awt.Point;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -11,8 +10,10 @@ import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Random;
-import javax.swing.JFrame;	// Modul um Fenster zu erzeugen
+import javax.swing.JFrame;
 import javax.swing.Timer;
+import java.awt.GraphicsEnvironment;
+import java.awt.GraphicsDevice;
 
 public class STO implements ActionListener, KeyListener {
 	
@@ -21,7 +22,9 @@ public class STO implements ActionListener, KeyListener {
 	public JFrame jframe;
 	public RenderPanel renderPanel;
 	public Timer timer = new Timer(1, this);
-	public Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+	GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+	public Dimension dim = new Dimension(gd.getDisplayMode().getWidth(), gd.getDisplayMode().getHeight());
+
 	public static final int worldSize = 4;
 	public float dayLength;
 	public int worldX, worldY;
@@ -114,7 +117,7 @@ public class STO implements ActionListener, KeyListener {
 		thirsty = 100;
 		
 		pTired = (float) 0.001;
-		playerMovement = (float) 1.5;
+		playerMovement = (float) 3;
 		
 		// Set inventory
 		woodCollected = 0;
@@ -306,8 +309,8 @@ public class STO implements ActionListener, KeyListener {
 
 		// Set wolve behaviour
 		nWolves = 10;
-		changeSpeed = (float) 0.05;
-		maxSpeed = (float) 1.45;
+		changeSpeed = (float) 0.1;
+		maxSpeed = (float) 3;
 		changeDirection = (float) 0.05;
 		wolveRadius = 500; 
 		wolveDriftRadius = 20 * wolveRadius; 
@@ -330,7 +333,7 @@ public class STO implements ActionListener, KeyListener {
 		
 		// Set rabbits
 		nRabbits = 20;
-		rabbitSpeed = (float) 2;
+		rabbitSpeed = (float) 4;
 		rabbitChange = (float) 0.1;
 		rabbitFlee = (float) 0.5;
 		rabbitRadius = 200;
