@@ -66,6 +66,7 @@ public class RenderPanel extends JPanel {
 	public BufferedImage fire5;
 	public BufferedImage fire6;
 	public BufferedImage shelter;
+	public BufferedImage shelter_hidden;
 	
 	public BufferedImage button1;
 	public BufferedImage button2;
@@ -163,6 +164,7 @@ public class RenderPanel extends JPanel {
 			fire5 = ImageIO.read(new File(imagePath + "fire5.gif"));
 			fire6 = ImageIO.read(new File(imagePath + "fire6.gif"));
 			shelter = ImageIO.read(new File(imagePath + "shelter.png"));
+			shelter_hidden = ImageIO.read(new File(imagePath + "shelter_hidden.png"));
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
@@ -409,8 +411,12 @@ public class RenderPanel extends JPanel {
 							g.drawImage(fish_trap, x - cornerX - fish_trap.getWidth() / 2, pixY - cornerY - fish_trap.getHeight(), this);
 						else
 							g.drawImage(fish_trap_shot, x - cornerX - fish_trap_shot.getWidth() / 2, pixY - cornerY - fish_trap_shot.getHeight(), this);
-					if (sto.craftableType.get(craftInd) == 4)
-						g.drawImage(shelter, x - cornerX - shelter.getWidth() / 2, pixY - cornerY - shelter.getHeight(), this);
+					if (sto.craftableType.get(craftInd) == 4) {
+						if (sto.hidden == false)
+							g.drawImage(shelter, x - cornerX - shelter.getWidth() / 2, pixY - cornerY - shelter.getHeight(), this);
+						else
+							g.drawImage(shelter_hidden, x - cornerX - shelter.getWidth() / 2, pixY - cornerY - shelter.getHeight(), this);
+					}
 				}
 			}
 			
@@ -421,7 +427,8 @@ public class RenderPanel extends JPanel {
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-				g.drawImage(figure, (int) sto.player.x - cornerX - figure.getWidth() / 2, (int) sto.player.y - cornerY - figure.getHeight() + 5, this);
+				if (sto.hidden == false)
+					g.drawImage(figure, (int) sto.player.x - cornerX - figure.getWidth() / 2, (int) sto.player.y - cornerY - figure.getHeight() + 5, this);
 			}
 		}
 		
@@ -523,22 +530,26 @@ public class RenderPanel extends JPanel {
 		else
 			g.drawImage(button4_low, sto.dim.width / 2 + 100, 20, this);
 		
-		// Show craft options
-		if (sto.cook == false) {
-			if (sto.craft == false && sto.search == false && sto.harvest == false) {
-				for (int i = 0; i < sto.craftables.size(); i++) {
-					float disx = sto.craftables.get(i).x - sto.player.x;
-					float disy = sto.craftables.get(i).y - sto.player.y;
-					if (sto.craftableType.get(i) == 1 && sto.craftableStat.get(i) == true && Math.sqrt(disx * disx + disy * disy) < 50
-							&& (sto.rawMeatCollected > 0 || sto.fishCollected > 0)) {
-						String cook = "Press [Space] for cooking";
-						g.setColor(Color.BLACK);
-						g.drawString(cook, sto.dim.width / 2 - 150, sto.dim.height - 140);
-					}
+		// Show options
+		if (sto.cook == false && sto.hidden == false && sto.craft == false && sto.search == false && sto.harvest == false) {
+			for (int i = 0; i < sto.craftables.size(); i++) {
+				float disx = sto.craftables.get(i).x - sto.player.x;
+				float disy = sto.craftables.get(i).y - sto.player.y;
+				if (sto.craftableType.get(i) == 1 && sto.craftableStat.get(i) == true && Math.sqrt(disx * disx + disy * disy) < 50
+						&& (sto.rawMeatCollected > 0 || sto.fishCollected > 0)) {
+					String cook = "Press [Space] for cooking";
+					g.setColor(Color.BLACK);
+					g.drawString(cook, sto.dim.width / 2 - 150, sto.dim.height - 140);
+				}
+				else if (sto.craftableType.get(i) == 4 && Math.sqrt(disx * disx + disy * disy) < 50) {
+					String cook = "Press [Space] for hiding";
+					g.setColor(Color.BLACK);
+					g.drawString(cook, sto.dim.width / 2 - 150, sto.dim.height - 140);
 				}
 			}
 		}
-		
+
+
 		if (sto.harvest == false) {
 			if (sto.cook == false && sto.search == false && sto.craft == false) {
 				for (int i = 0; i < sto.craftables.size(); i++) {
@@ -565,7 +576,13 @@ public class RenderPanel extends JPanel {
 			for (int i = 0; i < 150-sto.searchTime; i++)
 				g.fillRect(sto.dim.width / 2 - 200 + (int) ((float) 400 / 150) *i, sto.dim.height - 90, (int) ((float) 400 / 150), 10);
 		}
-		
+
+		if (sto.hidden == true) {
+			String hidden = "Hidden in shelter!";
+			g.setColor(Color.WHITE);
+			g.drawString(hidden, sto.dim.width / 2 - 80, sto.dim.height - 100);
+		}
+
 		if (sto.craft == true) {
 			String craft = "Crafting...";
 			g.setColor(Color.WHITE);

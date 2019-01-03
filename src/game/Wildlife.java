@@ -49,11 +49,13 @@ public class Wildlife {
 			// Check for wolve chasing
 			float xDir = sto.player.x - wolveX;
 			float yDir = sto.player.y - wolveY;
-			if (wolveChase(i, 1, wolveX, wolveY, sto.player.x, sto.player.y, sto.wolveRadius) == true) {
-				float dirLen = (float) Math.sqrt(xDir * xDir + yDir * yDir);
-				float intensity = random.nextFloat();
-				velX += intensity * sto.chase * xDir / dirLen;
-				velY += intensity * sto.chase * yDir / dirLen;
+			if (sto.hidden == false) {
+				if (wolveChase(i, 1, wolveX, wolveY, sto.player.x, sto.player.y, sto.wolveRadius) == true) {
+					float dirLen = (float) Math.sqrt(xDir * xDir + yDir * yDir);
+					float intensity = random.nextFloat();
+					velX += intensity * sto.chase * xDir / dirLen;
+					velY += intensity * sto.chase * yDir / dirLen;
+				}
 			}
 			
 			// Check for fire fleeing
@@ -69,9 +71,9 @@ public class Wildlife {
 				}
 				}
 			}
-			
+
 			// Check for wolve death
-			if (wolveAttack(i, wolveX, wolveY, sto.player.x, sto.player.y, 25) == true)
+			if (wolveAttack(i, wolveX, wolveY, sto.player.x, sto.player.y, 25) == true && sto.hidden == false)
 				sto.over = true;
 			
 			sto.wolveSpeed.set(i, new Point2D.Float(velX, velY));

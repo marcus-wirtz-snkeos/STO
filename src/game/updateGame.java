@@ -37,8 +37,11 @@ public class updateGame {
 		}
 		
 		if (tick % 100 == 0 && sto.tired > 0 && sto.hungry > 0 && sto.thirsty > 0 && sto.condition < 100)
-			sto.condition += 1;
-		
+			if (sto.hidden == false)
+				sto.condition += 1;
+			else
+				sto.condition += 2;
+
 		if (tick % 5 == 0 && sto.run == true) {
 			if (sto.tired > 0)
 				sto.tired -= 1;
@@ -56,8 +59,7 @@ public class updateGame {
 	}
 	
 	public static void move() {
-		
-		if (sto.search == false && sto.craft == false && sto.cook == false && sto.harvest == false) {
+		if (sto.hidden == false && sto.search == false && sto.craft == false && sto.cook == false && sto.harvest == false) {
 		float movement = sto.playerMovement;
 		movement -= (0.03 * sto.stoneCollected + 0.01 * sto.woodCollected + 0.001 * sto.leaveCollected + 
 				0.002 * sto.lianaCollected + 0.001 * sto.berryCollected);
@@ -104,7 +106,7 @@ public class updateGame {
 	public static void cooking() {
 		
 		if (sto.cook == false) {
-			if (sto.keys[KeyEvent.VK_SPACE] && sto.craft == false && sto.search == false && sto.harvest == false) {
+			if (sto.keys[KeyEvent.VK_SPACE] && sto.hidden == false && sto.craft == false && sto.search == false && sto.harvest == false) {
 				for (int i = 0; i < sto.craftables.size(); i++) {
 					float disx = sto.craftables.get(i).x - sto.player.x;
 					float disy = sto.craftables.get(i).y - sto.player.y;
@@ -137,7 +139,7 @@ public class updateGame {
 	public static void harvesting() {
 		
 		if (sto.harvest == false) {
-			if (sto.keys[KeyEvent.VK_SPACE] && sto.cook == false && sto.search == false && sto.craft == false) {
+			if (sto.keys[KeyEvent.VK_SPACE] && sto.cook == false && sto.search == false && sto.craft == false && sto.hidden == false) {
 				for (int i = 0; i < sto.craftables.size(); i++) {
 					float disx = sto.craftables.get(i).x - sto.player.x;
 					float disy = sto.craftables.get(i).y - sto.player.y;
@@ -176,8 +178,9 @@ public class updateGame {
 	public static void searching() {
 		
 		if (sto.search == false) {
-			if (sto.keys[KeyEvent.VK_SPACE] && sto.harvest==false && sto.cook == false && sto.craft == false) {
+			if (sto.space && sto.hidden == false && sto.harvest == false && sto.cook == false && sto.craft == false) {
 				sto.search = true;
+				sto.space = false;
 			}
 		}
 		else {
@@ -383,6 +386,27 @@ public class updateGame {
 			sto.nStones -= 1;
 			sto.stones.remove(stoneIndex);
 			sto.stoneCollected += 1;
+		}
+	}
+
+	public static void hideShelter() {
+		if (sto.space == true && sto.harvest == false && sto.cook == false && sto.craft == false) {
+			if (sto.hidden == true) {
+				sto.hidden = false;
+				sto.space = false;
+			}
+			else {
+				for (int i = 0; i < sto.craftables.size(); i++) {
+					if (sto.craftableType.get(i) == 4) {
+						float disx = sto.craftables.get(i).x - sto.player.x;
+						float disy = sto.craftables.get(i).y - sto.player.y;
+						if (Math.sqrt(disx * disx + disy * disy) < 50) {
+							sto.hidden = true;
+							sto.space = false;
+						}
+					}
+				}
+			}
 		}
 	}
 	

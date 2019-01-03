@@ -39,7 +39,7 @@ public class STO implements ActionListener, KeyListener {
 	public float pPine1, pPine2, pFir1, pFir2, pTree, pDeath, pPlant1, pPlant2, pPlant3, pPlant4, pRock1, pRock2, pLily1, pLily2, pLily3;
 	public float berryRespawn, woodSpawn, stoneSpawn, rabbitSpawn, fishSpawn;
 	public float pTired, playerMovement;
-	public boolean over, search, craft, cook, harvest, run;
+	public boolean over, search, craft, cook, harvest, run, hidden, space;
 	
 	
 	public ArrayList<Point2D.Float> wolves = new ArrayList<Point2D.Float>();
@@ -103,6 +103,8 @@ public class STO implements ActionListener, KeyListener {
 		cook = false;
 		harvest = false;
 		run = false;
+		hidden = false;
+		space = false;
 		
 		// Set initial stats
 		score = 0;
@@ -453,9 +455,10 @@ public class STO implements ActionListener, KeyListener {
 		updateGame.cooking();
 		updateGame.harvesting();
 		updateGame.crafting();
+		updateGame.hideShelter();
 		updateGame.searching();
 		updateGame.move();
-		
+
 		// Draw world
 		renderPanel.repaint();
 	}
@@ -627,7 +630,6 @@ public class STO implements ActionListener, KeyListener {
 	}
 	
 	public void keyPressed(KeyEvent e) {
-		
 		// eating berries
 		if (e.getKeyCode() == 69 && berryCollected > 0) {
 			berryCollected -= 1;
@@ -637,6 +639,8 @@ public class STO implements ActionListener, KeyListener {
 			meatCollected -= 1;
 			hungry = Math.min(100, hungry + 40);
 		}
+		if (e.getKeyCode() == 32)	// keycode for space
+			space = true;
 
 	    keys[e.getKeyCode()] = true;
 		if (over == true && keys[KeyEvent.VK_R])
