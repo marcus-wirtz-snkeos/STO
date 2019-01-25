@@ -118,14 +118,14 @@ public class STO implements ActionListener, KeyListener {
 		playerMovement = (float) 3;
 		
 		// Set inventory
-		woodCollected = 30;
-		stoneCollected = 20;
-		leaveCollected = 20;
-		lianaCollected = 20;
-		berryCollected = 10;
+		woodCollected = 0;
+		stoneCollected = 0;
+		leaveCollected = 0;
+		lianaCollected = 0;
+		berryCollected = 0;
 		meatCollected = 0;
-		rawMeatCollected = 1;
-		fishCollected = 1;
+		rawMeatCollected = 0;
+		fishCollected = 0;
 		
 		// Set craftables
 		craftables.clear();
@@ -564,7 +564,24 @@ public class STO implements ActionListener, KeyListener {
 		}
 		return false;
 	}
-	
+
+	public boolean checkCraftable(float x, float y) {
+		for (int i = 0; i < craftables.size(); i++) {
+			float dis_x = craftables.get(i).x - x;
+			float dis_y = craftables.get(i).y - y;
+			float r = 1;
+			if (craftableType.get(i) == 1)
+				r = 25;
+			if (craftableType.get(i) == 2)
+				r = 20;
+			if (craftableType.get(i) == 4)
+				r = 45;
+			if (Math.sqrt(dis_x * dis_x + 20 * dis_y * dis_y) < r)
+				return true;
+		}
+		return false;
+	}
+
 	public void addTree(int x, int y) {
 		
 		trees.add(new Point(x, y));
@@ -636,11 +653,11 @@ public class STO implements ActionListener, KeyListener {
 			hungry = Math.min(100, hungry + 40);
 		}
 		if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-			if (sto.craft == true) {
-				int idx = sto.craftables.size() - 1;
-				sto.craftables.remove(idx);
-				sto.craftableType.remove(idx);
-				sto.craftableStat.remove(idx);
+			if (craft == true) {
+				int idx = craftables.size() - 1;
+				craftables.remove(idx);
+				craftableType.remove(idx);
+				craftableStat.remove(idx);
 			}
 			craft = false;
 			craftTime = 400;

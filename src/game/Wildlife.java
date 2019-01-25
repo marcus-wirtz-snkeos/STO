@@ -36,7 +36,8 @@ public class Wildlife {
 			}
 			
 			if (wolveX + velX < 0 || wolveX + velX > sto.worldX || wolveY + velY > sto.worldY || wolveY + velY < 0 
-					|| sto.checkLake(wolveX + 2*velX, wolveY + 2*velY, 0) == true || sto.checkRock(wolveX + 2*velX, wolveY + 2*velY, 50, true) == true) {
+					|| sto.checkLake(wolveX + 2*velX, wolveY + 2*velY, 0) == true || sto.checkRock(wolveX + 2*velX, wolveY + 2*velY, 50, true) == true
+					|| sto.checkCraftable(wolveX + 2*velX, wolveY + 2*velY) == true) {
 				velX = -velX;
 				velY = -velY;
 			}
@@ -63,9 +64,9 @@ public class Wildlife {
 				if (sto.craftableType.get(j) == 1 && sto.craftableStat.get(j) == true) {
 				xDir = sto.craftables.get(j).x - wolveX;
 				yDir = sto.craftables.get(j).y - wolveY;
-				if (Math.sqrt(xDir * xDir + yDir * yDir) < 200) {
+				if (Math.sqrt(xDir * xDir + yDir * yDir) < 300) {
 					float dirLen = (float) Math.sqrt(xDir * xDir + yDir * yDir);
-					float intensity = random.nextFloat();
+					float intensity = 3 * random.nextFloat();
 					velX -= intensity * xDir / dirLen;
 					velY -= intensity * yDir / dirLen;
 				}

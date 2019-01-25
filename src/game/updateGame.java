@@ -77,25 +77,25 @@ public class updateGame {
 				movement /= Math.sqrt(2);
 		
 	    if((sto.keys[KeyEvent.VK_W] || sto.keys[KeyEvent.VK_UP]) && sto.player.y > 0 && sto.checkLake(sto.player.x, sto.player.y - movement, 0) == false
-	    		&& sto.checkRock(sto.player.x, sto.player.y - movement, 50, true) == false){
+	    	&& sto.checkCraftable(sto.player.x, sto.player.y - movement) == false && sto.checkRock(sto.player.x, sto.player.y - movement, 50, true) == false){
 	    	sto.direction = "Up";
 	    	sto.player.y -= movement;
 	    }
 
 	    if((sto.keys[KeyEvent.VK_S] || sto.keys[KeyEvent.VK_DOWN]) && sto.player.y < sto.worldY && sto.checkLake(sto.player.x, sto.player.y + movement, 0) == false
-	    		&& sto.checkRock(sto.player.x, sto.player.y + movement, 50, true) == false){
+	    	&& sto.checkCraftable(sto.player.x, sto.player.y + movement) == false && sto.checkRock(sto.player.x, sto.player.y + movement, 50, true) == false){
 	    	sto.direction = "Down";
 	    	sto.player.y += movement;
 	    }
 
 	    if((sto.keys[KeyEvent.VK_A] || sto.keys[KeyEvent.VK_LEFT]) && sto.player.x > 0 && sto.checkLake(sto.player.x - movement, sto.player.y, 0) == false
-	    		&& sto.checkRock(sto.player.x - movement, sto.player.y, 50, true) == false){
+	    	&& sto.checkCraftable(sto.player.x - movement, sto.player.y) == false && sto.checkRock(sto.player.x - movement, sto.player.y, 50, true) == false){
 	    	sto.direction = "Left";
 	    	sto.player.x -= movement;
 	    }
 
 	    if((sto.keys[KeyEvent.VK_D] || sto.keys[KeyEvent.VK_RIGHT]) && sto.player.x < sto.worldX && sto.checkLake(sto.player.x + movement, sto.player.y, 0) == false
-	    		&& sto.checkRock(sto.player.x + movement, sto.player.y, 50, true) == false){
+	    	&& sto.checkCraftable(sto.player.x + movement, sto.player.y) == false && sto.checkRock(sto.player.x + movement, sto.player.y, 50, true) == false){
 	    	sto.direction = "Right";
 	    	sto.player.x += movement;
 	    }
@@ -238,7 +238,7 @@ public class updateGame {
 			sto.stoneCollected -= 8;
 			sto.craftableType.add(1);
 			sto.craftableStat.add(true);
-			addCraftable(20);
+			addCraftable(30);
 		}
 		
 		if (sto.keys[KeyEvent.VK_2] && sto.woodCollected >= 3 && sto.lianaCollected >= 1) {
@@ -248,7 +248,7 @@ public class updateGame {
 			sto.lianaCollected -= 1;
 			sto.craftableType.add(2);
 			sto.craftableStat.add(true);
-			addCraftable(20);
+			addCraftable(30);
 		}
 		
 		if (sto.keys[KeyEvent.VK_3] && sto.woodCollected >= 3 && sto.lianaCollected >= 8 ) {
@@ -260,7 +260,7 @@ public class updateGame {
 				sto.lianaCollected -= 8;
 				sto.craftableType.add(3);
 				sto.craftableStat.add(true);
-				addCraftable(30);
+				addCraftable(40);
 			}
 		}
 		
@@ -272,7 +272,7 @@ public class updateGame {
 				sto.leaveCollected -= 10;
 				sto.craftableType.add(4);
 				sto.craftableStat.add(true);
-				addCraftable(40);
+				addCraftable(50);
 		}
 	}
 	
