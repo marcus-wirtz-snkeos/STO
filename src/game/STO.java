@@ -28,7 +28,7 @@ public class STO implements ActionListener, KeyListener {
 	public static final int worldSize = 4;
 	public float dayLength;
 	public int worldX, worldY;
-	public int tick = 0, score, searchTime, craftTime, harvestTime, cookTime, berryBonus, rWood, rStone;
+	public int tick = 0, score, craftTime, harvestTime, cookTime, berryBonus, rWood, rStone;
 	public int seedForests, seedRocks, seedPlants, seedLilies;
 	public float changeSpeed, chase, maxSpeed, changeDirection, wolveRadius, wolveAggression, wolveDriftRadius;
 	public float rabbitChange, rabbitFlee, rabbitSpeed, rabbitRadius;
@@ -39,7 +39,7 @@ public class STO implements ActionListener, KeyListener {
 	public float pPine1, pPine2, pFir1, pFir2, pTree, pDeath, pPlant1, pPlant2, pPlant3, pPlant4, pRock1, pRock2, pLily1, pLily2, pLily3;
 	public float berryRespawn, woodSpawn, stoneSpawn, rabbitSpawn, fishSpawn;
 	public float pTired, playerMovement;
-	public boolean over, search, craft, cook, harvest, run, hidden, space;
+	public boolean over, craft, cook, harvest, hidden;
 	
 	
 	public ArrayList<Point2D.Float> wolves = new ArrayList<Point2D.Float>();
@@ -73,7 +73,7 @@ public class STO implements ActionListener, KeyListener {
 	public Point2D.Float player = new Point2D.Float(0, 0);
 	public String direction = new String();
 	
-	int nCraft = 4, action = 1;
+	int nCraft = 4, craftableAction = 1;
 	boolean[] craftStats = new boolean[nCraft];
 	
 	public Random random;
@@ -98,17 +98,13 @@ public class STO implements ActionListener, KeyListener {
 		
 		random = new Random();
 		over = false;
-		search = false;
 		craft = false;
 		cook = false;
 		harvest = false;
-		run = false;
 		hidden = false;
-		space = false;
 		
 		// Set initial stats
 		score = 0;
-		searchTime = 150;
 		harvestTime = 200;
 		cookTime = 300;
 		craftTime = 400;
@@ -122,14 +118,14 @@ public class STO implements ActionListener, KeyListener {
 		playerMovement = (float) 3;
 		
 		// Set inventory
-		woodCollected = 0;
-		stoneCollected = 0;
-		leaveCollected = 0;
-		lianaCollected = 0;
-		berryCollected = 0;
+		woodCollected = 30;
+		stoneCollected = 20;
+		leaveCollected = 20;
+		lianaCollected = 20;
+		berryCollected = 10;
 		meatCollected = 0;
-		rawMeatCollected = 0;
-		fishCollected = 0;
+		rawMeatCollected = 1;
+		fishCollected = 1;
 		
 		// Set craftables
 		craftables.clear();
@@ -154,9 +150,9 @@ public class STO implements ActionListener, KeyListener {
 		System.out.println("Lakes Set!");
 		
 		// Set berries
-		nBerries = 100;
+		nBerries = 60;
 		berryBonus = 25;
-		berryRespawn = (float) 0.001;
+		berryRespawn = (float) 0.0001;
 		berries.clear();
 		for (int i = 0; i < nBerries; i++) {
 			boolean looping = true;
@@ -639,9 +635,21 @@ public class STO implements ActionListener, KeyListener {
 			meatCollected -= 1;
 			hungry = Math.min(100, hungry + 40);
 		}
-		if (e.getKeyCode() == 32)	// keycode for space
-			space = true;
-
+		if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+			if (sto.craft == true) {
+				int idx = sto.craftables.size() - 1;
+				sto.craftables.remove(idx);
+				sto.craftableType.remove(idx);
+				sto.craftableStat.remove(idx);
+			}
+			craft = false;
+			craftTime = 400;
+			cook = false;
+			cookTime = 300;
+			harvest = false;
+			harvestTime = 200;
+		}
+		
 	    keys[e.getKeyCode()] = true;
 		if (over == true && keys[KeyEvent.VK_R])
 			startGame();	

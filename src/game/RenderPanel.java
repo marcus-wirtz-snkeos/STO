@@ -3,6 +3,7 @@ package game;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -531,13 +532,18 @@ public class RenderPanel extends JPanel {
 			g.drawImage(button4_low, sto.dim.width / 2 + 100, 20, this);
 		
 		// Show options
-		if (sto.cook == false && sto.hidden == false && sto.craft == false && sto.search == false && sto.harvest == false) {
+		if (sto.cook == false && sto.hidden == false && sto.craft == false && sto.harvest == false) {
 			for (int i = 0; i < sto.craftables.size(); i++) {
 				float disx = sto.craftables.get(i).x - sto.player.x;
 				float disy = sto.craftables.get(i).y - sto.player.y;
 				if (sto.craftableType.get(i) == 1 && sto.craftableStat.get(i) == true && Math.sqrt(disx * disx + disy * disy) < 50
 						&& (sto.rawMeatCollected > 0 || sto.fishCollected > 0)) {
 					String cook = "Press [Space] for cooking";
+					g.setColor(Color.BLACK);
+					g.drawString(cook, sto.dim.width / 2 - 150, sto.dim.height - 140);
+				}
+				else if ((sto.craftableType.get(i) == 2 || sto.craftableType.get(i) == 3) && sto.craftableStat.get(i) == false && Math.sqrt(disx * disx + disy * disy) < 50) {
+					String cook = "Press [Space] for harvesting";
 					g.setColor(Color.BLACK);
 					g.drawString(cook, sto.dim.width / 2 - 150, sto.dim.height - 140);
 				}
@@ -550,31 +556,28 @@ public class RenderPanel extends JPanel {
 		}
 
 
-		if (sto.harvest == false) {
-			if (sto.cook == false && sto.search == false && sto.craft == false) {
-				for (int i = 0; i < sto.craftables.size(); i++) {
-					float disx = sto.craftables.get(i).x - sto.player.x;
-					float disy = sto.craftables.get(i).y - sto.player.y;
-					if ((sto.craftableType.get(i) == 2 || sto.craftableType.get(i) == 3) && 
-							sto.craftableStat.get(i) == false && Math.sqrt(disx * disx + disy * disy) < 50) {
-						String harvest = "";
-						if (sto.craftableType.get(i) == 2)
-							harvest = "Press [Space] for harvesting";
-						else if (sto.craftableType.get(i) == 2)
-							harvest = "Press [Space] for collecting";
-						g.setColor(Color.BLACK);
-						g.drawString(harvest, sto.dim.width / 2 - 150, sto.dim.height - 140);
-					}
+		if (sto.harvest == false && sto.cook == false && sto.craft == false) {
+			for (int i = 0; i < sto.craftables.size(); i++) {
+				float disx = sto.craftables.get(i).x - sto.player.x;
+				float disy = sto.craftables.get(i).y - sto.player.y;
+				if ((sto.craftableType.get(i) == 2 || sto.craftableType.get(i) == 3) && 
+						sto.craftableStat.get(i) == false && Math.sqrt(disx * disx + disy * disy) < 50) {
+					String harvest = "";
+					if (sto.craftableType.get(i) == 2)
+						harvest = "Press [Space] for harvesting";
+					else if (sto.craftableType.get(i) == 2)
+						harvest = "Press [Space] for collecting";
+					g.setColor(Color.BLACK);
+					g.drawString(harvest, sto.dim.width / 2 - 150, sto.dim.height - 140);
 				}
 			}
 		}
 
-		if (sto.search == true) {
+		if (sto.keys[KeyEvent.VK_SPACE] && sto.cook == false && sto.craft == false && sto.harvest == false && sto.hidden == false) {
 			String search = "Searching...";
 			g.setColor(Color.WHITE);
-			g.drawString(search, sto.dim.width / 2 - 80, sto.dim.height - 100);
-			for (int i = 0; i < 150-sto.searchTime; i++)
-				g.fillRect(sto.dim.width / 2 - 200 + (int) ((float) 400 / 150) *i, sto.dim.height - 90, (int) ((float) 400 / 150), 10);
+			g.drawString(search, sto.dim.width / 2 - 50, sto.dim.height - 100);
+			g.fillRect(sto.dim.width / 2 - 100, sto.dim.height - 90, (int) (5 * sto.tick % 200), 10);
 		}
 
 		if (sto.hidden == true) {
@@ -601,7 +604,7 @@ public class RenderPanel extends JPanel {
 		
 		if (sto.harvest == true) {
 			String harvest = "";
-			if (sto.craftableType.get(sto.action) == 2)
+			if (sto.craftableType.get(sto.craftableAction) == 2)
 				harvest = "Harvesting rabbit...";
 			else
 				harvest = "Collecting fish...";
@@ -611,7 +614,7 @@ public class RenderPanel extends JPanel {
 				g.fillRect(sto.dim.width / 2 - 200 + 2*i, sto.dim.height - 90, 2, 10);
 		}
 		
-		if (sto.run == true && sto.tired > 0) {
+		if (sto.keys[KeyEvent.VK_SHIFT] && sto.tired > 0) {
 			String run = "Running...";
 			g.setColor(Color.RED);
 			g.drawString(run, sto.dim.width / 2 - 70, sto.dim.height - 100);

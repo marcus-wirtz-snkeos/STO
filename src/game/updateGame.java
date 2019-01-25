@@ -36,16 +36,14 @@ public class updateGame {
 			}
 		}
 		
-		if (tick % 100 == 0 && sto.tired > 0 && sto.hungry > 0 && sto.thirsty > 0 && sto.condition < 100)
+		if (tick % 100 == 0 && sto.tired > 50 && sto.hungry > 50 && sto.thirsty > 50 && sto.condition < 100)
 			if (sto.hidden == false)
 				sto.condition += 1;
 			else
 				sto.condition += 2;
 
-		if (tick % 5 == 0 && sto.run == true) {
-			if (sto.tired > 0)
-				sto.tired -= 1;
-		}
+		if (tick % 5 == 0 && sto.keys[KeyEvent.VK_SHIFT] && sto.tired > 0)
+			sto.tired -= 1;
 		
 		if (tick % 50 == 0 && sto.tired < 100)
 			sto.tired += 1;
@@ -59,15 +57,16 @@ public class updateGame {
 	}
 	
 	public static void move() {
-		if (sto.hidden == false && sto.search == false && sto.craft == false && sto.cook == false && sto.harvest == false) {
+		if (sto.cook == true || sto.craft == true || sto.harvest == true || sto.hidden == true || sto.keys[KeyEvent.VK_SPACE] == true)
+			return;
+
 		float movement = sto.playerMovement;
 		movement -= (0.03 * sto.stoneCollected + 0.01 * sto.woodCollected + 0.001 * sto.leaveCollected + 
 				0.002 * sto.lianaCollected + 0.001 * sto.berryCollected);
-		sto.run = false;
-		if (sto.keys[KeyEvent.VK_SHIFT] && sto.tired > 0) {
-			sto.run = true;
+
+		if (sto.keys[KeyEvent.VK_SHIFT] && sto.tired > 0) 
 			movement *= 1.5;
-		}
+
 		movement = Math.max(movement, 0);
 		
 		if((sto.keys[KeyEvent.VK_W] && sto.keys[KeyEvent.VK_A]) || (sto.keys[KeyEvent.VK_W] && sto.keys[KeyEvent.VK_D]) || 
@@ -100,97 +99,83 @@ public class updateGame {
 	    	sto.direction = "Right";
 	    	sto.player.x += movement;
 	    }
-		}
 	}
 	
 	public static void cooking() {
-		
-		if (sto.cook == false) {
-			if (sto.keys[KeyEvent.VK_SPACE] && sto.hidden == false && sto.craft == false && sto.search == false && sto.harvest == false) {
-				for (int i = 0; i < sto.craftables.size(); i++) {
-					float disx = sto.craftables.get(i).x - sto.player.x;
-					float disy = sto.craftables.get(i).y - sto.player.y;
-					if (sto.craftableType.get(i) == 1 && sto.craftableStat.get(i) == true && Math.sqrt(disx * disx + disy * disy) < 50
-							&& (sto.rawMeatCollected > 0 || sto.fishCollected > 0)) {
-						sto.cook = true;
-						sto.action = i;
-					}
+
+		if (sto.keys[KeyEvent.VK_SPACE] && sto.cook == false && sto.craft == false && sto.harvest == false && sto.hidden == false) {
+			for (int i = 0; i < sto.craftables.size(); i++) {
+				float disx = sto.craftables.get(i).x - sto.player.x;
+				float disy = sto.craftables.get(i).y - sto.player.y;
+				if (sto.craftableType.get(i) == 1 && sto.craftableStat.get(i) == true && Math.sqrt(disx * disx + disy * disy) < 50
+						&& (sto.rawMeatCollected > 0 || sto.fishCollected > 0)) {
+					sto.cook = true;
+					sto.craftableAction = i;
+					if (sto.rawMeatCollected > 0)
+						sto.rawMeatCollected -= 1;
+					else if (sto.fishCollected > 0)
+						sto.fishCollected -= 1;
 				}
 			}
 		}
-		else {
-			if (sto.cookTime == 0) {
-				sto.cook = false;
-				sto.cookTime = 300;
-				if (sto.rawMeatCollected > 0)
-					sto.rawMeatCollected -= 1;
-				else
-					sto.fishCollected -= 1;
-				sto.meatCollected += 1;
-				if (random.nextFloat() < 0.2)
-					sto.craftableStat.set(sto.action, false);
-			}
-			else
+		else if (sto.cook == true) {
+
+			if (sto.cookTime > 0) {
+				// still cooking
 				sto.cookTime -= 1;
+				return;
+			}
+
+			sto.cook = false;
+			sto.cookTime = 300;
+			sto.meatCollected += 1;
+			if (random.nextFloat() < 0.2)
+				sto.craftableStat.set(sto.craftableAction, false);
 		}
-		
-	}	
+	}
 	
 	public static void harvesting() {
-		
-		if (sto.harvest == false) {
-			if (sto.keys[KeyEvent.VK_SPACE] && sto.cook == false && sto.search == false && sto.craft == false && sto.hidden == false) {
-				for (int i = 0; i < sto.craftables.size(); i++) {
-					float disx = sto.craftables.get(i).x - sto.player.x;
-					float disy = sto.craftables.get(i).y - sto.player.y;
-					if ((sto.craftableType.get(i) == 2 || sto.craftableType.get(i) == 3) && 
-							sto.craftableStat.get(i) == false && Math.sqrt(disx * disx + disy * disy) < 50) {
-						sto.harvest = true;
-						sto.action = i;
-					}
-				}
-			}
-		}
-		else {
-			if (sto.harvestTime == 0) {
-				sto.harvest = false;
-				sto.harvestTime = 200;
-	
-				if (sto.craftableType.get(sto.action) == 2) 
-					sto.rawMeatCollected += 1;
-				else if (sto.craftableType.get(sto.action) == 3)
-					sto.fishCollected += 1;
 
-				if (random.nextFloat() < 0.2) {
-					sto.craftables.remove(sto.action);
-					sto.craftableType.remove(sto.action);
-					sto.craftableStat.remove(sto.action);
+		if (sto.keys[KeyEvent.VK_SPACE] && sto.cook == false && sto.craft == false && sto.harvest == false && sto.hidden == false) {
+			for (int i = 0; i < sto.craftables.size(); i++) {
+				float disx = sto.craftables.get(i).x - sto.player.x;
+				float disy = sto.craftables.get(i).y - sto.player.y;
+				if ((sto.craftableType.get(i) == 2 || sto.craftableType.get(i) == 3) && 
+					 sto.craftableStat.get(i) == false && Math.sqrt(disx * disx + disy * disy) < 50) {
+					sto.harvest = true;
+					sto.craftableAction = i;
 				}
-				else
-					sto.craftableStat.set(sto.action, true);
 			}
-			else
-				sto.harvestTime -= 1;
 		}
-		
+		else if (sto.harvest == true) {
+			
+			if (sto.harvestTime > 0) {
+				// still harvesting
+				sto.harvestTime -= 1;
+				return;
+			}
+
+			sto.harvest = false;
+			sto.harvestTime = 200;
+
+			if (sto.craftableType.get(sto.craftableAction) == 2) 
+				sto.rawMeatCollected += 1;
+			else if (sto.craftableType.get(sto.craftableAction) == 3)
+				sto.fishCollected += 1;
+
+			if (random.nextFloat() < 0.2) {
+				sto.craftables.remove(sto.craftableAction);
+				sto.craftableType.remove(sto.craftableAction);
+				sto.craftableStat.remove(sto.craftableAction);
+				return;
+			}
+			sto.craftableStat.set(sto.craftableAction, true);
+		}
 	}
 	
 	public static void searching() {
 		
-		if (sto.search == false) {
-			if (sto.space && sto.hidden == false && sto.harvest == false && sto.cook == false && sto.craft == false) {
-				sto.search = true;
-				sto.space = false;
-			}
-		}
-		else {
-			if (sto.searchTime == 0) {
-				sto.search = false;
-				sto.searchTime = 150;
-			}
-			else
-				sto.searchTime -= 1;
-		
+		if (sto.keys[KeyEvent.VK_SPACE] && sto.cook == false && sto.craft == false && sto.harvest == false && sto.hidden == false) {
 			float pWood = 0, pLiana = 0;
 			for (int i = 0; i < sto.trees.size(); i++) {
 				float dis_x = sto.trees.get(i).x - sto.player.x;
@@ -237,15 +222,16 @@ public class updateGame {
 	public static void crafting() {
 		
 		if (sto.craft == true) {
-			if (sto.craftTime == 0) {
-				sto.craft = false;
-				sto.craftTime = 400;
-			}
-			else
+			if (sto.craftTime > 0) {
 				sto.craftTime -= 1;
+				return;
+			}
+			sto.craft = false;
+			sto.craftTime = 400;
 		}
+	
 		
-		if (sto.craft == false && sto.keys[KeyEvent.VK_1] && sto.woodCollected >= 5 && sto.stoneCollected >= 1) {
+		if (sto.keys[KeyEvent.VK_1] && sto.woodCollected >= 5 && sto.stoneCollected >= 8) {
 			sto.craft = true;
 			
 			sto.woodCollected -= 5;
@@ -255,7 +241,7 @@ public class updateGame {
 			addCraftable(20);
 		}
 		
-		if (sto.craft == false && sto.keys[KeyEvent.VK_2] && sto.woodCollected >= 3 && sto.lianaCollected >= 1) {
+		if (sto.keys[KeyEvent.VK_2] && sto.woodCollected >= 3 && sto.lianaCollected >= 1) {
 			sto.craft = true;
 			
 			sto.woodCollected -= 3;
@@ -265,7 +251,7 @@ public class updateGame {
 			addCraftable(20);
 		}
 		
-		if (sto.craft == false && sto.keys[KeyEvent.VK_3] && sto.woodCollected >= 3 && sto.lianaCollected >= 8 ) {
+		if (sto.keys[KeyEvent.VK_3] && sto.woodCollected >= 3 && sto.lianaCollected >= 8 ) {
 
 			if (sto.checkLake(sto.player.x, sto.player.y, -20)) {
 				sto.craft = true;
@@ -274,11 +260,11 @@ public class updateGame {
 				sto.lianaCollected -= 8;
 				sto.craftableType.add(3);
 				sto.craftableStat.add(true);
-				addCraftable(50);
+				addCraftable(30);
 			}
 		}
 		
-		if (sto.craft == false && sto.keys[KeyEvent.VK_4] && sto.woodCollected >= 8 && sto.lianaCollected >= 4 && sto.leaveCollected >= 10) {
+		if (sto.keys[KeyEvent.VK_4] && sto.woodCollected >= 8 && sto.lianaCollected >= 4 && sto.leaveCollected >= 10) {
 				sto.craft = true;
 				
 				sto.woodCollected -= 8;
@@ -286,7 +272,7 @@ public class updateGame {
 				sto.leaveCollected -= 10;
 				sto.craftableType.add(4);
 				sto.craftableStat.add(true);
-				addCraftable(50);
+				addCraftable(40);
 		}
 	}
 	
@@ -390,20 +376,17 @@ public class updateGame {
 	}
 
 	public static void hideShelter() {
-		if (sto.space == true && sto.harvest == false && sto.cook == false && sto.craft == false) {
+		if (sto.keys[KeyEvent.VK_SPACE] && sto.cook == false && sto.craft == false && sto.harvest == false) {
 			if (sto.hidden == true) {
 				sto.hidden = false;
-				sto.space = false;
+				return;
 			}
-			else {
-				for (int i = 0; i < sto.craftables.size(); i++) {
-					if (sto.craftableType.get(i) == 4) {
-						float disx = sto.craftables.get(i).x - sto.player.x;
-						float disy = sto.craftables.get(i).y - sto.player.y;
-						if (Math.sqrt(disx * disx + disy * disy) < 50) {
-							sto.hidden = true;
-							sto.space = false;
-						}
+			for (int i = 0; i < sto.craftables.size(); i++) {
+				if (sto.craftableType.get(i) == 4) {
+					float disx = sto.craftables.get(i).x - sto.player.x;
+					float disy = sto.craftables.get(i).y - sto.player.y;
+					if (Math.sqrt(disx * disx + disy * disy) < 50) {
+						sto.hidden = true;
 					}
 				}
 			}
