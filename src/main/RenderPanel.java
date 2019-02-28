@@ -1,4 +1,4 @@
-package game;
+package main;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -7,12 +7,15 @@ import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Random;
 
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
 @SuppressWarnings("serial")
 public class RenderPanel extends JPanel {
+	
+	static Random random =  new Random();
 	
 	public BufferedImage figure;
 	public BufferedImage wolve_left;
@@ -83,19 +86,18 @@ public class RenderPanel extends JPanel {
 	protected void paintComponent(Graphics g) {
 
 		super.paintComponent(g);
-		STO sto = STO.sto;
 		
 		g.setColor(new Color(0, 204, 0, 150));
-		g.fillRect(0, 0, sto.dim.width, sto.dim.height);
+		g.fillRect(0, 0, Game.dim.width, Game.dim.height);
 		
-		int cornerX = (int) Math.min(Math.max(sto.player.x - sto.dim.width / 2, 0), sto.worldX - sto.dim.width);
-		int cornerY = (int) Math.min(Math.max(sto.player.y - sto.dim.height / 2, 0), sto.worldY - sto.dim.height);
+		int cornerX = (int) Math.min(Math.max(Game.player.getX() - Game.dim.width / 2, 0), Game.worldX - Game.dim.width);
+		int cornerY = (int) Math.min(Math.max(Game.player.getY() - Game.dim.height / 2, 0), Game.worldY - Game.dim.height);
 		
 		// Draw lakes
 		g.setColor(Color.BLUE);
-		for (int i = 0; i < sto.nLakes; i++) {
-			int radius = sto.radiusLakes.get(i);
-			g.fillOval(sto.lakes.get(i).x - radius - cornerX, sto.lakes.get(i).y - radius / 2 - cornerY, 2 * radius, radius);
+		for (int i = 0; i < World.nLakes; i++) {
+			int radius = World.radiusLakes.get(i);
+			g.fillOval(World.lakes.get(i).x - radius - cornerX, World.lakes.get(i).y - radius / 2 - cornerY, 2 * radius, radius);
 		}
 		
 		try {
@@ -171,53 +173,53 @@ public class RenderPanel extends JPanel {
 		}
 		
 		int treeInd = 0, plantInd = 0, stoneInd = 0, rockInd = 0, berryInd = 0, lilyInd = 0, reedInd = 0;
-		for (int pixY = Math.max(0, cornerY - 100); pixY < Math.min(sto.worldY, cornerY + sto.dim.height + 100); pixY++) {
+		for (int pixY = Math.max(0, cornerY - 100); pixY < Math.min(Game.worldY, cornerY + Game.dim.height + 100); pixY++) {
 			
 			// Draw trees
 			if (treeInd == 0) {
-				while (sto.trees.get(treeInd).y < pixY)
+				while (World.trees.get(treeInd).y < pixY)
 					treeInd++;
 			}
-			if (treeInd < sto.trees.size()) {
-				while (sto.trees.get(treeInd).y == pixY) {
-					int x = sto.trees.get(treeInd).x;
-					if (x < cornerX -100 && x > cornerX + sto.dim.width + 100)
+			if (treeInd < World.trees.size()) {
+				while (World.trees.get(treeInd).y == pixY) {
+					int x = World.trees.get(treeInd).x;
+					if (x < cornerX -100 && x > cornerX + Game.dim.width + 100)
 						continue;
-					if (sto.treeType.get(treeInd) == 0) {
-						if (sto.treeDeath.get(treeInd) == true)
+					if (World.treeType.get(treeInd) == 0) {
+						if (World.treeDeath.get(treeInd) == true)
 							g.drawImage(Pine1_Death, x - cornerX - Pine1_Death.getWidth() / 2, pixY - cornerY - Pine1_Death.getHeight(), this);
 						else
 							g.drawImage(Pine1, x - cornerX - Pine1.getWidth() / 2, pixY - cornerY - Pine1.getHeight(), this);
 					}
-					if (sto.treeType.get(treeInd) == 1) {
-						if (sto.treeDeath.get(treeInd) == true)
+					if (World.treeType.get(treeInd) == 1) {
+						if (World.treeDeath.get(treeInd) == true)
 							g.drawImage(Pine2_Death, x - cornerX - Pine2_Death.getWidth() / 2, pixY - cornerY - Pine2_Death.getHeight(), this);
 						else
 							g.drawImage(Pine2, x - cornerX - Pine2.getWidth() / 2, pixY - cornerY - Pine2.getHeight(), this);
 					}
-					else if (sto.treeType.get(treeInd) == 2) {
+					else if (World.treeType.get(treeInd) == 2) {
 						g.drawImage(Fir1, x - cornerX - Fir1.getWidth() / 2, pixY - cornerY - Fir1.getHeight(), this);
 					}
-					else if (sto.treeType.get(treeInd) == 3) {
+					else if (World.treeType.get(treeInd) == 3) {
 						g.drawImage(Fir2, x - cornerX - Fir1.getWidth() / 2, pixY - cornerY - Fir2.getHeight(), this);
 					}
 					else{
-						if (sto.treeDeath.get(treeInd) == true)
+						if (World.treeDeath.get(treeInd) == true)
 							g.drawImage(Tree_Death, x - cornerX - Tree_Death.getWidth() / 2, pixY - cornerY - Tree_Death.getHeight(), this);
 						else
 							g.drawImage(Tree, x - cornerX - Tree.getWidth() / 2, pixY - cornerY - Tree.getHeight(), this);
 					}
 					treeInd++;
-					if (treeInd == sto.trees.size())
+					if (treeInd == World.trees.size())
 						break;
 				}
 			}
 			
 			// Draw woods
-			for (int woodInd = 0; woodInd < sto.woods.size(); woodInd++) {
-				int x = sto.woods.get(woodInd).x;
-				if (sto.woods.get(woodInd).y == pixY) {
-					if (sto.woodStats.get(woodInd) == true)
+			for (int woodInd = 0; woodInd < World.woods.size(); woodInd++) {
+				int x = World.woods.get(woodInd).x;
+				if (World.woods.get(woodInd).y == pixY) {
+					if (World.woodStats.get(woodInd) == true)
 						g.drawImage(wood1, x - cornerX - wood1.getWidth() / 2, pixY - cornerY - wood1.getHeight(), this);
 					else
 						g.drawImage(wood2, x - cornerX - wood2.getWidth() / 2, pixY - cornerY - wood2.getWidth() / 2, this);
@@ -226,91 +228,91 @@ public class RenderPanel extends JPanel {
 			
 			// Draw plants
 			if (plantInd == 0) {
-				while (sto.plants.get(plantInd).y < pixY)
+				while (World.plants.get(plantInd).y < pixY)
 					plantInd++;
 			}
-			if (plantInd < sto.plants.size()) {
-				while (sto.plants.get(plantInd).y == pixY) {
-					int x = sto.plants.get(plantInd).x;
-					if (x < cornerX -100 && x > cornerX + sto.dim.width + 100)
+			if (plantInd < World.plants.size()) {
+				while (World.plants.get(plantInd).y == pixY) {
+					int x = World.plants.get(plantInd).x;
+					if (x < cornerX -100 && x > cornerX + Game.dim.width + 100)
 						continue;
-					if (sto.plantType.get(plantInd) == 1)
+					if (World.plantType.get(plantInd) == 1)
 						g.drawImage(plant1, x - cornerX - plant1.getWidth() / 2, pixY - cornerY - plant1.getHeight(), this);
-					if (sto.plantType.get(plantInd) == 2)
+					if (World.plantType.get(plantInd) == 2)
 						g.drawImage(plant2, x - cornerX - plant2.getWidth() / 2, pixY - cornerY - plant2.getHeight(), this);
-					if (sto.plantType.get(plantInd) == 3)
+					if (World.plantType.get(plantInd) == 3)
 						g.drawImage(plant3, x - cornerX - plant3.getWidth() / 2, pixY - cornerY - plant3.getHeight(), this);
-					if (sto.plantType.get(plantInd) == 4)
+					if (World.plantType.get(plantInd) == 4)
 						g.drawImage(plant4, x - cornerX - plant4.getWidth() / 2, pixY - cornerY - plant4.getHeight(), this);
 					plantInd++;
-					if (plantInd == sto.plants.size())
+					if (plantInd == World.plants.size())
 						break;
 				}
 			}
 			
 			// Draw stones
 			if (stoneInd == 0) {
-				while (sto.stones.get(stoneInd).y < pixY)
+				while (World.stones.get(stoneInd).y < pixY)
 					stoneInd++;
 			}
-			if (stoneInd < sto.stones.size()) {
-				while (sto.stones.get(stoneInd).y == pixY) {
-					int x = sto.stones.get(stoneInd).x;
-					if (x < cornerX -100 && x > cornerX + sto.dim.width + 100)
+			if (stoneInd < World.stones.size()) {
+				while (World.stones.get(stoneInd).y == pixY) {
+					int x = World.stones.get(stoneInd).x;
+					if (x < cornerX -100 && x > cornerX + Game.dim.width + 100)
 						continue;
 					g.drawImage(stone, x - cornerX - stone.getWidth() / 2, pixY - cornerY - stone.getHeight(), this);
 					stoneInd++;
-					if (stoneInd == sto.stones.size())
+					if (stoneInd == World.stones.size())
 						break;
 				}
 			}
 			
 			// Draw rocks
 			if (rockInd == 0) {
-				while (sto.rocks.get(rockInd).y < pixY) {
+				while (World.rocks.get(rockInd).y < pixY) {
 					rockInd++;
 				}
 			}
-			if (rockInd < sto.rocks.size()) {			
-				while (sto.rocks.get(rockInd).y == pixY) {
-					int x = sto.rocks.get(rockInd).x;
-					if (x < cornerX -100 && x > cornerX + sto.dim.width + 100)
+			if (rockInd < World.rocks.size()) {			
+				while (World.rocks.get(rockInd).y == pixY) {
+					int x = World.rocks.get(rockInd).x;
+					if (x < cornerX -100 && x > cornerX + Game.dim.width + 100)
 						continue;
-					if (sto.rockType.get(rockInd) == 1)
+					if (World.rockType.get(rockInd) == 1)
 						g.drawImage(rock1, x - cornerX - rock1.getWidth() / 2, pixY - cornerY - rock1.getHeight(), this);
 					else
 						g.drawImage(rock2, x - cornerX - rock2.getWidth() / 2, pixY - cornerY - rock2.getHeight(), this);
 					rockInd++;
-					if (rockInd == sto.rocks.size())
+					if (rockInd == World.rocks.size())
 						break;
 				}
 			}
 			
 			// Draw berries
 			if (berryInd == 0) {
-				while (sto.berries.get(berryInd).y < pixY)
+				while (World.berries.get(berryInd).y < pixY)
 					berryInd++;
 			}
-			if  (berryInd < sto.berries.size()) {
-				while (sto.berries.get(berryInd).y == pixY) {
-					int x = sto.berries.get(berryInd).x;
-					if (x < cornerX -100 && x > cornerX + sto.dim.width + 100)
+			if  (berryInd < World.berries.size()) {
+				while (World.berries.get(berryInd).y == pixY) {
+					int x = World.berries.get(berryInd).x;
+					if (x < cornerX -100 && x > cornerX + Game.dim.width + 100)
 						continue;
-					if (sto.berryStats.get(berryInd) == true)
+					if (World.berryStats.get(berryInd) == true)
 						g.drawImage(berryFull, x - cornerX - berryFull.getWidth() / 2, pixY - cornerY - berryFull.getHeight(), this);
 					else
 						g.drawImage(berryEmpty, x - cornerX - berryEmpty.getWidth() / 2, pixY - cornerY - berryEmpty.getHeight(), this);
 					berryInd++;
-					if (berryInd == sto.berries.size())
+					if (berryInd == World.berries.size())
 						break;
 				}
 			}
 			
 			// Draw wolves
-			for (int wolveInd = 0; wolveInd < sto.nWolves; wolveInd++) {
-				if ((int) sto.wolves.get(wolveInd).y == pixY) {
-					int wolveX = (int) sto.wolves.get(wolveInd).x, wolveY = (int) sto.wolves.get(wolveInd).y;
-					if (sto.wolveSpeed.get(wolveInd).x < 0)
+			for (int wolveInd = 0; wolveInd < World.nWolves; wolveInd++) {
+				if ((int) World.wolves.get(wolveInd).y == pixY) {
+					int wolveX = (int) World.wolves.get(wolveInd).x, wolveY = (int) World.wolves.get(wolveInd).y;
+					if (World.wolveSpeed.get(wolveInd).x < 0)
 						g.drawImage(wolve_left, wolveX - cornerX - wolve_left.getWidth() / 2, wolveY - cornerY - wolve_left.getHeight(), this);
 					else
 						g.drawImage(wolve_right, wolveX  - cornerX - wolve_right.getWidth() / 2, wolveY - cornerY - wolve_right.getHeight(), this);
@@ -318,12 +320,12 @@ public class RenderPanel extends JPanel {
 			}
 
 			// Draw rabbits
-			for (int rabbitInd = 0; rabbitInd < sto.rabbits.size(); rabbitInd++) {
-				if ((int) sto.rabbits.get(rabbitInd).y == pixY) {
-					int rabbitX = (int) sto.rabbits.get(rabbitInd).x, rabbitY = (int) sto.rabbits.get(rabbitInd).y;
-					if (sto.rabbitStats.get(rabbitInd) == false)
+			for (int rabbitInd = 0; rabbitInd < World.rabbits.size(); rabbitInd++) {
+				if ((int) World.rabbits.get(rabbitInd).y == pixY) {
+					int rabbitX = (int) World.rabbits.get(rabbitInd).x, rabbitY = (int) World.rabbits.get(rabbitInd).y;
+					if (World.rabbitStats.get(rabbitInd) == false)
 						continue;
-					if (sto.rabbitVel.get(rabbitInd).x < 0)
+					if (World.rabbitVel.get(rabbitInd).x < 0)
 						g.drawImage(rabbit_left, rabbitX - cornerX - rabbit_left.getWidth() / 2, rabbitY - cornerY - rabbit_left.getHeight(), this);
 					else
 						g.drawImage(rabbit_right, rabbitX  - cornerX - rabbit_right.getWidth() / 2, rabbitY - cornerY - rabbit_right.getHeight(), this);
@@ -331,12 +333,12 @@ public class RenderPanel extends JPanel {
 			}
 			
 			// Draw fishes
-			for (int fishInd = 0; fishInd < sto.fishes.size(); fishInd++) {
-				if ((int) sto.fishes.get(fishInd).y == pixY) {
-					int fishX = (int) sto.fishes.get(fishInd).x, fishY = (int) sto.fishes.get(fishInd).y;
-					if (sto.fishStats.get(fishInd) == false)
+			for (int fishInd = 0; fishInd < World.fishes.size(); fishInd++) {
+				if ((int) World.fishes.get(fishInd).y == pixY) {
+					int fishX = (int) World.fishes.get(fishInd).x, fishY = (int) World.fishes.get(fishInd).y;
+					if (World.fishStats.get(fishInd) == false)
 						continue;
-					if (sto.fishVel.get(fishInd).x < 0)
+					if (World.fishVel.get(fishInd).x < 0)
 						g.drawImage(fish_left, fishX - cornerX - fish_left.getWidth() / 2, fishY - cornerY - fish_left.getHeight(), this);
 					else
 						g.drawImage(fish_right, fishX  - cornerX - fish_right.getWidth() / 2, fishY - cornerY - fish_right.getHeight(), this);
@@ -345,49 +347,49 @@ public class RenderPanel extends JPanel {
 			
 			// Draw lilies
 			if (lilyInd == 0) {
-				while (sto.lilies.get(lilyInd).y < pixY)
+				while (World.lilies.get(lilyInd).y < pixY)
 					lilyInd++;
 			}
-			if (lilyInd < sto.lilies.size()) {
-				while (sto.lilies.get(lilyInd).y == pixY) {
-					int x = sto.lilies.get(lilyInd).x;
-					if (x < cornerX -100 && x > cornerX + sto.dim.width + 100)
+			if (lilyInd < World.lilies.size()) {
+				while (World.lilies.get(lilyInd).y == pixY) {
+					int x = World.lilies.get(lilyInd).x;
+					if (x < cornerX -100 && x > cornerX + Game.dim.width + 100)
 						continue;
-					if (sto.lilyType.get(lilyInd) == 1)
+					if (World.lilyType.get(lilyInd) == 1)
 						g.drawImage(lily1, x - cornerX - lily1.getWidth() / 2, pixY - cornerY - lily1.getHeight(), this);
-					if (sto.lilyType.get(lilyInd) == 2)
+					if (World.lilyType.get(lilyInd) == 2)
 						g.drawImage(lily2, x - cornerX - lily2.getWidth() / 2, pixY - cornerY - lily2.getHeight(), this);
-					if (sto.lilyType.get(lilyInd) == 3)
+					if (World.lilyType.get(lilyInd) == 3)
 						g.drawImage(lily3, x - cornerX - lily3.getWidth() / 2, pixY - cornerY - lily3.getHeight(), this);
 					lilyInd++;
-					if (lilyInd == sto.lilies.size())
+					if (lilyInd == World.lilies.size())
 						break;
 				}
 			}
 			
 			// Draw reeds
 			if (reedInd == 0) {
-				while (sto.reeds.get(reedInd).y < pixY)
+				while (World.reeds.get(reedInd).y < pixY)
 					reedInd++;
 			}
-			if (reedInd < sto.reeds.size()) {
-				while (sto.reeds.get(reedInd).y == pixY) {
-					int x = sto.reeds.get(reedInd).x;
-					if (x < cornerX -100 && x > cornerX + sto.dim.width + 100)
+			if (reedInd < World.reeds.size()) {
+				while (World.reeds.get(reedInd).y == pixY) {
+					int x = World.reeds.get(reedInd).x;
+					if (x < cornerX -100 && x > cornerX + Game.dim.width + 100)
 						continue;
 					reedInd++;
 					g.drawImage(reed, x - cornerX - reed.getWidth() / 2 + 20, pixY - cornerY - reed.getHeight() + 20, this);
-					if (reedInd == sto.reeds.size())
+					if (reedInd == World.reeds.size())
 						break;
 				}
 			}
 			
 			// Draw craftables
-			for (int craftInd = 0; craftInd < sto.craftables.size(); craftInd++) {
-				if (sto.craftables.get(craftInd).y == pixY) {
-					int x = sto.craftables.get(craftInd).x;
-					if (sto.craftableType.get(craftInd) == 1) {
-						int k = sto.random.nextInt(6) + 1;
+			for (int craftInd = 0; craftInd < World.craftables.size(); craftInd++) {
+				if (World.craftables.get(craftInd).y == pixY) {
+					int x = World.craftables.get(craftInd).x;
+					if (World.craftableType.get(craftInd) == 1) {
+						int k = random.nextInt(6) + 1;
 						if (k == 1)
 							g.drawImage(fire1, x - cornerX - fire1.getWidth() / 2, pixY - cornerY - fire1.getHeight(), this);
 						else if (k == 2)
@@ -401,19 +403,19 @@ public class RenderPanel extends JPanel {
 						else if (k == 6)
 							g.drawImage(fire6, x - cornerX - fire1.getWidth() / 2, pixY - cornerY - fire1.getHeight(), this);
 					}
-					if (sto.craftableType.get(craftInd) == 2) {
-						if (sto.craftableStat.get(craftInd) == true)
+					if (World.craftableType.get(craftInd) == 2) {
+						if (World.craftableStat.get(craftInd) == true)
 							g.drawImage(snare, x - cornerX - snare.getWidth() / 2, pixY - cornerY - snare.getHeight(), this);
 						else
 							g.drawImage(snare_shot, x - cornerX - snare.getWidth() / 2, pixY - cornerY - snare.getHeight(), this);
 					}
-					if (sto.craftableType.get(craftInd) == 3)
-						if (sto.craftableStat.get(craftInd) == true)
+					if (World.craftableType.get(craftInd) == 3)
+						if (World.craftableStat.get(craftInd) == true)
 							g.drawImage(fish_trap, x - cornerX - fish_trap.getWidth() / 2, pixY - cornerY - fish_trap.getHeight(), this);
 						else
 							g.drawImage(fish_trap_shot, x - cornerX - fish_trap_shot.getWidth() / 2, pixY - cornerY - fish_trap_shot.getHeight(), this);
-					if (sto.craftableType.get(craftInd) == 4) {
-						if (sto.hidden == false)
+					if (World.craftableType.get(craftInd) == 4) {
+						if (Game.hidden == false)
 							g.drawImage(shelter, x - cornerX - shelter.getWidth() / 2, pixY - cornerY - shelter.getHeight(), this);
 						else
 							g.drawImage(shelter_hidden, x - cornerX - shelter.getWidth() / 2, pixY - cornerY - shelter.getHeight(), this);
@@ -422,215 +424,215 @@ public class RenderPanel extends JPanel {
 			}
 			
 			// Draw figure
-			if ((int) sto.player.y == pixY) {
+			if ((int) Game.player.getY() == pixY) {
 				try {
-					figure = ImageIO.read(new File(imagePath + "woman_" + sto.direction + ".gif"));
+					figure = ImageIO.read(new File(imagePath + "woman_" + Game.player.getDirection() + ".gif"));
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-				if (sto.hidden == false)
-					g.drawImage(figure, (int) sto.player.x - cornerX - figure.getWidth() / 2, (int) sto.player.y - cornerY - figure.getHeight() + 5, this);
+				if (Game.hidden == false)
+					g.drawImage(figure, (int) Game.player.getX() - cornerX - figure.getWidth() / 2, (int) Game.player.getY() - cornerY - figure.getHeight() + 5, this);
 			}
 		}
 		
 		/*
 		// Draw Day/Night Cycle
-		int bright = (int)  (120 * (1 - Math.cos((float) sto.tick / sto.dayLength)));
+		int bright = (int)  (120 * (1 - Math.cos((float) Game.tick / Game.dayLength)));
 		g.setColor(new Color(0, 0, 0, bright));
-		g.fillRect(0, 0, sto.dim.width, sto.dim.height);
+		g.fillRect(0, 0, Game.dim.width, Game.dim.height);
 		*/
 		
 		// Draw stats
 		g.setFont(new Font("TimesRoman", Font.PLAIN, 22));
 		
-		String health = "Condition: " + sto.condition;
+		String health = "Condition: " + Game.player.getCondition();
 		g.setColor(Color.WHITE);
-		g.drawString(health, sto.dim.width - 199, sto.dim.height - 169);
-		if (sto.condition < 10)
+		g.drawString(health, Game.dim.width - 199, Game.dim.height - 169);
+		if (Game.player.getCondition() < 10)
 			g.setColor(Color.RED);
 		else
 			g.setColor(Color.BLACK);
-		g.drawString(health, sto.dim.width - 200, sto.dim.height - 170);
+		g.drawString(health, Game.dim.width - 200, Game.dim.height - 170);
 		
-		String tired = "Tired: " + sto.tired;
+		String tired = "Tired: " + Game.player.getTired();
 		g.setColor(Color.WHITE);
-		g.drawString(tired, sto.dim.width - 199, sto.dim.height - 139);
-		if (sto.tired == 0)
+		g.drawString(tired, Game.dim.width - 199, Game.dim.height - 139);
+		if (Game.player.getTired() == 0)
 			g.setColor(Color.RED);
 		else
 			g.setColor(Color.BLACK);
-		g.drawString(tired, sto.dim.width - 200, sto.dim.height - 140);	
+		g.drawString(tired, Game.dim.width - 200, Game.dim.height - 140);	
 
-		String hungry = "Hungry: " + sto.hungry;
+		String hungry = "Hungry: " + Game.player.getHungry();
 		g.setColor(Color.WHITE);
-		g.drawString(hungry, sto.dim.width - 199, sto.dim.height - 109);
-		if (sto.hungry == 0)
+		g.drawString(hungry, Game.dim.width - 199, Game.dim.height - 109);
+		if (Game.player.getHungry() == 0)
 			g.setColor(Color.RED);
 		else
 			g.setColor(Color.BLACK);
-		g.drawString(hungry, sto.dim.width - 200, sto.dim.height - 110);
+		g.drawString(hungry, Game.dim.width - 200, Game.dim.height - 110);
 
-		String thirsty = "Thirsty: " + sto.thirsty;
+		String thirsty = "Thirsty: " + Game.player.getThirsty();
 		g.setColor(Color.WHITE);
-		g.drawString(thirsty, sto.dim.width - 199, sto.dim.height - 79);
-		if (sto.thirsty == 0)
+		g.drawString(thirsty, Game.dim.width - 199, Game.dim.height - 79);
+		if (Game.player.getThirsty() == 0)
 			g.setColor(Color.RED);
 		else
 			g.setColor(Color.BLACK);
-		g.drawString(thirsty, sto.dim.width - 200, sto.dim.height - 80);	
+		g.drawString(thirsty, Game.dim.width - 200, Game.dim.height - 80);	
 		
 		// Draw Score
-		String score = "Score: " + sto.score;
+		String score = "Score: " + Game.score;
 		g.setColor(Color.WHITE);
 		g.drawString(score, 11, 21);
 		g.setColor(Color.BLACK);
 		g.drawString(score, 10, 20);
 		
 		// Draw inventory
-		String woods = sto.woodCollected + " x ";
-		g.drawString(woods, 15, sto.dim.height - 200);
-		String stones = sto.stoneCollected + " x ";
-		g.drawString(stones, 15, sto.dim.height - 160);
-		String leaves = sto.leaveCollected + " x ";
-		g.drawString(leaves, 15, sto.dim.height - 120);
-		String lianas = sto.lianaCollected + " x ";
-		g.drawString(lianas, 15, sto.dim.height - 80);
-		String berries = sto.berryCollected + " x           (e)";
-		g.drawString(berries, 130, sto.dim.height - 200);
-		String meat = sto.meatCollected + " x           (r)";
-		g.drawString(meat, 130, sto.dim.height - 160);
-		String rawmeat = sto.rawMeatCollected + " x ";
-		g.drawString(rawmeat, 130, sto.dim.height - 120);
-		String fishes = sto.fishCollected + " x ";
-		g.drawString(fishes, 130, sto.dim.height - 80);
+		String woods = Game.woodCollected + " x ";
+		g.drawString(woods, 15, Game.dim.height - 200);
+		String stones = Game.stoneCollected + " x ";
+		g.drawString(stones, 15, Game.dim.height - 160);
+		String leaves = Game.leaveCollected + " x ";
+		g.drawString(leaves, 15, Game.dim.height - 120);
+		String lianas = Game.lianaCollected + " x ";
+		g.drawString(lianas, 15, Game.dim.height - 80);
+		String berries = Game.berryCollected + " x           (e)";
+		g.drawString(berries, 130, Game.dim.height - 200);
+		String meat = Game.meatCollected + " x           (r)";
+		g.drawString(meat, 130, Game.dim.height - 160);
+		String rawmeat = Game.rawMeatCollected + " x ";
+		g.drawString(rawmeat, 130, Game.dim.height - 120);
+		String fishes = Game.fishCollected + " x ";
+		g.drawString(fishes, 130, Game.dim.height - 80);
 		
-		g.drawImage(wood, 60, sto.dim.height - 224, this);
-		g.drawImage(stone, 65, sto.dim.height - 182, this);
-		g.drawImage(leafe, 65, sto.dim.height - 142, this);
-		g.drawImage(liana, 63, sto.dim.height - 96, this);
-		g.drawImage(berry, 184, sto.dim.height - 224, this);
-		g.drawImage(cooked_meat, 180, sto.dim.height - 182, this);
-		g.drawImage(raw_meat, 180, sto.dim.height - 142, this);
-		g.drawImage(fish, 180, sto.dim.height - 96, this);
+		g.drawImage(wood, 60, Game.dim.height - 224, this);
+		g.drawImage(stone, 65, Game.dim.height - 182, this);
+		g.drawImage(leafe, 65, Game.dim.height - 142, this);
+		g.drawImage(liana, 63, Game.dim.height - 96, this);
+		g.drawImage(berry, 184, Game.dim.height - 224, this);
+		g.drawImage(cooked_meat, 180, Game.dim.height - 182, this);
+		g.drawImage(raw_meat, 180, Game.dim.height - 142, this);
+		g.drawImage(fish, 180, Game.dim.height - 96, this);
 		
 		// Draw craftable system
-		if (sto.woodCollected >= 5 && sto.stoneCollected >= 8)
-			g.drawImage(button1, sto.dim.width / 2 - 200, 20, this);
+		if (Game.woodCollected >= 5 && Game.stoneCollected >= 8)
+			g.drawImage(button1, Game.dim.width / 2 - 200, 20, this);
 		else
-			g.drawImage(button1_low, sto.dim.width / 2 - 200, 20, this);
-		if (sto.woodCollected >= 3 && sto.lianaCollected >= 1)
-			g.drawImage(button2, sto.dim.width / 2 - 100, 20, this);
+			g.drawImage(button1_low, Game.dim.width / 2 - 200, 20, this);
+		if (Game.woodCollected >= 3 && Game.lianaCollected >= 1)
+			g.drawImage(button2, Game.dim.width / 2 - 100, 20, this);
 		else
-			g.drawImage(button2_low, sto.dim.width / 2 - 100, 20, this);
-		if (sto.woodCollected >= 3 && sto.lianaCollected >= 8)
-			g.drawImage(button3, sto.dim.width / 2, 20, this);
+			g.drawImage(button2_low, Game.dim.width / 2 - 100, 20, this);
+		if (Game.woodCollected >= 3 && Game.lianaCollected >= 8)
+			g.drawImage(button3, Game.dim.width / 2, 20, this);
 		else
-			g.drawImage(button3_low, sto.dim.width / 2, 20, this);
-		if (sto.woodCollected >= 8 && sto.lianaCollected >= 4 && sto.leaveCollected >= 10)
-			g.drawImage(button4, sto.dim.width / 2 + 100, 20, this);
+			g.drawImage(button3_low, Game.dim.width / 2, 20, this);
+		if (Game.woodCollected >= 8 && Game.lianaCollected >= 4 && Game.leaveCollected >= 10)
+			g.drawImage(button4, Game.dim.width / 2 + 100, 20, this);
 		else
-			g.drawImage(button4_low, sto.dim.width / 2 + 100, 20, this);
+			g.drawImage(button4_low, Game.dim.width / 2 + 100, 20, this);
 		
 		// Show options
-		if (sto.cook == false && sto.hidden == false && sto.craft == false && sto.harvest == false) {
-			for (int i = 0; i < sto.craftables.size(); i++) {
-				float disx = sto.craftables.get(i).x - sto.player.x;
-				float disy = sto.craftables.get(i).y - sto.player.y;
-				if (sto.craftableType.get(i) == 1 && sto.craftableStat.get(i) == true && Math.sqrt(disx * disx + disy * disy) < 50
-						&& (sto.rawMeatCollected > 0 || sto.fishCollected > 0)) {
+		if (Game.cook == false && Game.hidden == false && Game.craft == false && Game.harvest == false) {
+			for (int i = 0; i < World.craftables.size(); i++) {
+				float disx = World.craftables.get(i).x - Game.player.getX();
+				float disy = World.craftables.get(i).y - Game.player.getY();
+				if (World.craftableType.get(i) == 1 && World.craftableStat.get(i) == true && Math.sqrt(disx * disx + disy * disy) < 50
+						&& (Game.rawMeatCollected > 0 || Game.fishCollected > 0)) {
 					String cook = "Press [Space] for cooking";
 					g.setColor(Color.BLACK);
-					g.drawString(cook, sto.dim.width / 2 - 150, sto.dim.height - 140);
+					g.drawString(cook, Game.dim.width / 2 - 150, Game.dim.height - 140);
 				}
-				else if ((sto.craftableType.get(i) == 2 || sto.craftableType.get(i) == 3) && sto.craftableStat.get(i) == false && Math.sqrt(disx * disx + disy * disy) < 50) {
+				else if ((World.craftableType.get(i) == 2 || World.craftableType.get(i) == 3) && World.craftableStat.get(i) == false && Math.sqrt(disx * disx + disy * disy) < 50) {
 					String cook = "Press [Space] for harvesting";
 					g.setColor(Color.BLACK);
-					g.drawString(cook, sto.dim.width / 2 - 150, sto.dim.height - 140);
+					g.drawString(cook, Game.dim.width / 2 - 150, Game.dim.height - 140);
 				}
-				else if (sto.craftableType.get(i) == 4 && Math.sqrt(disx * disx + disy * disy) < 50) {
+				else if (World.craftableType.get(i) == 4 && Math.sqrt(disx * disx + disy * disy) < 50) {
 					String cook = "Press [Space] for hiding";
 					g.setColor(Color.BLACK);
-					g.drawString(cook, sto.dim.width / 2 - 150, sto.dim.height - 140);
+					g.drawString(cook, Game.dim.width / 2 - 150, Game.dim.height - 140);
 				}
 			}
 		}
 
 
-		if (sto.harvest == false && sto.cook == false && sto.craft == false) {
-			for (int i = 0; i < sto.craftables.size(); i++) {
-				float disx = sto.craftables.get(i).x - sto.player.x;
-				float disy = sto.craftables.get(i).y - sto.player.y;
-				if ((sto.craftableType.get(i) == 2 || sto.craftableType.get(i) == 3) && 
-						sto.craftableStat.get(i) == false && Math.sqrt(disx * disx + disy * disy) < 50) {
+		if (Game.harvest == false && Game.cook == false && Game.craft == false) {
+			for (int i = 0; i < World.craftables.size(); i++) {
+				float disx = World.craftables.get(i).x - Game.player.getX();
+				float disy = World.craftables.get(i).y - Game.player.getY();
+				if ((World.craftableType.get(i) == 2 || World.craftableType.get(i) == 3) && 
+						World.craftableStat.get(i) == false && Math.sqrt(disx * disx + disy * disy) < 50) {
 					String harvest = "";
-					if (sto.craftableType.get(i) == 2)
+					if (World.craftableType.get(i) == 2)
 						harvest = "Press [Space] for harvesting";
-					else if (sto.craftableType.get(i) == 2)
+					else if (World.craftableType.get(i) == 2)
 						harvest = "Press [Space] for collecting";
 					g.setColor(Color.BLACK);
-					g.drawString(harvest, sto.dim.width / 2 - 150, sto.dim.height - 140);
+					g.drawString(harvest, Game.dim.width / 2 - 150, Game.dim.height - 140);
 				}
 			}
 		}
 
-		if (sto.keys[KeyEvent.VK_SPACE] && sto.cook == false && sto.craft == false && sto.harvest == false && sto.hidden == false) {
+		if (Game.keys[KeyEvent.VK_SPACE] && Game.cook == false && Game.craft == false && Game.harvest == false && Game.hidden == false) {
 			String search = "Searching...";
 			g.setColor(Color.WHITE);
-			g.drawString(search, sto.dim.width / 2 - 50, sto.dim.height - 100);
-			g.fillRect(sto.dim.width / 2 - 100, sto.dim.height - 90, (int) (5 * sto.tick % 200), 10);
+			g.drawString(search, Game.dim.width / 2 - 50, Game.dim.height - 100);
+			g.fillRect(Game.dim.width / 2 - 100, Game.dim.height - 90, (int) (5 * Game.tick % 200), 10);
 		}
 
-		if (sto.hidden == true) {
+		if (Game.hidden == true) {
 			String hidden = "Hidden in shelter!";
 			g.setColor(Color.WHITE);
-			g.drawString(hidden, sto.dim.width / 2 - 80, sto.dim.height - 100);
+			g.drawString(hidden, Game.dim.width / 2 - 80, Game.dim.height - 100);
 		}
 
-		if (sto.craft == true) {
+		if (Game.craft == true) {
 			String craft = "Crafting...";
 			g.setColor(Color.WHITE);
-			g.drawString(craft, sto.dim.width / 2 - 70, sto.dim.height - 100);
-			for (int i = 0; i < 400-sto.craftTime; i++)
-				g.fillRect(sto.dim.width / 2 - 200 + i, sto.dim.height - 90, 1, 10);
+			g.drawString(craft, Game.dim.width / 2 - 70, Game.dim.height - 100);
+			for (int i = 0; i < 400-Game.craftTime; i++)
+				g.fillRect(Game.dim.width / 2 - 200 + i, Game.dim.height - 90, 1, 10);
 		}
 		
-		if (sto.cook == true) {
+		if (Game.cook == true) {
 			String cook = "Cooking...";
 			g.setColor(Color.WHITE);
-			g.drawString(cook, sto.dim.width / 2 - 70, sto.dim.height - 100);
-			for (int i = 0; i < 300-sto.cookTime; i++)
-				g.fillRect(sto.dim.width / 2 - 200 + (int) ((float) 400 / 300) *i, sto.dim.height - 90, (int) ((float) 400 / 300), 10);
+			g.drawString(cook, Game.dim.width / 2 - 70, Game.dim.height - 100);
+			for (int i = 0; i < 300-Game.cookTime; i++)
+				g.fillRect(Game.dim.width / 2 - 200 + (int) ((float) 400 / 300) *i, Game.dim.height - 90, (int) ((float) 400 / 300), 10);
 		}
 		
-		if (sto.harvest == true) {
+		if (Game.harvest == true) {
 			String harvest = "";
-			if (sto.craftableType.get(sto.craftableAction) == 2)
+			if (World.craftableType.get(Game.craftableAction) == 2)
 				harvest = "Harvesting rabbit...";
 			else
 				harvest = "Collecting fish...";
 			g.setColor(Color.WHITE);
-			g.drawString(harvest, sto.dim.width / 2 - 120, sto.dim.height - 100);
-			for (int i = 0; i < 200-sto.harvestTime; i++)
-				g.fillRect(sto.dim.width / 2 - 200 + 2*i, sto.dim.height - 90, 2, 10);
+			g.drawString(harvest, Game.dim.width / 2 - 120, Game.dim.height - 100);
+			for (int i = 0; i < 200-Game.harvestTime; i++)
+				g.fillRect(Game.dim.width / 2 - 200 + 2*i, Game.dim.height - 90, 2, 10);
 		}
 		
-		if (sto.keys[KeyEvent.VK_SHIFT] && sto.tired > 0) {
+		if (Game.keys[KeyEvent.VK_SHIFT] && Game.player.getTired() > 0) {
 			String run = "Running...";
 			g.setColor(Color.RED);
-			g.drawString(run, sto.dim.width / 2 - 70, sto.dim.height - 100);
+			g.drawString(run, Game.dim.width / 2 - 70, Game.dim.height - 100);
 		}
 		
-		if (sto.over == true) {
+		if (Game.over == true) {
 			String gameover = "GAME OVER!";
 			g.setColor(Color.RED);
 			g.setFont(new Font("TimesRoman", Font.PLAIN, 30));
-			g.drawString(gameover, sto.dim.width / 2 - 8 * gameover.length(), sto.dim.height / 2 - 13);		
+			g.drawString(gameover, Game.dim.width / 2 - 8 * gameover.length(), Game.dim.height / 2 - 13);		
 			g.setColor(Color.BLACK);
-			g.drawString(gameover, sto.dim.width / 2 - 8 * gameover.length() + 1, sto.dim.height / 2 - 13 + 1);
+			g.drawString(gameover, Game.dim.width / 2 - 8 * gameover.length() + 1, Game.dim.height / 2 - 13 + 1);
 			
 			String restart = "Press 'R' for restart.";
 			g.setFont(new Font("TimesRoman", Font.PLAIN, 22));
-			g.drawString(restart, sto.dim.width / 2 - 82, sto.dim.height / 2 + 10);
+			g.drawString(restart, Game.dim.width / 2 - 82, Game.dim.height / 2 + 10);
 		}
 	}
 }
