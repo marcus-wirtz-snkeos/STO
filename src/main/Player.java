@@ -51,7 +51,7 @@ public class Player {
 		cookTime = 300;
 		craftTime = 400;
 	}
-	
+
 	public void initPosition() {
 		// Set player start
 		direction = "Down";
@@ -60,7 +60,7 @@ public class Player {
 		while (true) {
 			startX = random.nextInt(Game.worldX / 3) + Game.worldX / 3;
 			startY = random.nextInt(Game.worldY / 3) + Game.worldY / 3;
-			if ((World.whichWolve(startX, startY) < 0 && World.checkLake(startX, startY, -5) == false))
+			if ((World.whichWolve(startX, startY) < 0 && World.checkLake(startX, startY, -5) == false) && World.checkRock(startX, startY, 50, true) == false)
 				break;
 		}
 		position = new Point2D.Float((float) startX, (float) startY);
