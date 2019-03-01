@@ -27,24 +27,24 @@ public class World {
 	public static ArrayList<Point2D.Float> fishes = new ArrayList<Point2D.Float>();
 	public static ArrayList<Point2D.Float> fishVel = new ArrayList<Point2D.Float>();
 	public static ArrayList<Boolean> fishStats = new ArrayList<Boolean>();
-	public static ArrayList<Point> lakes = new ArrayList<Point>();
+	public static ArrayList<Point2D.Float> lakes = new ArrayList<Point2D.Float>();
 	public static ArrayList<Integer> radiusLakes = new ArrayList<Integer>();
-	public static ArrayList<Point> berries = new ArrayList<Point>();
+	public static ArrayList<Point2D.Float> berries = new ArrayList<Point2D.Float>();
 	public static ArrayList<Boolean> berryStats = new ArrayList<Boolean>();
-	public static ArrayList<Point> woods = new ArrayList<Point>();
-	public static ArrayList<Point> stones = new ArrayList<Point>();
+	public static ArrayList<Point2D.Float> woods = new ArrayList<Point2D.Float>();
+	public static ArrayList<Point2D.Float> stones = new ArrayList<Point2D.Float>();
 	public static ArrayList<Boolean> woodStats = new ArrayList<Boolean>();
-	public static ArrayList<Point> trees = new ArrayList<Point>();
+	public static ArrayList<Point2D.Float> trees = new ArrayList<Point2D.Float>();
 	public static ArrayList<Integer> treeType = new ArrayList<Integer>();
-	public static ArrayList<Point> rocks = new ArrayList<Point>();
+	public static ArrayList<Point2D.Float> rocks = new ArrayList<Point2D.Float>();
 	public static ArrayList<Integer> rockType = new ArrayList<Integer>();
 	public static ArrayList<Boolean> treeDeath = new ArrayList<Boolean>();
-	public static ArrayList<Point> plants = new ArrayList<Point>();
+	public static ArrayList<Point2D.Float> plants = new ArrayList<Point2D.Float>();
 	public static ArrayList<Integer> plantType = new ArrayList<Integer>();
-	public static ArrayList<Point> lilies = new ArrayList<Point>();
+	public static ArrayList<Point2D.Float> lilies = new ArrayList<Point2D.Float>();
 	public static ArrayList<Integer> lilyType = new ArrayList<Integer>();
-	public static ArrayList<Point> reeds = new ArrayList<Point>();
-	public static ArrayList<Point> craftables = new ArrayList<Point>();
+	public static ArrayList<Point2D.Float> reeds = new ArrayList<Point2D.Float>();
+	public static ArrayList<Point2D.Float> craftables = new ArrayList<Point2D.Float>();
 	public static ArrayList<Integer> craftableType = new ArrayList<Integer>();
 	public static ArrayList<Integer> craftableScore = new ArrayList<Integer>();
 	
@@ -58,7 +58,7 @@ public class World {
 		int minLake = 30, maxLake = 400;
 		lakes.clear();
 		for (int i = 0; i < nLakes; i++) {
-			lakes.add(new Point(random.nextInt(Game.worldX), random.nextInt(Game.worldY)));
+			lakes.add(new Point2D.Float(random.nextInt(Game.worldX), random.nextInt(Game.worldY)));
 			radiusLakes.add(random.nextInt((maxLake - minLake) + 1) + minLake);
 		}
 		System.out.println("Lakes Set!");
@@ -74,13 +74,13 @@ public class World {
 				int startX = random.nextInt(Game.worldX);
 				int startY = random.nextInt(Game.worldY);
 				if (checkLake(startX, startY, -5) == false) {
-					berries.add(new Point(startX, startY));
+					berries.add(new Point2D.Float(startX, startY));
 					berryStats.add(true);
 					looping = false;
 				}
 			}
 		}
-		berries.sort(Game.byY);
+		berries.sort(Game.FloatbyY);
 		
 		// Set trees
 		nTrees = 2000;
@@ -112,7 +112,7 @@ public class World {
 				}
 			}
 		}
-		trees.sort(Game.byY);
+		trees.sort(Game.FloatbyY);
 		System.out.println("Trees Set!");
 		
 		// Set plants
@@ -143,7 +143,7 @@ public class World {
 				}
 			}
 		}
-		plants.sort(Game.byY);
+		plants.sort(Game.FloatbyY);
 		System.out.println("Plants Set!");
 		
 		// Set wood
@@ -158,7 +158,7 @@ public class World {
 				int startX = random.nextInt(Game.worldX);
 				int startY = random.nextInt(Game.worldY);
 				if (checkLake(startX, startY, -5) == false && checkTree(startX, startY, rWood) == true) {
-					woods.add(new Point(startX, startY));
+					woods.add(new Point2D.Float(startX, startY));
 					if (random.nextFloat() < 0.5)
 						woodStats.add(true);
 					else
@@ -195,7 +195,7 @@ public class World {
 				}
 			}
 		}
-		rocks.sort(Game.byY);
+		rocks.sort(Game.FloatbyY);
 		System.out.println("Wocks Set!");
 
 		// Set stones
@@ -210,12 +210,12 @@ public class World {
 				int startX = random.nextInt(Game.worldX);
 				int startY = random.nextInt(Game.worldY);
 				if (checkLake(startX, startY, -5) == false && (checkRock(startX, startY, 300, false) || random.nextFloat() < 0.05)) {
-					stones.add(new Point(startX, startY));
+					stones.add(new Point2D.Float(startX, startY));
 					looping = false;
 				}
 			}
 		}		
-		stones.sort(Game.byY);
+		stones.sort(Game.FloatbyY);
 		System.out.println("Stones Set!");
 
 		// Set wolve behaviour
@@ -298,7 +298,7 @@ public class World {
 				}
 			}
 		}
-		lilies.sort(Game.byY);
+		lilies.sort(Game.FloatbyY);
 		System.out.println("Lilies Set!");
 		
 		// Set reeds
@@ -309,12 +309,12 @@ public class World {
 				int startX = random.nextInt(Game.worldX);
 				int startY = random.nextInt(Game.worldY);
 				if (checkLake(startX, startY, 20) == true && checkLake(startX, startY, 80) == false) {
-					reeds.add(new Point(startX, startY));
+					reeds.add(new Point2D.Float(startX, startY));
 					break;
 				}
 			}
 		}
-		reeds.sort(Game.byY);
+		reeds.sort(Game.FloatbyY);
 		System.out.println("Reeds Set!");
 	}
 	
@@ -443,7 +443,7 @@ public class World {
 
 	public static void addTree(int x, int y) {
 		
-		trees.add(new Point(x, y));
+		trees.add(new Point2D.Float(x, y));
 		float pCheck = random.nextFloat();
 		if (pCheck < pPine1)
 			treeType.add(0);
@@ -463,7 +463,7 @@ public class World {
 	
 	public static void addPlant(int x, int y) {
 		
-		plants.add(new Point(x, y));
+		plants.add(new Point2D.Float(x, y));
 		float pCheck = random.nextFloat();
 		if (pCheck < pPlant1)
 			plantType.add(1);
@@ -477,7 +477,7 @@ public class World {
 	
 	public static void addLily(int x, int y) {
 		
-		lilies.add(new Point(x, y));
+		lilies.add(new Point2D.Float(x, y));
 		float pCheck = random.nextFloat();
 		if (pCheck < pLily1)
 			lilyType.add(1);
@@ -489,12 +489,11 @@ public class World {
 	
 	public static void addRock(int x, int y) {
 		
-		rocks.add(new Point(x, y));
+		rocks.add(new Point2D.Float(x, y));
 		float pCheck = random.nextFloat();
 		if (pCheck < pRock1)
 			rockType.add(1);
 		else
 			rockType.add(2);
 	}
-	
 }

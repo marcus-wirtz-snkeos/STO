@@ -49,7 +49,7 @@ public class RenderPanel extends JPanel {
 		g.setColor(Color.BLUE);
 		for (int i = 0; i < World.nLakes; i++) {
 			int radius = World.radiusLakes.get(i);
-			g.fillOval(World.lakes.get(i).x - radius - cornerX, World.lakes.get(i).y - radius / 2 - cornerY, 2 * radius, radius);
+			g.fillOval((int) World.lakes.get(i).x - radius - cornerX, (int) World.lakes.get(i).y - radius / 2 - cornerY, 2 * radius, radius);
 		}
 		
 		try {
@@ -126,7 +126,7 @@ public class RenderPanel extends JPanel {
 		}
 		
 		int treeInd = 0, plantInd = 0, stoneInd = 0, rockInd = 0, woodInd = 0, berryInd = 0, lilyInd = 0, reedInd = 0;
-		for (int pixY = Math.max(0, cornerY - 100); pixY < Math.min(Game.worldY, cornerY + Game.dim.height + 100); pixY++) {
+		for (int pixY = Math.max(0, cornerY - 100); pixY < Math.min(Game.worldY, cornerY + Game.dim.height + 200); pixY++) {
 
 			// Draw trees
 			if (treeInd == 0) {
@@ -135,7 +135,7 @@ public class RenderPanel extends JPanel {
 			}
 			if (treeInd < World.trees.size()) {
 				while (World.trees.get(treeInd).y == pixY) {
-					int x = World.trees.get(treeInd).x;
+					int x = (int) World.trees.get(treeInd).x;
 					if (x < cornerX - 100 || x > cornerX + Game.dim.width + 100) {
 						treeInd++;
 						continue;
@@ -177,7 +177,7 @@ public class RenderPanel extends JPanel {
 			}
 			if (woodInd < World.woods.size()) {
 				while (World.woods.get(woodInd).y == pixY) {
-					int x = World.woods.get(woodInd).x;
+					int x = (int) World.woods.get(woodInd).x;
 					if (x < cornerX - 100 || x > cornerX + Game.dim.width + 100) {
 						woodInd++;
 						continue;
@@ -199,7 +199,7 @@ public class RenderPanel extends JPanel {
 			}
 			if (plantInd < World.plants.size()) {
 				while (World.plants.get(plantInd).y == pixY) {
-					int x = World.plants.get(plantInd).x;
+					int x = (int) World.plants.get(plantInd).x;
 					if (x < cornerX -100 || x > cornerX + Game.dim.width + 100) {
 						plantInd++;
 						continue;
@@ -225,7 +225,7 @@ public class RenderPanel extends JPanel {
 			}
 			if (stoneInd < World.stones.size()) {
 				while (World.stones.get(stoneInd).y == pixY) {
-					int x = World.stones.get(stoneInd).x;
+					int x = (int) World.stones.get(stoneInd).x;
 					if (x < cornerX - 100 || x > cornerX + Game.dim.width + 100) {
 						stoneInd++;
 						continue;
@@ -245,7 +245,7 @@ public class RenderPanel extends JPanel {
 			}
 			if (rockInd < World.rocks.size()) {			
 				while (World.rocks.get(rockInd).y == pixY) {
-					int x = World.rocks.get(rockInd).x;
+					int x = (int) World.rocks.get(rockInd).x;
 					if (x < cornerX - 100 || x > cornerX + Game.dim.width + 100) {
 						rockInd++;
 						continue;
@@ -267,7 +267,7 @@ public class RenderPanel extends JPanel {
 			}
 			if  (berryInd < World.berries.size()) {
 				while (World.berries.get(berryInd).y == pixY) {
-					int x = World.berries.get(berryInd).x;
+					int x = (int) World.berries.get(berryInd).x;
 					if (x < cornerX - 100 || x > cornerX + Game.dim.width + 100) {
 						berryInd++;
 						continue;
@@ -326,7 +326,7 @@ public class RenderPanel extends JPanel {
 			}
 			if (lilyInd < World.lilies.size()) {
 				while (World.lilies.get(lilyInd).y == pixY) {
-					int x = World.lilies.get(lilyInd).x;
+					int x = (int) World.lilies.get(lilyInd).x;
 					if (x < cornerX - 100 || x > cornerX + Game.dim.width + 100) {
 						lilyInd++;
 						continue;
@@ -350,7 +350,7 @@ public class RenderPanel extends JPanel {
 			}
 			if (reedInd < World.reeds.size()) {
 				while (World.reeds.get(reedInd).y == pixY) {
-					int x = World.reeds.get(reedInd).x;
+					int x = (int) World.reeds.get(reedInd).x;
 					if (x < cornerX - 100 || x > cornerX + Game.dim.width + 100) {
 						reedInd++;
 						continue;
@@ -365,7 +365,7 @@ public class RenderPanel extends JPanel {
 			// Draw craftables
 			for (int craftInd = 0; craftInd < World.craftables.size(); craftInd++) {
 				if (World.craftables.get(craftInd).y == pixY) {
-					int x = World.craftables.get(craftInd).x;
+					int x = (int) World.craftables.get(craftInd).x;
 					if (World.craftableType.get(craftInd) == 1) {
 						int score = World.craftableScore.get(craftInd);
 						if (score >= 1) {
@@ -401,7 +401,7 @@ public class RenderPanel extends JPanel {
 						else
 							g.drawImage(fish_trap_shot, x - cornerX - fish_trap_shot.getWidth() / 2, pixY - cornerY - fish_trap_shot.getHeight(), this);
 					if (World.craftableType.get(craftInd) == 4) {
-						if (Game.hidden == false)
+						if (Game.player.isHidden())
 							g.drawImage(shelter, x - cornerX - shelter.getWidth() / 2, pixY - cornerY - shelter.getHeight(), this);
 						else
 							g.drawImage(shelter_hidden, x - cornerX - shelter.getWidth() / 2, pixY - cornerY - shelter.getHeight(), this);
@@ -416,7 +416,7 @@ public class RenderPanel extends JPanel {
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-				if (Game.hidden == false)
+				if (Game.player.isHidden() == false)
 					g.drawImage(figure, (int) Game.player.getX() - cornerX - figure.getWidth() / 2, (int) Game.player.getY() - cornerY - figure.getHeight() + 5, this);
 			}
 		}
@@ -429,69 +429,9 @@ public class RenderPanel extends JPanel {
 		*/
 		
 		// Draw stats
-		g.setFont(new Font("TimesRoman", Font.PLAIN, 22));
-		
-		String health = "Condition: " + Game.player.getCondition();
-		g.setColor(Color.WHITE);
-		g.drawString(health, Game.dim.width - 199, Game.dim.height - 169);
-		if (Game.player.getCondition() < 10)
-			g.setColor(Color.RED);
-		else
-			g.setColor(Color.BLACK);
-		g.drawString(health, Game.dim.width - 200, Game.dim.height - 170);
-		
-		String tired = "Tired: " + Game.player.getTired();
-		g.setColor(Color.WHITE);
-		g.drawString(tired, Game.dim.width - 199, Game.dim.height - 139);
-		if (Game.player.getTired() == 0)
-			g.setColor(Color.RED);
-		else
-			g.setColor(Color.BLACK);
-		g.drawString(tired, Game.dim.width - 200, Game.dim.height - 140);	
-
-		String hungry = "Hungry: " + Game.player.getHungry();
-		g.setColor(Color.WHITE);
-		g.drawString(hungry, Game.dim.width - 199, Game.dim.height - 109);
-		if (Game.player.getHungry() == 0)
-			g.setColor(Color.RED);
-		else
-			g.setColor(Color.BLACK);
-		g.drawString(hungry, Game.dim.width - 200, Game.dim.height - 110);
-
-		String thirsty = "Thirsty: " + Game.player.getThirsty();
-		g.setColor(Color.WHITE);
-		g.drawString(thirsty, Game.dim.width - 199, Game.dim.height - 79);
-		if (Game.player.getThirsty() == 0)
-			g.setColor(Color.RED);
-		else
-			g.setColor(Color.BLACK);
-		g.drawString(thirsty, Game.dim.width - 200, Game.dim.height - 80);	
-		
-		// Draw Score
-		String score = "Score: " + Game.score;
-		g.setColor(Color.WHITE);
-		g.drawString(score, 11, 21);
-		g.setColor(Color.BLACK);
-		g.drawString(score, 10, 20);
-		
+		Game.player.drawStats(g);
 		// Draw inventory
-		String woods = Game.woodCollected + " x ";
-		g.drawString(woods, 15, Game.dim.height - 200);
-		String stones = Game.stoneCollected + " x ";
-		g.drawString(stones, 15, Game.dim.height - 160);
-		String leaves = Game.leaveCollected + " x ";
-		g.drawString(leaves, 15, Game.dim.height - 120);
-		String lianas = Game.lianaCollected + " x ";
-		g.drawString(lianas, 15, Game.dim.height - 80);
-		String berries = Game.berryCollected + " x           (e)";
-		g.drawString(berries, 130, Game.dim.height - 200);
-		String meat = Game.meatCollected + " x           (r)";
-		g.drawString(meat, 130, Game.dim.height - 160);
-		String rawmeat = Game.rawMeatCollected + " x ";
-		g.drawString(rawmeat, 130, Game.dim.height - 120);
-		String fishes = Game.fishCollected + " x ";
-		g.drawString(fishes, 130, Game.dim.height - 80);
-		
+		Game.player.drawInventory(g);
 		g.drawImage(wood, 60, Game.dim.height - 224, this);
 		g.drawImage(stone, 65, Game.dim.height - 182, this);
 		g.drawImage(leafe, 65, Game.dim.height - 142, this);
@@ -500,110 +440,26 @@ public class RenderPanel extends JPanel {
 		g.drawImage(cooked_meat, 180, Game.dim.height - 182, this);
 		g.drawImage(raw_meat, 180, Game.dim.height - 142, this);
 		g.drawImage(fish, 180, Game.dim.height - 96, this);
-		
+
 		// Draw craftable system
-		if (Game.woodCollected >= 5 && Game.stoneCollected >= 8)
+		if (Game.player.woodCollected >= 5 && Game.player.stoneCollected >= 8)
 			g.drawImage(button1, Game.dim.width / 2 - 200, 20, this);
 		else
 			g.drawImage(button1_low, Game.dim.width / 2 - 200, 20, this);
-		if (Game.woodCollected >= 3 && Game.lianaCollected >= 1)
+		if (Game.player.woodCollected >= 3 && Game.player.lianaCollected >= 1)
 			g.drawImage(button2, Game.dim.width / 2 - 100, 20, this);
 		else
 			g.drawImage(button2_low, Game.dim.width / 2 - 100, 20, this);
-		if (Game.woodCollected >= 3 && Game.lianaCollected >= 8)
+		if (Game.player.woodCollected >= 3 && Game.player.lianaCollected >= 8)
 			g.drawImage(button3, Game.dim.width / 2, 20, this);
 		else
 			g.drawImage(button3_low, Game.dim.width / 2, 20, this);
-		if (Game.woodCollected >= 8 && Game.lianaCollected >= 4 && Game.leaveCollected >= 10)
+		if (Game.player.woodCollected >= 8 && Game.player.lianaCollected >= 4 && Game.player.leaveCollected >= 10)
 			g.drawImage(button4, Game.dim.width / 2 + 100, 20, this);
 		else
 			g.drawImage(button4_low, Game.dim.width / 2 + 100, 20, this);
 		
 		// Show options
-		if (Game.cook == false && Game.hidden == false && Game.craft == false && Game.harvest == false) {
-			for (int i = 0; i < World.craftables.size(); i++) {
-				float disx = World.craftables.get(i).x - Game.player.getX();
-				float disy = World.craftables.get(i).y - Game.player.getY();
-				String str;
-				g.setColor(Color.BLACK);
-				if (World.craftableType.get(i) == 1 && Math.sqrt(disx * disx + disy * disy) < 50) {
-					str = "Press [F] for fueling the fire";
-					g.drawString(str, Game.dim.width / 2 - 150, Game.dim.height - 160);
-				}
-				if (World.craftableType.get(i) == 1 && World.craftableScore.get(i) >= 1 && Math.sqrt(disx * disx + disy * disy) < 50
-						&& (Game.rawMeatCollected > 0 || Game.fishCollected > 0)) {
-					str = "Press [Space] for cooking";
-				}
-				else if (World.craftableType.get(i) == 2 && World.craftableScore.get(i) < 1 && Math.sqrt(disx * disx + disy * disy) < 50)
-					str = "Press [Space] for harvesting";
-				else if (World.craftableType.get(i) == 3 && World.craftableScore.get(i) < 1 && Math.sqrt(disx * disx + disy * disy) < 50)
-					str = "Press [Space] for collecting";
-				else if (World.craftableType.get(i) == 4 && Math.sqrt(disx * disx + disy * disy) < 50)
-					str = "Press [Space] for hiding";
-				else
-					continue;
-				g.drawString(str, Game.dim.width / 2 - 150, Game.dim.height - 140);
-			}
-		}
-
-		if (Game.keys[KeyEvent.VK_SPACE] && Game.cook == false && Game.craft == false && Game.harvest == false && Game.hidden == false) {
-			String search = "Searching...";
-			g.setColor(Color.WHITE);
-			g.drawString(search, Game.dim.width / 2 - 50, Game.dim.height - 100);
-			g.fillRect(Game.dim.width / 2 - 100, Game.dim.height - 90, (int) (5 * Game.tick % 200), 10);
-		}
-
-		if (Game.hidden == true) {
-			String hidden = "Hidden in shelter!";
-			g.setColor(Color.WHITE);
-			g.drawString(hidden, Game.dim.width / 2 - 80, Game.dim.height - 100);
-		}
-
-		if (Game.craft == true) {
-			String craft = "Crafting...";
-			g.setColor(Color.WHITE);
-			g.drawString(craft, Game.dim.width / 2 - 70, Game.dim.height - 100);
-			for (int i = 0; i < 400-Game.craftTime; i++)
-				g.fillRect(Game.dim.width / 2 - 200 + i, Game.dim.height - 90, 1, 10);
-		}
-		
-		if (Game.cook == true) {
-			String cook = "Cooking...";
-			g.setColor(Color.WHITE);
-			g.drawString(cook, Game.dim.width / 2 - 70, Game.dim.height - 100);
-			for (int i = 0; i < 300-Game.cookTime; i++)
-				g.fillRect(Game.dim.width / 2 - 200 + (int) ((float) 400 / 300) *i, Game.dim.height - 90, (int) ((float) 400 / 300), 10);
-		}
-		
-		if (Game.harvest == true) {
-			String harvest = "";
-			if (World.craftableType.get(Game.craftableAction) == 2)
-				harvest = "Harvesting rabbit...";
-			else
-				harvest = "Collecting fish...";
-			g.setColor(Color.WHITE);
-			g.drawString(harvest, Game.dim.width / 2 - 120, Game.dim.height - 100);
-			for (int i = 0; i < 200-Game.harvestTime; i++)
-				g.fillRect(Game.dim.width / 2 - 200 + 2*i, Game.dim.height - 90, 2, 10);
-		}
-		
-		if (Game.keys[KeyEvent.VK_SHIFT] && Game.player.getTired() > 0) {
-			String run = "Running...";
-			g.setColor(Color.RED);
-			g.drawString(run, Game.dim.width / 2 - 70, Game.dim.height - 100);
-		}
-		
-		if (Game.over == true) {
-			String gameover = "GAME OVER!";
-			g.setColor(Color.RED);
-			g.setFont(new Font("TimesRoman", Font.PLAIN, 30));
-			g.drawString(gameover, Game.dim.width / 2 - 8 * gameover.length(), Game.dim.height / 2 - 13);		
-			g.setColor(Color.BLACK);
-			g.drawString(gameover, Game.dim.width / 2 - 8 * gameover.length() + 1, Game.dim.height / 2 - 13 + 1);
-			
-			String restart = "Press 'R' for restart.";
-			g.setFont(new Font("TimesRoman", Font.PLAIN, 22));
-			g.drawString(restart, Game.dim.width / 2 - 82, Game.dim.height / 2 + 10);
-		}
+		Game.player.showOptions(g);
 	}
 }

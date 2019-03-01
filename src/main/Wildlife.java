@@ -71,7 +71,7 @@ public class Wildlife {
 			// Check for wolve chasing
 			float xDir = Game.player.getX() - wolveX;
 			float yDir = Game.player.getY() - wolveY;
-			if (Game.hidden == false) {
+			if (Game.player.isHidden() == false) {
 				if (wolveChase(i, 1, wolveX, wolveY, Game.player.getX(), Game.player.getY(), wolveRadius) == true) {
 					float dirLen = (float) Math.sqrt(xDir * xDir + yDir * yDir);
 					float intensity = random.nextFloat();
@@ -95,7 +95,7 @@ public class Wildlife {
 			}
 
 			// Check for wolve death
-			if (wolveAttack(i, wolveX, wolveY, Game.player.getX(), Game.player.getY(), 25) == true && Game.hidden == false)
+			if (wolveAttack(i, wolveX, wolveY, Game.player.getX(), Game.player.getY(), 25) == true && Game.player.isHidden() == false)
 				Game.over = true;
 			
 			World.wolveSpeed.set(i, new Point2D.Float(velX, velY));
