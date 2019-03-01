@@ -46,13 +46,13 @@ public class World {
 	public static ArrayList<Point> reeds = new ArrayList<Point>();
 	public static ArrayList<Point> craftables = new ArrayList<Point>();
 	public static ArrayList<Integer> craftableType = new ArrayList<Integer>();
-	public static ArrayList<Boolean> craftableStat = new ArrayList<Boolean>();
+	public static ArrayList<Integer> craftableScore = new ArrayList<Integer>();
 	
 	public static void initWorld() {
 		// Set craftables
 		craftables.clear();
 		craftableType.clear();
-		craftableStat.clear();
+		craftableScore.clear();
 		
 		nLakes = 50;
 		int minLake = 30, maxLake = 400;

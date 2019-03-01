@@ -85,8 +85,8 @@ public class Game implements ActionListener, KeyListener {
 		playerMovement = (float) 3;
 		
 		// Set inventory
-		woodCollected = 0;
-		stoneCollected = 0;
+		woodCollected = 10;
+		stoneCollected = 10;
 		leaveCollected = 0;
 		lianaCollected = 0;
 		berryCollected = 0;
@@ -104,6 +104,7 @@ public class Game implements ActionListener, KeyListener {
 		
 		World.initWorld();
 		player.initPosition();
+		System.out.println("Player Init!");
 		timer.start();	
 	}
 	
@@ -144,6 +145,9 @@ public class Game implements ActionListener, KeyListener {
 			berryCollected -= 1;
 			player.addHungry(5);
 		}
+		if (e.getKeyCode() == 70 && woodCollected > 0) {
+			player.fuelFire();
+		}
 		if (e.getKeyCode() == 82 && meatCollected > 0) {
 			meatCollected -= 1;
 			player.addHungry(40);
@@ -153,7 +157,7 @@ public class Game implements ActionListener, KeyListener {
 				int idx = World.craftables.size() - 1;
 				World.craftables.remove(idx);
 				World.craftableType.remove(idx);
-				World.craftableStat.remove(idx);
+				World.craftableScore.remove(idx);
 			}
 			craft = false;
 			craftTime = 400;

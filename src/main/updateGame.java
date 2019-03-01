@@ -47,7 +47,15 @@ public class updateGame {
 		
 		if (tick % 50 == 0 && Game.player.getTired() < 100)
 			Game.player.addTired(1);
-			
+	
+		if (tick % 30 == 0 && random.nextFloat() < 0.5 && Game.craft == false) { 
+			for (int i = 0; i < World.craftables.size(); i++) {
+				if (World.craftableType.get(i) == 1) {
+					World.craftableScore.set(i, Math.max(World.craftableScore.get(i) - 1, 0));
+				}
+			}
+		}
+
 		if (tick % 100 == 0)
 			Game.score += 1;
 		
@@ -107,7 +115,7 @@ public class updateGame {
 			for (int i = 0; i < World.craftables.size(); i++) {
 				float disx = World.craftables.get(i).x - Game.player.getX();
 				float disy = World.craftables.get(i).y - Game.player.getY();
-				if (World.craftableType.get(i) == 1 && World.craftableStat.get(i) == true && Math.sqrt(disx * disx + disy * disy) < 50
+				if (World.craftableType.get(i) == 1 && World.craftableScore.get(i) >= 1 && Math.sqrt(disx * disx + disy * disy) < 50
 						&& (Game.rawMeatCollected > 0 || Game.fishCollected > 0)) {
 					Game.cook = true;
 					Game.craftableAction = i;
@@ -130,7 +138,7 @@ public class updateGame {
 			Game.cookTime = 300;
 			Game.meatCollected += 1;
 			if (random.nextFloat() < 0.2)
-				World.craftableStat.set(Game.craftableAction, false);
+				World.craftableScore.set(Game.craftableAction, 0);
 		}
 	}
 	
@@ -141,7 +149,7 @@ public class updateGame {
 				float disx = World.craftables.get(i).x - Game.player.getX();
 				float disy = World.craftables.get(i).y - Game.player.getY();
 				if ((World.craftableType.get(i) == 2 || World.craftableType.get(i) == 3) && 
-						World.craftableStat.get(i) == false && Math.sqrt(disx * disx + disy * disy) < 50) {
+						World.craftableScore.get(i) >= 1 && Math.sqrt(disx * disx + disy * disy) < 50) {
 					Game.harvest = true;
 					Game.craftableAction = i;
 				}
@@ -166,10 +174,10 @@ public class updateGame {
 			if (random.nextFloat() < 0.2) {
 				World.craftables.remove(Game.craftableAction);
 				World.craftableType.remove(Game.craftableAction);
-				World.craftableStat.remove(Game.craftableAction);
+				World.craftableScore.remove(Game.craftableAction);
 				return;
 			}
-			World.craftableStat.set(Game.craftableAction, true);
+			World.craftableScore.set(Game.craftableAction, 100);
 		}
 	}
 	
@@ -237,7 +245,7 @@ public class updateGame {
 			Game.woodCollected -= 5;
 			Game.stoneCollected -= 8;
 			World.craftableType.add(1);
-			World.craftableStat.add(true);
+			World.craftableScore.add(100);
 			addCraftable(30);
 		}
 		
@@ -247,7 +255,7 @@ public class updateGame {
 			Game.woodCollected -= 3;
 			Game.lianaCollected -= 1;
 			World.craftableType.add(2);
-			World.craftableStat.add(true);
+			World.craftableScore.add(100);
 			addCraftable(30);
 		}
 		
@@ -259,7 +267,7 @@ public class updateGame {
 				Game.woodCollected -= 3;
 				Game.lianaCollected -= 8;
 				World.craftableType.add(3);
-				World.craftableStat.add(true);
+				World.craftableScore.add(100);
 				addCraftable(40);
 			}
 		}
@@ -271,7 +279,7 @@ public class updateGame {
 				Game.lianaCollected -= 4;
 				Game.leaveCollected -= 10;
 				World.craftableType.add(4);
-				World.craftableStat.add(true);
+				World.craftableScore.add(100);
 				addCraftable(50);
 		}
 	}

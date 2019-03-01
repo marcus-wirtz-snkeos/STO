@@ -1,5 +1,6 @@
 package main;
 
+import java.awt.event.KeyEvent;
 import java.awt.geom.Point2D;
 import java.util.Random;
 
@@ -51,4 +52,18 @@ public class Player {
 	public void addHungry(int add) { hungry = Math.min(hungry + add, 100); }
 	public void addThirsty(int add) { thirsty = Math.min(thirsty + add, 100); }
 	
+	public void fuelFire() {
+		if (Game.hidden == false && Game.cook == false && Game.craft == false && Game.harvest == false) {
+			for (int i = 0; i < World.craftables.size(); i++) {
+				if (World.craftableType.get(i) == 1) {
+					float disx = World.craftables.get(i).x - Game.player.getX();
+					float disy = World.craftables.get(i).y - Game.player.getY();
+					if (Math.sqrt(disx * disx + disy * disy) < 50) {
+						Game.woodCollected -= 1;
+						World.craftableScore.set(i, Math.min(100, World.craftableScore.get(i) + 20));
+					}
+				}
+			}
+		}
+	}
 }
