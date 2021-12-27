@@ -1,9 +1,7 @@
 package main;
 
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -138,6 +136,8 @@ public class RenderPanel extends JPanel {
 					int x = (int) World.trees.get(treeInd).x;
 					if (x < cornerX - 100 || x > cornerX + Game.dim.width + 100) {
 						treeInd++;
+						if (treeInd == World.trees.size())
+							break;
 						continue;
 					}
 					if (World.treeType.get(treeInd) == 0) {
@@ -180,6 +180,8 @@ public class RenderPanel extends JPanel {
 					int x = (int) World.woods.get(woodInd).x;
 					if (x < cornerX - 100 || x > cornerX + Game.dim.width + 100) {
 						woodInd++;
+						if (woodInd == World.woods.size())
+							break;
 						continue;
 					}
 					if (World.woodStats.get(woodInd) == true)
@@ -202,6 +204,8 @@ public class RenderPanel extends JPanel {
 					int x = (int) World.plants.get(plantInd).x;
 					if (x < cornerX -100 || x > cornerX + Game.dim.width + 100) {
 						plantInd++;
+						if (plantInd == World.plants.size())
+							break;
 						continue;
 					}
 					if (World.plantType.get(plantInd) == 1)
@@ -228,6 +232,8 @@ public class RenderPanel extends JPanel {
 					int x = (int) World.stones.get(stoneInd).x;
 					if (x < cornerX - 100 || x > cornerX + Game.dim.width + 100) {
 						stoneInd++;
+						if (stoneInd == World.stones.size())
+							break;
 						continue;
 					}
 					g.drawImage(stone, x - cornerX - stone.getWidth() / 2, pixY - cornerY - stone.getHeight(), this);
@@ -248,6 +254,8 @@ public class RenderPanel extends JPanel {
 					int x = (int) World.rocks.get(rockInd).x;
 					if (x < cornerX - 100 || x > cornerX + Game.dim.width + 100) {
 						rockInd++;
+						if (rockInd == World.rocks.size())
+							break;
 						continue;
 					}
 					if (World.rockType.get(rockInd) == 1)
@@ -270,6 +278,8 @@ public class RenderPanel extends JPanel {
 					int x = (int) World.berries.get(berryInd).x;
 					if (x < cornerX - 100 || x > cornerX + Game.dim.width + 100) {
 						berryInd++;
+						if (berryInd == World.berries.size())
+							break;
 						continue;
 					}
 					if (World.berryStats.get(berryInd) == true)
@@ -329,6 +339,8 @@ public class RenderPanel extends JPanel {
 					int x = (int) World.lilies.get(lilyInd).x;
 					if (x < cornerX - 100 || x > cornerX + Game.dim.width + 100) {
 						lilyInd++;
+						if (lilyInd == World.lilies.size())
+							break;
 						continue;
 					}
 					if (World.lilyType.get(lilyInd) == 1)
@@ -353,6 +365,8 @@ public class RenderPanel extends JPanel {
 					int x = (int) World.reeds.get(reedInd).x;
 					if (x < cornerX - 100 || x > cornerX + Game.dim.width + 100) {
 						reedInd++;
+						if (reedInd == World.reeds.size())
+							break;
 						continue;
 					}
 					g.drawImage(reed, x - cornerX - reed.getWidth() / 2 + 20, pixY - cornerY - reed.getHeight() + 20, this);
