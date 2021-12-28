@@ -29,8 +29,8 @@ public class Player {
 		thirsty = 100;
 		
 		// Set inventory
-		woodCollected = 10;
-		stoneCollected = 10;
+		woodCollected = 0;
+		stoneCollected = 0;
 		leaveCollected = 0;
 		lianaCollected = 0;
 		berryCollected = 0;
@@ -86,7 +86,7 @@ public class Player {
 	public boolean isHidden() { return hidden; }
 	
 	public void fuelFire() {
-		if (this.doingAction() == false && woodCollected > 1) {
+		if (this.doingAction() == false && woodCollected >= 1) {
 			for (int i = 0; i < World.craftables.size(); i++) {
 				if (World.craftableType.get(i) == 1) {
 					if (this.checkDistance(World.craftables.get(i), (float) 50)) {
@@ -167,21 +167,9 @@ public class Player {
 		
 		if (Game.tick % 50 == 0 && this.getTired() < 100)
 			this.addTired(1);
-	
-		if (Game.tick % 30 == 0 && random.nextFloat() < 0.5 && craft == false) { 
-			for (int i = 0; i < World.craftables.size(); i++) {
-				if (World.craftableType.get(i) == 1) {
-					World.craftableScore.set(i, Math.max(World.craftableScore.get(i) - 1, 0));
-				}
-			}
-		}
 
-		if (Game.tick % 100 == 0)
-			Game.score += 1;
-		
 		if (this.getCondition() <= 0)
-			Game.over = true;
-		
+			Game.over = true;		
 	}
 	
 	public void move() {
@@ -245,19 +233,17 @@ public class Player {
 				}
 			}
 		}
-		else if (cook == true) {
-
-			if (cookTime > 0) {
+		else if (cook == true) {			
+			if (cookTime > 0 && World.craftableScore.get(craftableAction) >= 1) {
 				// still cooking
 				cookTime -= 1;
-				return;
 			}
-
-			cook = false;
-			cookTime = 300;
-			meatCollected += 1;
-			if (random.nextFloat() < 0.2)
-				World.craftableScore.set(craftableAction, 0);
+			else {
+				cook = false;
+				cookTime = 300;
+				if (World.craftableScore.get(craftableAction) >= 1)
+					meatCollected += 1;	
+			}
 		}
 	}
 	
@@ -268,7 +254,7 @@ public class Player {
 				float disx = World.craftables.get(i).x - this.getX();
 				float disy = World.craftables.get(i).y - this.getY();
 				if ((World.craftableType.get(i) == 2 || World.craftableType.get(i) == 3) && 
-						World.craftableScore.get(i) >= 1 && Math.sqrt(disx * disx + disy * disy) < 50) {
+						World.craftableScore.get(i) == 0 && Math.sqrt(disx * disx + disy * disy) < 50) {
 					harvest = true;
 					craftableAction = i;
 				}
