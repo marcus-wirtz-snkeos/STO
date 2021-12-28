@@ -29,8 +29,8 @@ public class Player {
 		thirsty = 100;
 		
 		// Set inventory
-		woodCollected = 10;
-		stoneCollected = 10;
+		woodCollected = 0;
+		stoneCollected = 0;
 		leaveCollected = 0;
 		lianaCollected = 0;
 		berryCollected = 0;
@@ -102,6 +102,7 @@ public class Player {
 		if (this.doingAction() == false && berryCollected > 0) {
 			berryCollected -= 1;
 			this.addHungry(5);
+			this.addThirsty(2);
 		}
 	}
 	
@@ -407,7 +408,7 @@ public class Player {
 		int berryIndex = World.checkBerry(Game.player.getX(), Game.player.getY());
 		if (berryIndex >= 0 && World.berryStats.get(berryIndex) == true) {
 			World.berryStats.set(berryIndex, false);
-			berryCollected += 3;
+			berryCollected += 0;
 		}
 		
 		int woodIndex = World.checkWood(Game.player.getX(), Game.player.getY());
@@ -423,6 +424,13 @@ public class Player {
 			World.nStones -= 1;
 			World.stones.remove(stoneIndex);
 			stoneCollected += 1;
+		}
+		
+		int rabbitIndex = World.checkRabbit(Game.player.getX(), Game.player.getY());
+		if (rabbitIndex >= 0) {
+			World.nRabbits -= 1;
+			World.rabbits.remove(rabbitIndex);
+			berryCollected += 1;
 		}
 	}
 

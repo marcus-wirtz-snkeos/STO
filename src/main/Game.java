@@ -25,15 +25,15 @@ public class Game implements ActionListener, KeyListener {
 	static GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
 	public static Dimension dim = new Dimension(gd.getDisplayMode().getWidth(), gd.getDisplayMode().getHeight());
 
-	public static final int worldSize = 4;
+	public static final int worldSize = 2;
 	public static int worldX = worldSize * dim.width;
-	public static int worldY = worldSize * dim.height;;
+	public static int worldY = worldSize * dim.height;
 	public static float dayLength = (float) 500;
 
 	public static int tick = 0;
 	public static int score;
 	public static float pTired = (float) 0.001;
-	public static float playerMovement = (float) 3;
+	public static float playerMovement = (float) 10;
 	public static boolean over;
 	
 	int nCraft = 4;

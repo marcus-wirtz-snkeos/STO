@@ -2,6 +2,7 @@ package main;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -76,10 +77,10 @@ public class RenderPanel extends JPanel {
 			berryFull = ImageIO.read(new File(imagePath + "berry_full.gif"));
 			berryEmpty = ImageIO.read(new File(imagePath + "berry_empty.gif"));
 			
-			wolve_left = ImageIO.read(new File(imagePath + "wolve_left.gif"));
-			wolve_right = ImageIO.read(new File(imagePath + "wolve_right.gif"));
-			rabbit_left = ImageIO.read(new File(imagePath + "rabbit_left.gif"));
-			rabbit_right = ImageIO.read(new File(imagePath + "rabbit_right.gif"));
+			wolve_left = ImageIO.read(new File(imagePath + "marshall_izquierda.gif"));
+			wolve_right = ImageIO.read(new File(imagePath + "marshall_derecha.gif"));
+			rabbit_left = ImageIO.read(new File(imagePath + "hueso.gif"));
+			rabbit_right = ImageIO.read(new File(imagePath + "hueso.gif"));
 			fish_left = ImageIO.read(new File(imagePath + "fish_left.png"));
 			fish_right = ImageIO.read(new File(imagePath + "fish_right.png"));
 			
@@ -92,7 +93,7 @@ public class RenderPanel extends JPanel {
 			leafe = ImageIO.read(new File(imagePath + "leafe.gif"));
 			liana = ImageIO.read(new File(imagePath + "liana.gif"));
 			
-			berry = ImageIO.read(new File(imagePath + "berry.gif"));
+			berry = ImageIO.read(new File(imagePath + "hueso.gif"));
 			cooked_meat = ImageIO.read(new File(imagePath + "cooked_meat.gif"));
 			raw_meat = ImageIO.read(new File(imagePath + "raw_meat.gif"));
 			fish = ImageIO.read(new File(imagePath + "fish.gif"));
@@ -415,7 +416,7 @@ public class RenderPanel extends JPanel {
 						else
 							g.drawImage(fish_trap_shot, x - cornerX - fish_trap_shot.getWidth() / 2, pixY - cornerY - fish_trap_shot.getHeight(), this);
 					if (World.craftableType.get(craftInd) == 4) {
-						if (Game.player.isHidden())
+						if (Game.player.isHidden() == false)
 							g.drawImage(shelter, x - cornerX - shelter.getWidth() / 2, pixY - cornerY - shelter.getHeight(), this);
 						else
 							g.drawImage(shelter_hidden, x - cornerX - shelter.getWidth() / 2, pixY - cornerY - shelter.getHeight(), this);
@@ -426,7 +427,10 @@ public class RenderPanel extends JPanel {
 			// Draw figure
 			if ((int) Game.player.getY() == pixY) {
 				try {
-					figure = ImageIO.read(new File(imagePath + "woman_" + Game.player.getDirection() + ".gif"));
+					if (Game.keys[KeyEvent.VK_A] || Game.keys[KeyEvent.VK_LEFT])
+						figure = ImageIO.read(new File(imagePath + "everest_izquierda.gif"));
+					else
+						figure = ImageIO.read(new File(imagePath + "everest_derecha.gif"));
 				} catch (IOException e) {
 					e.printStackTrace();
 				}

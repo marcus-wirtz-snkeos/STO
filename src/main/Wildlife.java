@@ -11,7 +11,7 @@ public class Wildlife {
 	// wolve setting
 	public static float changeSpeed = (float) 0.1;
 	public static float chase = (float) 0.8;
-	public static float maxSpeed = (float) 3;
+	public static float maxSpeed = (float) 10;
 	public static float changeDirection = (float) 0.05;
 	public static float wolveRadius = 500;
 	public static float wolveAggression = (float) 0.5;
@@ -257,7 +257,7 @@ public class Wildlife {
 		float dis_x = wolveX - playerX;
 		float dis_y = wolveY - playerY;
 		if (Math.sqrt(dis_x * dis_x + 4 * dis_y * dis_y) <= wolveRadius) {
-				return true;
+				return false;
 		}
 		return false;
 	}

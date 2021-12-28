@@ -54,8 +54,8 @@ public class World {
 		craftableType.clear();
 		craftableScore.clear();
 		
-		nLakes = 50;
-		int minLake = 30, maxLake = 400;
+		nLakes = 2;
+		int minLake = 100, maxLake = 300;
 		lakes.clear();
 		for (int i = 0; i < nLakes; i++) {
 			lakes.add(new Point2D.Float(random.nextInt(Game.worldX), random.nextInt(Game.worldY)));
@@ -64,7 +64,7 @@ public class World {
 		System.out.println("Lakes Set!");
 		
 		// Set berries
-		nBerries = 60;
+		nBerries = 10;
 		berryBonus = 25;
 		berryRespawn = (float) 0.0001;
 		berries.clear();
@@ -83,7 +83,7 @@ public class World {
 		berries.sort(Game.FloatbyY);
 		
 		// Set trees
-		nTrees = 2000;
+		nTrees = 100;
 		seedForests = 20;
 		pPine1 = (float) 0.3;
 		pPine2 = (float) 0.2;
@@ -116,7 +116,7 @@ public class World {
 		System.out.println("Trees Set!");
 		
 		// Set plants
-		nPlants = 500;
+		nPlants = 50;
 		seedPlants = 10;
 		pPlant1 = (float) 0.6;
 		pPlant2 = (float) 0.35;
@@ -170,7 +170,7 @@ public class World {
 		System.out.println("Wood Set!");
 		
 		// Set rocks
-		nRocks = 80;
+		nRocks = 30;
 		seedRocks = 5;
 		pRock1 = (float) 0.7;
 		pRock2 = (float) 0.3;
@@ -219,7 +219,7 @@ public class World {
 		System.out.println("Stones Set!");
 
 		// Set wolve behaviour
-		nWolves = 10;
+		nWolves = 1;
 		wolves.clear();
 		for (int i = 0; i < nWolves; i++) {
 			while (true) {
@@ -235,7 +235,7 @@ public class World {
 		System.out.println("Wolves Set!");
 		
 		// Set rabbits
-		nRabbits = 20;
+		nRabbits = 100;
 		rabbitSpawn = (float) 0.001;
 		
 		rabbits.clear();
@@ -273,7 +273,7 @@ public class World {
 		System.out.println("Fishes set!");
 		
 		// Set lilies
-		nLilies = 500;
+		nLilies = 50;
 		seedLilies = 20;
 		pLily1 = (float) 0.4;
 		pLily2 = (float) 0.4;
@@ -302,7 +302,7 @@ public class World {
 		System.out.println("Lilies Set!");
 		
 		// Set reeds
-		nReeds = 500;
+		nReeds = 100;
 		reeds.clear();
 		for (int i = 0; i < nReeds; i++) {
 			while (true) {
@@ -344,6 +344,17 @@ public class World {
 		for (int i = 0; i < nBerries; i++) {
 			float dis_x = berries.get(i).x - x;
 			float dis_y = berries.get(i).y - y;		
+			if (Math.sqrt(dis_x * dis_x + dis_y * dis_y) < 20) {
+				return i;
+			}
+		}
+		return -1;
+	}
+	
+	public static int checkRabbit(float x, float y) {
+		for (int i = 0; i < nRabbits; i++) {
+			float dis_x = rabbits.get(i).x - x;
+			float dis_y = rabbits.get(i).y - y;		
 			if (Math.sqrt(dis_x * dis_x + dis_y * dis_y) < 20) {
 				return i;
 			}
