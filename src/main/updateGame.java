@@ -8,6 +8,28 @@ public class updateGame {
 	static Random random = new Random();
 	static Game game = Game.game;
 	
+	public static void update() {
+
+		// Wildlife settings
+		Wildlife.wolveBehaviour();
+		Wildlife.rabbitBehaviour();
+		Wildlife.fishBehaviour();
+		
+		if (Game.tick % 30 == 0 && random.nextFloat() < 0.5) { 
+			for (int i = 0; i < World.craftables.size(); i++) {
+				if (World.craftableType.get(i) == 1) {
+					World.craftableScore.set(i, Math.max(World.craftableScore.get(i) - 1, 0));
+				}
+			}
+		}
+
+		if (Game.tick % 100 == 0)
+			Game.score += 1;
+
+		if (Game.tick == 10000)
+			Game.tick = 0;
+	}
+	
 	public static void spawnItems() {
 		
 		if (Game.tick % 100 == 0) {

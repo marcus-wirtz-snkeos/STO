@@ -387,15 +387,15 @@ public class RenderPanel extends JPanel {
 							if (k == 1)
 								g.drawImage(fire1, x - cornerX - fire1.getWidth() / 2, pixY - cornerY - fire1.getHeight(), this);
 							else if (k == 2)
-								g.drawImage(fire2, x - cornerX - fire1.getWidth() / 2, pixY - cornerY - fire1.getHeight(), this);
+								g.drawImage(fire2, x - cornerX - fire2.getWidth() / 2, pixY - cornerY - fire2.getHeight(), this);
 							else if (k == 3)
-								g.drawImage(fire3, x - cornerX - fire1.getWidth() / 2, pixY - cornerY - fire1.getHeight(), this);
+								g.drawImage(fire3, x - cornerX - fire3.getWidth() / 2, pixY - cornerY - fire3.getHeight(), this);
 							else if (k == 4)
-								g.drawImage(fire4, x - cornerX - fire1.getWidth() / 2, pixY - cornerY - fire1.getHeight(), this);
+								g.drawImage(fire4, x - cornerX - fire4.getWidth() / 2, pixY - cornerY - fire4.getHeight(), this);
 							else if (k == 5)
-								g.drawImage(fire5, x - cornerX - fire1.getWidth() / 2, pixY - cornerY - fire1.getHeight(), this);
+								g.drawImage(fire5, x - cornerX - fire5.getWidth() / 2, pixY - cornerY - fire5.getHeight(), this);
 							else if (k == 6)
-								g.drawImage(fire6, x - cornerX - fire1.getWidth() / 2, pixY - cornerY - fire1.getHeight(), this);
+								g.drawImage(fire6, x - cornerX - fire6.getWidth() / 2, pixY - cornerY - fire6.getHeight(), this);
 							g.setColor(Color.BLACK);
 							g.drawString((String) "" + score + " %", x - cornerX, pixY - cornerY - (int) (0.6 * fire1.getHeight()));
 						}
@@ -475,5 +475,14 @@ public class RenderPanel extends JPanel {
 		
 		// Show options
 		Game.player.showOptions(g);
+		
+		// game paused
+		if (Game.paused) {
+			if (Game.tick % 10 < 4)
+				g.setColor(Color.BLACK);
+			else
+				g.setColor(Color.WHITE);
+			g.drawString((String) "Paused", Game.dim.width / 2 - 40, Game.dim.height / 2 + 50);
+		}
 	}
 }

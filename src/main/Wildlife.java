@@ -9,16 +9,16 @@ public class Wildlife {
 	static Game game = Game.game;
 	
 	// wolve setting
-	public static float changeSpeed = (float) 0.1;
+	public static float changeSpeed = (float) 0.2;
 	public static float chase = (float) 0.8;
-	public static float maxSpeed = (float) 3;
+	public static float maxSpeed = (float) 5;
 	public static float changeDirection = (float) 0.05;
 	public static float wolveRadius = 500;
 	public static float wolveAggression = (float) 0.5;
 	public static float wolveDriftRadius = 20 * wolveRadius;
 	
 	// rabbit setting
-	public static float rabbitSpeed = (float) 4;
+	public static float rabbitSpeed = (float) 5;
 	public static float rabbitChange = (float) 0.1;
 	public static float rabbitFlee = (float) 0.5;
 	public static float rabbitRadius = 200;
@@ -36,8 +36,8 @@ public class Wildlife {
 			float velX = World.wolveSpeed.get(i).x, velY = World.wolveSpeed.get(i).y;
 			if (Game.tick % 100 == 0) {
 				if (random.nextFloat() < changeDirection) {
-					velX = 2*random.nextFloat()-1; 
-					velY = 2*random.nextFloat()-1;
+					velX = maxSpeed / 2 * (2*random.nextFloat() - 1); 
+					velY = maxSpeed / 2 * (2*random.nextFloat() - 1);
 				}
 				else if (random.nextFloat() < wolveAggression) {
 					float xDir = Game.player.getX() - wolveX;

@@ -54,7 +54,7 @@ public class World {
 		craftableType.clear();
 		craftableScore.clear();
 		
-		nLakes = 50;
+		nLakes = 10;
 		int minLake = 30, maxLake = 400;
 		lakes.clear();
 		for (int i = 0; i < nLakes; i++) {
@@ -64,7 +64,7 @@ public class World {
 		System.out.println("Lakes Set!");
 		
 		// Set berries
-		nBerries = 60;
+		nBerries = 20;
 		berryBonus = 25;
 		berryRespawn = (float) 0.0001;
 		berries.clear();
@@ -83,7 +83,7 @@ public class World {
 		berries.sort(Game.FloatbyY);
 		
 		// Set trees
-		nTrees = 2000;
+		nTrees = 400;
 		seedForests = 20;
 		pPine1 = (float) 0.3;
 		pPine2 = (float) 0.2;
@@ -116,7 +116,7 @@ public class World {
 		System.out.println("Trees Set!");
 		
 		// Set plants
-		nPlants = 500;
+		nPlants = 100;
 		seedPlants = 10;
 		pPlant1 = (float) 0.6;
 		pPlant2 = (float) 0.35;
@@ -147,7 +147,7 @@ public class World {
 		System.out.println("Plants Set!");
 		
 		// Set wood
-		nWoods = 20;
+		nWoods = 10;
 		rWood = 40;
 		woodSpawn = (float) 0.005;
 		
@@ -170,8 +170,8 @@ public class World {
 		System.out.println("Wood Set!");
 		
 		// Set rocks
-		nRocks = 80;
-		seedRocks = 5;
+		nRocks = 20;
+		seedRocks = 4;
 		pRock1 = (float) 0.7;
 		pRock2 = (float) 0.3;
 		
@@ -199,7 +199,7 @@ public class World {
 		System.out.println("Wocks Set!");
 
 		// Set stones
-		nStones = 15;
+		nStones = 10;
 		rStone = 40;
 		stoneSpawn = (float) 0.001;
 		
@@ -219,7 +219,7 @@ public class World {
 		System.out.println("Stones Set!");
 
 		// Set wolve behaviour
-		nWolves = 10;
+		nWolves = 3;
 		wolves.clear();
 		for (int i = 0; i < nWolves; i++) {
 			while (true) {
@@ -235,7 +235,7 @@ public class World {
 		System.out.println("Wolves Set!");
 		
 		// Set rabbits
-		nRabbits = 20;
+		nRabbits = 10;
 		rabbitSpawn = (float) 0.001;
 		
 		rabbits.clear();
@@ -254,7 +254,7 @@ public class World {
 		System.out.println("Rabbits Set!");
 		
 		// Set fishes
-		nFishes = 50;
+		nFishes = 20;
 		fishSpawn = (float) 0.001;
 		
 		fishes.clear();
@@ -273,7 +273,7 @@ public class World {
 		System.out.println("Fishes set!");
 		
 		// Set lilies
-		nLilies = 500;
+		nLilies = 100;
 		seedLilies = 20;
 		pLily1 = (float) 0.4;
 		pLily2 = (float) 0.4;
@@ -302,7 +302,7 @@ public class World {
 		System.out.println("Lilies Set!");
 		
 		// Set reeds
-		nReeds = 500;
+		nReeds = 100;
 		reeds.clear();
 		for (int i = 0; i < nReeds; i++) {
 			while (true) {
