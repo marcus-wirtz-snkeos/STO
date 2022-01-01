@@ -8,10 +8,9 @@ public class Wildlife {
 	static Random random = new Random();
 	
 	// wolve setting
-	public static float changeSpeed = (float) 0.2;
+	public static float wolveSpeed = (float) 5;
 	public static float chase = (float) 0.8;
-	public static float maxSpeed = (float) 5;
-	public static float changeDirection = (float) 0.05;
+	public static float wolveChange = (float) 0.2;
 	public static float wolveRadius = 500;
 	public static float wolveAggression = (float) 0.5;
 	public static float wolveDriftRadius = 20 * wolveRadius;
@@ -34,24 +33,24 @@ public class Wildlife {
 			float wolveX = World.wolves.get(i).x, wolveY = World.wolves.get(i).y;
 			float velX = World.wolveSpeed.get(i).x, velY = World.wolveSpeed.get(i).y;
 			if (Game.tick % 100 == 0) {
-				if (random.nextFloat() < changeDirection) {
-					velX = maxSpeed / 2 * (2*random.nextFloat() - 1); 
-					velY = maxSpeed / 2 * (2*random.nextFloat() - 1);
+				if (random.nextFloat() < wolveChange) {
+					velX = (float) (wolveSpeed / 2 * (random.nextFloat() - 0.5)); 
+					velY = (float) (wolveSpeed / 2 * (random.nextFloat() - 0.5));
 				}
 				else if (random.nextFloat() < wolveAggression) {
 					float xDir = Game.player.getX() - wolveX;
 					float yDir = Game.player.getY() - wolveY;
 					float dirLen = (float) Math.sqrt(xDir * xDir + yDir * yDir);
 					if (dirLen <= 10 * wolveRadius) {
-						velX += changeSpeed * xDir / dirLen;
-						velY += changeSpeed * yDir / dirLen;
+						velX += wolveSpeed / 10 * xDir / dirLen;
+						velY += wolveSpeed / 10 * yDir / dirLen;
 					}
 				}
 				else {
 					float randX = 2*random.nextFloat()-1;
 					float randY = 2*random.nextFloat()-1;
-					velX += changeSpeed * randX;
-					velY += changeSpeed * randY;
+					velX += wolveSpeed / 10 * randX;
+					velY += wolveSpeed / 10 * randY;
 				}
 			}
 			
@@ -59,13 +58,14 @@ public class Wildlife {
 					|| World.checkLake(wolveX + 2*velX, wolveY + 2*velY, 0) >= 0 
 					|| World.checkRock(wolveX + 2*velX, wolveY + 2*velY, 50, true) >= 0
 					|| World.checkCraftable(wolveX + 2*velX, wolveY + 2*velY) >= 0) {
-				velX = -velX;
-				velY = -velY;
+				float alpha = (float) (0.9 * Math.PI * (random.nextFloat() - 0.5));
+				velX = (float) (-velX * Math.cos(alpha) + velY * Math.sin(alpha));
+				velY = (float) (-velX * Math.sin(alpha) - velY * Math.cos(alpha));
 			}
 			float momSpeed = (float) Math.sqrt(velX * velX + velY * velY);
-			if (momSpeed > maxSpeed) {
-				velX *= maxSpeed / momSpeed;
-				velY *= maxSpeed / momSpeed;;
+			if (momSpeed > wolveSpeed) {
+				velX *= wolveSpeed / momSpeed;
+				velY *= wolveSpeed / momSpeed;;
 			}
 			
 			// Check for wolve chasing
@@ -124,8 +124,8 @@ public class Wildlife {
 			
 			if (Game.tick % 50 == 0) {
 				if (random.nextFloat() < rabbitChange) {
-					velX = 2*random.nextFloat()-1; 
-					velY = 2*random.nextFloat()-1;
+					velX = (float) (rabbitSpeed / 2 * (random.nextFloat() - 0.5)); 
+					velY = (float) (rabbitSpeed / 2 * (random.nextFloat() - 0.5));
 					}
 				else {
 					float randX = 2*random.nextFloat()-1;
@@ -142,7 +142,6 @@ public class Wildlife {
 			}
 			
 			// Check for rabbit fleeing
-			boolean flee = false;
 			float xDir = Game.player.getX() - rabbitX;
 			float yDir = Game.player.getY() - rabbitY;
 			float dirLen = (float) Math.sqrt(xDir * xDir + yDir * yDir);
@@ -150,10 +149,8 @@ public class Wildlife {
 			if (dirLen <= rabbitRadius) {
 				float p = (float) (1 - dirLen / rabbitRadius);
 				if (random.nextFloat() < p) {
-					float intensity = random.nextFloat();
-					velX -= intensity * rabbitFlee * xDir / dirLen;
-					velY -= intensity * rabbitFlee * yDir / dirLen;
-					flee = true;
+					velX -= random.nextFloat() * rabbitFlee * xDir / dirLen;
+					velY -= random.nextFloat() * rabbitFlee * yDir / dirLen;
 				}
 				
 			}
@@ -169,7 +166,6 @@ public class Wildlife {
 						float intensity = random.nextFloat();
 						velX -= intensity * rabbitFlee * xDir / dirLen;
 						velY -= intensity * rabbitFlee * yDir / dirLen;
-						flee = true;
 					}
 				}
 			}
@@ -177,12 +173,9 @@ public class Wildlife {
 			if (rabbitX + velX < 0 || rabbitX + velX > World.worldX || rabbitY + velY > World.worldY || rabbitY + velY < 0 
 					|| World.checkLake(rabbitX + 2*velX, rabbitY + 2*velY, 0) >= 0 
 					|| World.checkRock(rabbitX + 2*velX, rabbitY + 2*velY, 50, true) >= 0) {
-				if (flee == false) {
-					velX = -velX;
-					velY = -velY;
-				}
-				else 
-					velX = - velX;
+				float alpha = (float) (0.9 * Math.PI * (random.nextFloat() - 0.5));
+				velX = (float) (-velX * Math.cos(alpha) + velY * Math.sin(alpha));
+				velY = (float) (-velX * Math.sin(alpha) - velY * Math.cos(alpha));
 			}
 			
 			World.rabbitVel.set(i, new Point2D.Float(velX, velY));
@@ -244,8 +237,9 @@ public class Wildlife {
 			}
 
 			if (World.checkLake(fishX + 2*velX, fishY + 2*velY, 20) < 0) {
-					velX = -velX;
-					velY = -velY;
+				float alpha = (float) (0.9 * Math.PI * (random.nextFloat() - 0.5));
+				velX = (float) (-velX * Math.cos(alpha) + velY * Math.sin(alpha));
+				velY = (float) (-velX * Math.sin(alpha) - velY * Math.cos(alpha));
 			}
 			
 			World.fishVel.set(i, new Point2D.Float(velX, velY));

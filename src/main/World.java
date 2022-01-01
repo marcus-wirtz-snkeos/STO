@@ -20,16 +20,16 @@ public class World {
 	public static float dayLength = (float) 500;
 	
 	public static int nLakes = 10;
-	public static int nBerries = 20, nStones = 10, nWoods = 10;
-	public static int nWolves = 3, nRabbits = 15, nFishes = 30;
+	public static int nBerries = 15, nStones = 10, nWoods = 10;
+	public static int nWolves = 3, nRabbits = 10, nFishes = 20;
 	public static int nTrees = 400, nPlants = 100, nRocks = 20, nLilies = 100, nReeds = 100;
 	public static float pPine1, pPine2, pFir1, pFir2, pTree, pDeath, pPlant1, pPlant2, pPlant3, pPlant4, pRock1, pRock2, pLily1, pLily2, pLily3;
 	
 	public static int berryBonus;
 	public static int rWood, rStone;
 	public static int seedForests, seedRocks, seedPlants, seedLilies;
-	public static float berryRespawn = (float) 0.01, woodSpawn = (float) 0.01, stoneSpawn = (float) 0.01;
-	public static float	rabbitSpawn = (float) 0.01, fishSpawn = (float) 0.01;
+	public static float berryRespawn = (float) 0.001, woodSpawn = (float) 0.001, stoneSpawn = (float) 0.001;
+	public static float	rabbitSpawn = (float) 0.001, fishSpawn = (float) 0.001;
 
 	public static int nCraft = 4;
 	public static boolean[] craftStats = new boolean[nCraft];
