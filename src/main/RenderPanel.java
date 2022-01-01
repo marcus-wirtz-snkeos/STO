@@ -15,21 +15,8 @@ public class RenderPanel extends JPanel {
 	
 	static Random random =  new Random();
 	
-	public BufferedImage figure;
-	public BufferedImage wolve_left, wolve_right;
-	public BufferedImage rabbit_left, rabbit_right;
-	public BufferedImage fish_left, fish_right;
-	public BufferedImage berryFull, berryEmpty;
-	public BufferedImage Pine1, Pine1_Death, Pine2, Pine2_Death, Fir1, Fir2, Fir_Death, Tree, Tree_Death;
-	public BufferedImage berry, fish, cooked_meat, raw_meat;
-	public BufferedImage wood1, wood2;
-	public BufferedImage plant1, plant2, plant3, plant4;
-	public BufferedImage reed, lily1, lily2, lily3;
-	public BufferedImage stone, wood, rock1, rock2, leafe, liana;
-	public BufferedImage snare, snare_shot, fish_trap, fish_trap_shot;
-	public BufferedImage fire1, fire2, fire3, fire4, fire5, fire6, fire_burned;
-	public BufferedImage shelter, shelter_hidden;
-	public BufferedImage button1, button2, button3, button4, button1_low, button2_low, button3_low, button4_low;
+	public BufferedImage fig_coche, fig_woman, fig_frame;
+	public BufferedImage Pine1, Pine1_Death, Pine2, Pine2_Death, Fir1, Fir2, Tree, Tree_Death;
 	
 	public String imagePath = System.getProperty("user.dir") + "/img/";
 
@@ -37,20 +24,16 @@ public class RenderPanel extends JPanel {
 
 		super.paintComponent(g);
 		
-		g.setColor(new Color(0, 204, 0, 150));
+		g.setColor(new Color(51, 204, 255));
 		g.fillRect(0, 0, Game.dim.width, Game.dim.height);
 		
 		int cornerX = (int) Math.min(Math.max(Game.player.getX() - Game.dim.width / 2, 0), Game.worldX - Game.dim.width);
 		int cornerY = (int) Math.min(Math.max(Game.player.getY() - Game.dim.height / 2, 0), Game.worldY - Game.dim.height);
 		
-		// Draw lakes
-		g.setColor(Color.BLUE);
-		for (int i = 0; i < World.nLakes; i++) {
-			int radius = World.radiusLakes.get(i);
-			g.fillOval((int) World.lakes.get(i).x - radius - cornerX, (int) World.lakes.get(i).y - radius / 2 - cornerY, 2 * radius, radius);
-		}
-		
 		try {
+			fig_woman = ImageIO.read(new File(imagePath + "wonderwoman_small.gif"));
+			fig_coche = ImageIO.read(new File(imagePath + "coche.gif"));
+			fig_frame = ImageIO.read(new File(imagePath + "noria_frame.gif"));
 			Pine1 = ImageIO.read(new File(imagePath + "pine1.gif"));
 			Pine1_Death = ImageIO.read(new File(imagePath + "pine1_death.gif"));;
 			Pine2 = ImageIO.read(new File(imagePath + "pine2.gif"));;
@@ -59,6 +42,85 @@ public class RenderPanel extends JPanel {
 			Fir2 = ImageIO.read(new File(imagePath + "fir1.gif"));;
 			Tree = ImageIO.read(new File(imagePath + "tree.gif"));;
 			Tree_Death = ImageIO.read(new File(imagePath + "tree_death.gif"));;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		int treeInd = 0;
+		for (int pixY = Math.max(0, cornerY - 500); pixY < Math.min(Game.worldY, cornerY + Game.dim.height + 500); pixY++) {
+			// Draw figure
+			if ((int) Game.player.getY() == pixY) {
+				g.drawImage(fig_woman, (int) Game.player.getX() - cornerX - fig_woman.getWidth() / 2, (int) Game.player.getY() - cornerY - fig_woman.getHeight() + 5 - (int) Game.player.height, this);
+			}
+			float x_center = 2000;
+			float y_center = 2000;
+
+			if (y_center == pixY) {
+				g.drawImage(fig_frame, (int) x_center - cornerX - fig_frame.getWidth() / 2, (int) y_center - cornerY - fig_frame.getHeight() + 5, this);
+			}
+			
+			for (int i = 0; i < 12; i++) {
+				int x = (int) (x_center + 160 * Math.cos((float) Game.tick / 500 + 2. * (float) i * Math.PI / 12.));
+				int y = (int) (y_center - 230 + 160 * Math.sin((float) Game.tick / 500 + 2. * (float) i * Math.PI / 12.));
+				if (y == pixY)
+					g.drawImage(fig_coche, (int) x - cornerX - fig_coche.getWidth() / 2, (int) y - cornerY - fig_coche.getHeight() + 5, this);
+			}
+			
+			// Draw trees
+			if (treeInd == 0) {
+				while (World.trees.get(treeInd).y < pixY)
+					treeInd++;
+			}
+			if (treeInd < World.trees.size()) {
+				while (World.trees.get(treeInd).y == pixY) {
+					int x = (int) World.trees.get(treeInd).x;
+					if (x < cornerX - 100 || x > cornerX + Game.dim.width + 100) {
+						treeInd++;
+						if (treeInd == World.trees.size())
+							break;
+						continue;
+					}
+					if (World.treeType.get(treeInd) == 0) {
+						if (World.treeDeath.get(treeInd) == true)
+							g.drawImage(Pine1_Death, x - cornerX - Pine1_Death.getWidth() / 2, pixY - cornerY - Pine1_Death.getHeight(), this);
+						else
+							g.drawImage(Pine1, x - cornerX - Pine1.getWidth() / 2, pixY - cornerY - Pine1.getHeight(), this);
+					}
+					if (World.treeType.get(treeInd) == 1) {
+						if (World.treeDeath.get(treeInd) == true)
+							g.drawImage(Pine2_Death, x - cornerX - Pine2_Death.getWidth() / 2, pixY - cornerY - Pine2_Death.getHeight(), this);
+						else
+							g.drawImage(Pine2, x - cornerX - Pine2.getWidth() / 2, pixY - cornerY - Pine2.getHeight(), this);
+					}
+					else if (World.treeType.get(treeInd) == 2) {
+						g.drawImage(Fir1, x - cornerX - Fir1.getWidth() / 2, pixY - cornerY - Fir1.getHeight(), this);
+					}
+					else if (World.treeType.get(treeInd) == 3) {
+						g.drawImage(Fir2, x - cornerX - Fir1.getWidth() / 2, pixY - cornerY - Fir2.getHeight(), this);
+					}
+					else{
+						if (World.treeDeath.get(treeInd) == true)
+							g.drawImage(Tree_Death, x - cornerX - Tree_Death.getWidth() / 2, pixY - cornerY - Tree_Death.getHeight(), this);
+						else
+							g.drawImage(Tree, x - cornerX - Tree.getWidth() / 2, pixY - cornerY - Tree.getHeight(), this);
+					}
+					treeInd++;
+					if (treeInd == World.trees.size())
+						break;
+				}
+			}
+		}
+		
+		/*
+		// Draw lakes
+		g.setColor(Color.BLUE);
+		for (int i = 0; i < World.nLakes; i++) {
+			int radius = World.radiusLakes.get(i);
+			g.fillOval((int) World.lakes.get(i).x - radius - cornerX, (int) World.lakes.get(i).y - radius / 2 - cornerY, 2 * radius, radius);
+		}
+		
+		try {
+
 			
 			wood1 = ImageIO.read(new File(imagePath + "wood1.gif"));
 			wood2 = ImageIO.read(new File(imagePath + "wood2.gif"));
@@ -415,7 +477,7 @@ public class RenderPanel extends JPanel {
 						else
 							g.drawImage(fish_trap_shot, x - cornerX - fish_trap_shot.getWidth() / 2, pixY - cornerY - fish_trap_shot.getHeight(), this);
 					if (World.craftableType.get(craftInd) == 4) {
-						if (Game.player.isHidden())
+						if (!Game.player.isHidden())
 							g.drawImage(shelter, x - cornerX - shelter.getWidth() / 2, pixY - cornerY - shelter.getHeight(), this);
 						else
 							g.drawImage(shelter_hidden, x - cornerX - shelter.getWidth() / 2, pixY - cornerY - shelter.getHeight(), this);
@@ -435,13 +497,11 @@ public class RenderPanel extends JPanel {
 			}
 		}
 		
-		/*
 		// Draw Day/Night Cycle
 		int bright = (int)  (120 * (1 - Math.cos((float) Game.tick / Game.dayLength)));
 		g.setColor(new Color(0, 0, 0, bright));
 		g.fillRect(0, 0, Game.dim.width, Game.dim.height);
-		*/
-		
+
 		// Draw stats
 		Game.player.drawStats(g);
 		// Draw inventory
@@ -475,6 +535,8 @@ public class RenderPanel extends JPanel {
 		
 		// Show options
 		Game.player.showOptions(g);
+		*/
+		
 		
 		// game paused
 		if (Game.paused) {

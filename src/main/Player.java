@@ -11,6 +11,7 @@ public class Player {
 
 	Game game = Game.game;
 	private Point2D.Float position;
+	public float speed, height;
 	private int condition, tired, hungry, thirsty;
 	public int woodCollected, stoneCollected, leaveCollected, lianaCollected, berryCollected, meatCollected, rawMeatCollected, fishCollected;
 	private boolean craft, cook, harvest, hidden;
@@ -19,9 +20,11 @@ public class Player {
 	private String direction;
 	
 	static Random random =  new Random();
-	
-	public Player() {
 
+	public Player() {
+		
+		height = 0;
+		speed = 0;
 		// Set initial stats
 		condition = 100;
 		tired = 100;
@@ -60,8 +63,7 @@ public class Player {
 		while (true) {
 			startX = random.nextInt(Game.worldX / 3) + Game.worldX / 3;
 			startY = random.nextInt(Game.worldY / 3) + Game.worldY / 3;
-			if ((World.whichWolve(startX, startY) < 0 && World.checkLake(startX, startY, -5) == false) && World.checkRock(startX, startY, 50, true) == false)
-				break;
+			break;
 		}
 		position = new Point2D.Float((float) startX, (float) startY);
 	}
@@ -70,12 +72,14 @@ public class Player {
 	public float getY() { return position.y; }
 	public void addX(float x) { position.x += x; }
 	public void addY(float y) { position.y += y; }
+	public void setDirection(String dir) { direction = dir; }
+	public String getDirection() { return direction; }
+	public void setSpeed() { speed += 1; }
+	/*
 	public float getCondition() { return condition; }
 	public float getTired() { return tired; }
 	public float getHungry() { return hungry; }
 	public float getThirsty() { return thirsty; }
-	public String getDirection() { return direction; }
-	public void setDirection(String dir) { direction = dir; }
 	
 	public void addCondition(int add) { condition = Math.min(condition + add, 100); }
 	public void addTired(int add) { tired = Math.min(tired + add, 100); }
@@ -132,8 +136,10 @@ public class Player {
 		harvest = false;
 		harvestTime = 200;
 	}
+	*/
 	
 	
+	/*
 	public void stats() {
 
 		if (World.checkLake(position.x - (Game.playerMovement + 1), position.y, 0) == true || World.checkLake(position.x + (Game.playerMovement + 1), position.y, 0) == true || 
@@ -171,16 +177,19 @@ public class Player {
 		if (this.getCondition() <= 0)
 			Game.over = true;		
 	}
+	*/
 	
 	public void move() {
+		/*
 		if (cook == true || craft == true || harvest == true || hidden == true || Game.keys[KeyEvent.VK_SPACE] == true)
 			return;
+		*/
 
 		float movement = Game.playerMovement;
 		movement -= (0.03 * stoneCollected + 0.01 * woodCollected + 0.001 * leaveCollected + 
 				0.002 * lianaCollected + 0.001 * berryCollected);
 
-		if (Game.keys[KeyEvent.VK_SHIFT] && this.getTired() > 0) 
+		if (Game.keys[KeyEvent.VK_SHIFT]) 
 			movement *= 1.5;
 
 		movement = Math.max(movement, 0);
@@ -191,61 +200,39 @@ public class Player {
 				(Game.keys[KeyEvent.VK_UP] && Game.keys[KeyEvent.VK_LEFT]) || (Game.keys[KeyEvent.VK_UP] && Game.keys[KeyEvent.VK_RIGHT]) || 
 				(Game.keys[KeyEvent.VK_LEFT] && Game.keys[KeyEvent.VK_DOWN]) || (Game.keys[KeyEvent.VK_DOWN] && Game.keys[KeyEvent.VK_RIGHT]))
 				movement /= Math.sqrt(2);
-		
-	    if((Game.keys[KeyEvent.VK_W] || Game.keys[KeyEvent.VK_UP]) && this.getY() > 0 && World.checkLake(this.getX(), this.getY() - movement, 0) == false
-	    	&& World.checkCraftable(this.getX(), this.getY() - movement) == false && World.checkRock(this.getX(), this.getY() - movement, 50, true) == false){
+
+	    if((Game.keys[KeyEvent.VK_W] || Game.keys[KeyEvent.VK_UP]) && this.getY() > 30){
 	    	this.setDirection("Up");
 	    	this.addY(-movement);
 	    }
 
-	    if((Game.keys[KeyEvent.VK_S] || Game.keys[KeyEvent.VK_DOWN]) && this.getY() < Game.worldY && World.checkLake(this.getX(), this.getY() + movement, 0) == false
-	    	&& World.checkCraftable(this.getX(), this.getY() + movement) == false && World.checkRock(this.getX(), this.getY() + movement, 50, true) == false){
+	    if((Game.keys[KeyEvent.VK_S] || Game.keys[KeyEvent.VK_DOWN]) && this.getY() < Game.worldY - 30){
 	    	this.setDirection("Down");
 	    	this.addY(movement);
 	    }
 
-	    if((Game.keys[KeyEvent.VK_A] || Game.keys[KeyEvent.VK_LEFT]) && this.getX() > 0 && World.checkLake(this.getX() - movement, this.getY(), 0) == false
-	    	&& World.checkCraftable(this.getX() - movement, this.getY()) == false && World.checkRock(this.getX() - movement, this.getY(), 50, true) == false){
+	    if((Game.keys[KeyEvent.VK_A] || Game.keys[KeyEvent.VK_LEFT]) && this.getX() > 0){
 	    	this.setDirection("Left");
 	    	this.addX(-movement);
 	    }
 
-	    if((Game.keys[KeyEvent.VK_D] || Game.keys[KeyEvent.VK_RIGHT]) && this.getX() < Game.worldX && World.checkLake(this.getX() + movement, this.getY(), 0) == false
-	    	&& World.checkCraftable(this.getX() + movement, this.getY()) == false && World.checkRock(this.getX() + movement, this.getY(), 50, true) == false){
+	    if((Game.keys[KeyEvent.VK_D] || Game.keys[KeyEvent.VK_RIGHT]) && this.getX() < Game.worldX){
 	    	this.setDirection("Right");
 	    	this.addX(movement);
 	    }
+		if (Game.keys[KeyEvent.VK_SPACE] && height == 0) {
+			speed += 5;
+		}
+	    
+	    speed -= 0.2;
+	    height += speed;
+	    if (height <= 0) {
+	    	height = 0;
+	    	speed = 0;
+	    }
 	}
 	
-	public void cooking() {
-
-		if (Game.keys[KeyEvent.VK_SPACE] && cook == false && craft == false && harvest == false && hidden == false) {
-			for (int i = 0; i < World.craftables.size(); i++) {
-				if (World.craftableType.get(i) == 1 && World.craftableScore.get(i) >= 1 && (rawMeatCollected > 0 || fishCollected > 0)) {
-					if (this.checkDistance(World.craftables.get(i), 50)) {
-						cook = true;
-						craftableAction = i;
-						if (rawMeatCollected > 0)
-							rawMeatCollected -= 1;
-						else if (fishCollected > 0)
-							fishCollected -= 1;
-					}
-				}
-			}
-		}
-		else if (cook == true) {			
-			if (cookTime > 0 && World.craftableScore.get(craftableAction) >= 1) {
-				// still cooking
-				cookTime -= 1;
-			}
-			else {
-				cook = false;
-				cookTime = 300;
-				if (World.craftableScore.get(craftableAction) >= 1)
-					meatCollected += 1;	
-			}
-		}
-	}
+	/*
 	
 	public void harvesting() {
 
@@ -498,8 +485,9 @@ public class Player {
 		str = fishCollected + " x ";
 		g.drawString(str, 130, Game.dim.height - 80);
 	}
-	
+	*/
 	public void showOptions(Graphics g) {
+		/*
 		if (this.doingAction() == false) {
 			for (int i = 0; i < World.craftables.size(); i++) {
 				if (this.checkDistance(World.craftables.get(i), 50)) {
@@ -567,6 +555,7 @@ public class Player {
 			for (int i = 0; i < 200-harvestTime; i++)
 				g.fillRect(Game.dim.width / 2 - 200 + 2*i, Game.dim.height - 90, 2, 10);
 		}
+		*/
 		
 		if (Game.keys[KeyEvent.VK_SHIFT] && tired > 0) {
 			String str = "Running...";

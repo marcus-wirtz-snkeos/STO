@@ -18,7 +18,7 @@ public class World {
 	public static int seedForests, seedRocks, seedPlants, seedLilies;
 	public static float berryRespawn, woodSpawn, stoneSpawn, rabbitSpawn, fishSpawn;
 
-	
+
 	public static ArrayList<Point2D.Float> wolves = new ArrayList<Point2D.Float>();
 	public static ArrayList<Point2D.Float> wolveSpeed = new ArrayList<Point2D.Float>();
 	public static ArrayList<Point2D.Float> rabbits = new ArrayList<Point2D.Float>();
@@ -50,11 +50,12 @@ public class World {
 	
 	public static void initWorld() {
 		// Set craftables
+		/*
 		craftables.clear();
 		craftableType.clear();
 		craftableScore.clear();
 		
-		nLakes = 10;
+		nLakes = 20;
 		int minLake = 30, maxLake = 400;
 		lakes.clear();
 		for (int i = 0; i < nLakes; i++) {
@@ -64,7 +65,7 @@ public class World {
 		System.out.println("Lakes Set!");
 		
 		// Set berries
-		nBerries = 20;
+		nBerries = 30;
 		berryBonus = 25;
 		berryRespawn = (float) 0.0001;
 		berries.clear();
@@ -82,8 +83,9 @@ public class World {
 		}
 		berries.sort(Game.FloatbyY);
 		
+		*/
 		// Set trees
-		nTrees = 400;
+		nTrees = 40;
 		seedForests = 20;
 		pPine1 = (float) 0.3;
 		pPine2 = (float) 0.2;
@@ -95,28 +97,17 @@ public class World {
 		trees.clear();
 		System.out.println("Berries Set!");
 		for (int i = 0; i < nTrees; i++) {
-			while (true) {
-				int startX = random.nextInt(Game.worldX);
-				int startY = random.nextInt(Game.worldY);
-				if (checkLake(startX, startY, -5) == false) {
-					if (i < seedForests) {
-						addTree(startX, startY);
-						break;
-					}
-					else {
-						if ((checkTree(startX, startY, 100) == true && checkTree(startX, startY, 30) == false) || random.nextFloat() < 0.01){
-							addTree(startX, startY);
-							break;
-						}
-					}
-				}
-			}
+			int startX = random.nextInt(Game.worldX);
+			int startY = random.nextInt(Game.worldY);
+			addTree(startX, startY);
 		}
 		trees.sort(Game.FloatbyY);
 		System.out.println("Trees Set!");
+	}
+		/*
 		
 		// Set plants
-		nPlants = 100;
+		nPlants = 200;
 		seedPlants = 10;
 		pPlant1 = (float) 0.6;
 		pPlant2 = (float) 0.35;
@@ -147,7 +138,7 @@ public class World {
 		System.out.println("Plants Set!");
 		
 		// Set wood
-		nWoods = 10;
+		nWoods = 20;
 		rWood = 40;
 		woodSpawn = (float) 0.005;
 		
@@ -170,7 +161,7 @@ public class World {
 		System.out.println("Wood Set!");
 		
 		// Set rocks
-		nRocks = 20;
+		nRocks = 40;
 		seedRocks = 4;
 		pRock1 = (float) 0.7;
 		pRock2 = (float) 0.3;
@@ -199,7 +190,7 @@ public class World {
 		System.out.println("Wocks Set!");
 
 		// Set stones
-		nStones = 10;
+		nStones = 20;
 		rStone = 40;
 		stoneSpawn = (float) 0.001;
 		
@@ -219,7 +210,8 @@ public class World {
 		System.out.println("Stones Set!");
 
 		// Set wolve behaviour
-		nWolves = 3;
+
+		nWolves = 5;
 		wolves.clear();
 		for (int i = 0; i < nWolves; i++) {
 			while (true) {
@@ -235,7 +227,7 @@ public class World {
 		System.out.println("Wolves Set!");
 		
 		// Set rabbits
-		nRabbits = 10;
+		nRabbits = 20;
 		rabbitSpawn = (float) 0.001;
 		
 		rabbits.clear();
@@ -254,7 +246,7 @@ public class World {
 		System.out.println("Rabbits Set!");
 		
 		// Set fishes
-		nFishes = 20;
+		nFishes = 50;
 		fishSpawn = (float) 0.001;
 		
 		fishes.clear();
@@ -271,9 +263,10 @@ public class World {
 			}
 		}
 		System.out.println("Fishes set!");
+
 		
 		// Set lilies
-		nLilies = 100;
+		nLilies = 200;
 		seedLilies = 20;
 		pLily1 = (float) 0.4;
 		pLily2 = (float) 0.4;
@@ -302,7 +295,7 @@ public class World {
 		System.out.println("Lilies Set!");
 		
 		// Set reeds
-		nReeds = 100;
+		nReeds = 200;
 		reeds.clear();
 		for (int i = 0; i < nReeds; i++) {
 			while (true) {
@@ -318,6 +311,7 @@ public class World {
 		System.out.println("Reeds Set!");
 	}
 	
+	/*
 	public static int whichWolve(float x, float y) {
 		for (int i = 0; i < nWolves; i++) {
 			float dis_x = wolves.get(i).x - x;
@@ -440,7 +434,7 @@ public class World {
 		}
 		return false;
 	}
-
+	*/
 	public static void addTree(int x, int y) {
 		
 		trees.add(new Point2D.Float(x, y));
@@ -460,6 +454,7 @@ public class World {
 		else
 			treeDeath.add(false);
 	}
+	/*
 	
 	public static void addPlant(int x, int y) {
 		
@@ -495,5 +490,5 @@ public class World {
 			rockType.add(1);
 		else
 			rockType.add(2);
-	}
+	*/
 }

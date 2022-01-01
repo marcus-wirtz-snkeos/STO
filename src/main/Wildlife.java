@@ -29,6 +29,7 @@ public class Wildlife {
 	public static float fishFlee = (float) 0.8;
 	public static float fishRadius = 100;
 
+	/*
 	public static void wolveBehaviour() {
 		
 		for (int i = 0; i < World.nWolves; i++) {
@@ -83,14 +84,14 @@ public class Wildlife {
 			// Check for fire fleeing
 			for (int j = 0; j < World.craftables.size(); j++) {
 				if (World.craftableType.get(j) == 1 && World.craftableScore.get(j) >= 1) {
-				xDir = World.craftables.get(j).x - wolveX;
-				yDir = World.craftables.get(j).y - wolveY;
-				if (Math.sqrt(xDir * xDir + yDir * yDir) < 300) {
-					float dirLen = (float) Math.sqrt(xDir * xDir + yDir * yDir);
-					float intensity = 3 * random.nextFloat();
-					velX -= intensity * xDir / dirLen;
-					velY -= intensity * yDir / dirLen;
-				}
+					xDir = World.craftables.get(j).x - wolveX;
+					yDir = World.craftables.get(j).y - wolveY;
+					if (Math.sqrt(xDir * xDir + yDir * yDir) < 300) {
+						float dirLen = (float) Math.sqrt(xDir * xDir + yDir * yDir);
+						float intensity = 3 * random.nextFloat();
+						velX -= intensity * xDir / dirLen;
+						velY -= intensity * yDir / dirLen;
+					}
 				}
 			}
 
@@ -273,5 +274,6 @@ public class Wildlife {
 		}
 		return false;
 	}
+	*/
 	
 }

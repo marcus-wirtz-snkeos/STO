@@ -25,7 +25,7 @@ public class Game implements ActionListener, KeyListener {
 	static GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
 	public static Dimension dim = new Dimension(gd.getDisplayMode().getWidth(), gd.getDisplayMode().getHeight());
 
-	public static final int worldSize = 2;
+	public static final int worldSize = 3;
 	public static int worldX = worldSize * dim.width;
 	public static int worldY = worldSize * dim.height;;
 	public static float dayLength = (float) 500;
@@ -33,7 +33,7 @@ public class Game implements ActionListener, KeyListener {
 	public static int tick = 0;
 	public static int score;
 	public static float pTired = (float) 0.001;
-	public static float playerMovement = (float) 4;
+	public static float playerMovement = (float) 1;
 	public static boolean over;
 	public static boolean paused;
 	
@@ -68,9 +68,6 @@ public class Game implements ActionListener, KeyListener {
 		paused = false;
 		score = 0;
 
-		for (int i = 0; i < nCraft; i++)
-			craftStats[i] = false;
-		
 		// Initialize world and players
 		World.initWorld();
 		player.initPosition();
@@ -81,12 +78,13 @@ public class Game implements ActionListener, KeyListener {
 
 		tick++;
 		if (!paused) {
-			
+
 			if (over == true)
 				timer.stop();
 					
 			// Update game
 			updateGame.update();
+			/*
 			updateGame.spawnItems();
 			
 			// Update player
@@ -97,9 +95,9 @@ public class Game implements ActionListener, KeyListener {
 			player.crafting();
 			player.hideShelter();
 			player.searching();
+			*/
 			player.move();
 		}
-
 		// Draw world
 		renderPanel.repaint();
 	}
@@ -110,11 +108,13 @@ public class Game implements ActionListener, KeyListener {
 	
 	public void keyPressed(KeyEvent e) {
 		// eating berries
+		/*
 		if (e.getKeyCode() == 69) { player.eatBerry(); }
 		if (e.getKeyCode() == 82) { player.eatMeat(); }
 		if (e.getKeyCode() == 70) { player.fuelFire(); }
+		*/
 		if (e.getKeyCode() == 80) { pauseGame(); }
-		if (e.getKeyCode() == KeyEvent.VK_ESCAPE) { player.abortAction(); }
+		// if (e.getKeyCode() == KeyEvent.VK_ESCAPE) { player.abortAction(); }
 		
 	    keys[e.getKeyCode()] = true;
 		if (over == true && keys[KeyEvent.VK_R])

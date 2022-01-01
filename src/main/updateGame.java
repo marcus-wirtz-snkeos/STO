@@ -11,10 +11,10 @@ public class updateGame {
 	public static void update() {
 
 		// Wildlife settings
-		Wildlife.wolveBehaviour();
-		Wildlife.rabbitBehaviour();
-		Wildlife.fishBehaviour();
-		
+		// Wildlife.wolveBehaviour();
+		// Wildlife.rabbitBehaviour();
+		// Wildlife.fishBehaviour();
+		/*
 		if (Game.tick % 30 == 0 && random.nextFloat() < 0.5) { 
 			for (int i = 0; i < World.craftables.size(); i++) {
 				if (World.craftableType.get(i) == 1) {
@@ -28,8 +28,10 @@ public class updateGame {
 
 		if (Game.tick == 10000)
 			Game.tick = 0;
+		*/
 	}
 	
+	/*
 	public static void spawnItems() {
 		
 		if (Game.tick % 100 == 0) {
@@ -117,4 +119,5 @@ public class updateGame {
 		else
 			World.craftables.add(new Point2D.Float((int) Game.player.getX() + dis, (int) Game.player.getY()));
 	}
+	*/
 }
