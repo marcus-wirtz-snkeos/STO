@@ -1,19 +1,15 @@
 package main;
 
-import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.geom.Point2D;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Random;
 import javax.swing.JFrame;
 import javax.swing.Timer;
-import java.awt.GraphicsEnvironment;
-import java.awt.GraphicsDevice;
 
 public class Game implements ActionListener, KeyListener {
 	
@@ -22,24 +18,12 @@ public class Game implements ActionListener, KeyListener {
 	public JFrame jframe;
 	public RenderPanel renderPanel;
 	public Timer timer = new Timer(1, this);
-	static GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
-	public static Dimension dim = new Dimension(gd.getDisplayMode().getWidth(), gd.getDisplayMode().getHeight());
-
-	public static final int worldSize = 2;
-	public static int worldX = worldSize * dim.width;
-	public static int worldY = worldSize * dim.height;;
-	public static float dayLength = (float) 500;
 
 	public static int tick = 0;
 	public static int score;
-	public static float pTired = (float) 0.001;
-	public static float playerMovement = (float) 4;
 	public static boolean over;
 	public static boolean paused;
-	
-	int nCraft = 4;
-	boolean[] craftStats = new boolean[nCraft];
-	
+		
 	public static Random random;
 	
 	public static Player player;
@@ -48,7 +32,7 @@ public class Game implements ActionListener, KeyListener {
 	
 	public Game(){
 		jframe = new JFrame("Survive the outdoors");
-		jframe.setSize(dim.width, dim.height);
+		jframe.setSize(World.dim.width, World.dim.height);
 		jframe.setExtendedState(JFrame.MAXIMIZED_BOTH); 
 		jframe.setUndecorated(true);
 		jframe.setVisible(true);
@@ -68,8 +52,8 @@ public class Game implements ActionListener, KeyListener {
 		paused = false;
 		score = 0;
 
-		for (int i = 0; i < nCraft; i++)
-			craftStats[i] = false;
+		for (int i = 0; i < World.nCraft; i++)
+			World.craftStats[i] = false;
 		
 		// Initialize world and players
 		World.initWorld();
@@ -86,24 +70,41 @@ public class Game implements ActionListener, KeyListener {
 				timer.stop();
 					
 			// Update game
-			updateGame.update();
-			updateGame.spawnItems();
-			
-			// Update player
-			player.collectItems();
-			player.stats();
-			player.cooking();
-			player.harvesting();
-			player.crafting();
-			player.hideShelter();
-			player.searching();
-			player.move();
+			update();
 		}
 
 		// Draw world
 		renderPanel.repaint();
 	}
 	
+	public static void update() {
+
+		// Wildlife settings
+		Wildlife.wolveBehaviour();
+		Wildlife.rabbitBehaviour();
+		Wildlife.fishBehaviour();
+		
+		// update items
+		World.spawnItems();
+		World.updateItems();
+		
+		// Update player
+		player.collectItems();
+		player.stats();
+		player.cooking();
+		player.harvesting();
+		player.crafting();
+		player.hideShelter();
+		player.searching();
+		player.move();
+		
+		if (tick % 100 == 0)
+			score += 1;
+
+		if (tick == 10000)
+			tick = 0;
+	}
+		
 	public static void main(String[] args){
 		game = new Game();
 	}
@@ -121,12 +122,9 @@ public class Game implements ActionListener, KeyListener {
 			startGame();	
 	}
 
-	public void keyReleased(KeyEvent e) {
-	    keys[e.getKeyCode()] = false;
-	}
+	public void keyReleased(KeyEvent e) { keys[e.getKeyCode()] = false; }
 
-	public void keyTyped(KeyEvent e) {
-	}
+	public void keyTyped(KeyEvent e) { }
 	
 	private void pauseGame() { paused = !paused; }
 	

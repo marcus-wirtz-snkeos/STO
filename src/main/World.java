@@ -1,6 +1,8 @@
 package main;
 
-import java.awt.Point;
+import java.awt.Dimension;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Random;
@@ -9,15 +11,28 @@ public class World {
 	
 	static Random random =  new Random();
 
-	public static int nWolves, nRabbits, nFishes;
-	public static int nBerries, nLakes, nRocks, nWoods, nStones, nTrees, nPlants, nLilies, nReeds;
+	static GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+	public static Dimension dim = new Dimension(gd.getDisplayMode().getWidth(), gd.getDisplayMode().getHeight());
+
+	public static final int worldSize = 2;
+	public static int worldX = worldSize * dim.width;
+	public static int worldY = worldSize * dim.height;;
+	public static float dayLength = (float) 500;
+	
+	public static int nLakes = 10;
+	public static int nBerries = 20, nStones = 10, nWoods = 10;
+	public static int nWolves = 3, nRabbits = 15, nFishes = 30;
+	public static int nTrees = 400, nPlants = 100, nRocks = 20, nLilies = 100, nReeds = 100;
 	public static float pPine1, pPine2, pFir1, pFir2, pTree, pDeath, pPlant1, pPlant2, pPlant3, pPlant4, pRock1, pRock2, pLily1, pLily2, pLily3;
 	
 	public static int berryBonus;
 	public static int rWood, rStone;
 	public static int seedForests, seedRocks, seedPlants, seedLilies;
-	public static float berryRespawn, woodSpawn, stoneSpawn, rabbitSpawn, fishSpawn;
+	public static float berryRespawn = (float) 0.01, woodSpawn = (float) 0.01, stoneSpawn = (float) 0.01;
+	public static float	rabbitSpawn = (float) 0.01, fishSpawn = (float) 0.01;
 
+	public static int nCraft = 4;
+	public static boolean[] craftStats = new boolean[nCraft];
 	
 	public static ArrayList<Point2D.Float> wolves = new ArrayList<Point2D.Float>();
 	public static ArrayList<Point2D.Float> wolveSpeed = new ArrayList<Point2D.Float>();
@@ -27,13 +42,16 @@ public class World {
 	public static ArrayList<Point2D.Float> fishes = new ArrayList<Point2D.Float>();
 	public static ArrayList<Point2D.Float> fishVel = new ArrayList<Point2D.Float>();
 	public static ArrayList<Boolean> fishStats = new ArrayList<Boolean>();
+	
 	public static ArrayList<Point2D.Float> lakes = new ArrayList<Point2D.Float>();
 	public static ArrayList<Integer> radiusLakes = new ArrayList<Integer>();
+	
 	public static ArrayList<Point2D.Float> berries = new ArrayList<Point2D.Float>();
 	public static ArrayList<Boolean> berryStats = new ArrayList<Boolean>();
 	public static ArrayList<Point2D.Float> woods = new ArrayList<Point2D.Float>();
-	public static ArrayList<Point2D.Float> stones = new ArrayList<Point2D.Float>();
 	public static ArrayList<Boolean> woodStats = new ArrayList<Boolean>();
+	
+	public static ArrayList<Point2D.Float> stones = new ArrayList<Point2D.Float>();
 	public static ArrayList<Point2D.Float> trees = new ArrayList<Point2D.Float>();
 	public static ArrayList<Integer> treeType = new ArrayList<Integer>();
 	public static ArrayList<Point2D.Float> rocks = new ArrayList<Point2D.Float>();
@@ -44,46 +62,29 @@ public class World {
 	public static ArrayList<Point2D.Float> lilies = new ArrayList<Point2D.Float>();
 	public static ArrayList<Integer> lilyType = new ArrayList<Integer>();
 	public static ArrayList<Point2D.Float> reeds = new ArrayList<Point2D.Float>();
+	
 	public static ArrayList<Point2D.Float> craftables = new ArrayList<Point2D.Float>();
 	public static ArrayList<Integer> craftableType = new ArrayList<Integer>();
 	public static ArrayList<Integer> craftableScore = new ArrayList<Integer>();
 	
 	public static void initWorld() {
-		// Set craftables
+
+		// Clear previous craftables
 		craftables.clear();
 		craftableType.clear();
 		craftableScore.clear();
 		
-		nLakes = 10;
+		// Set lakes
 		int minLake = 30, maxLake = 400;
 		lakes.clear();
 		for (int i = 0; i < nLakes; i++) {
-			lakes.add(new Point2D.Float(random.nextInt(Game.worldX), random.nextInt(Game.worldY)));
+			lakes.add(new Point2D.Float(random.nextInt(worldX), random.nextInt(worldY)));
 			radiusLakes.add(random.nextInt((maxLake - minLake) + 1) + minLake);
 		}
 		System.out.println("Lakes Set!");
-		
-		// Set berries
-		nBerries = 20;
-		berryBonus = 25;
-		berryRespawn = (float) 0.0001;
-		berries.clear();
-		for (int i = 0; i < nBerries; i++) {
-			boolean looping = true;
-			while (looping == true) {
-				int startX = random.nextInt(Game.worldX);
-				int startY = random.nextInt(Game.worldY);
-				if (checkLake(startX, startY, -5) == false) {
-					berries.add(new Point2D.Float(startX, startY));
-					berryStats.add(true);
-					looping = false;
-				}
-			}
-		}
-		berries.sort(Game.FloatbyY);
+
 		
 		// Set trees
-		nTrees = 400;
 		seedForests = 20;
 		pPine1 = (float) 0.3;
 		pPine2 = (float) 0.2;
@@ -93,18 +94,17 @@ public class World {
 		pDeath = (float) 0.1;
 		
 		trees.clear();
-		System.out.println("Berries Set!");
 		for (int i = 0; i < nTrees; i++) {
 			while (true) {
-				int startX = random.nextInt(Game.worldX);
-				int startY = random.nextInt(Game.worldY);
-				if (checkLake(startX, startY, -5) == false) {
+				int startX = random.nextInt(worldX);
+				int startY = random.nextInt(worldY);
+				if (checkLake(startX, startY, -5) < 0) {
 					if (i < seedForests) {
 						addTree(startX, startY);
 						break;
 					}
 					else {
-						if ((checkTree(startX, startY, 100) == true && checkTree(startX, startY, 30) == false) || random.nextFloat() < 0.01){
+						if ((checkTree(startX, startY, 100) >= 0 && checkTree(startX, startY, 30) < 0) || random.nextFloat() < 0.01){
 							addTree(startX, startY);
 							break;
 						}
@@ -116,7 +116,6 @@ public class World {
 		System.out.println("Trees Set!");
 		
 		// Set plants
-		nPlants = 100;
 		seedPlants = 10;
 		pPlant1 = (float) 0.6;
 		pPlant2 = (float) 0.35;
@@ -125,19 +124,18 @@ public class World {
 		
 		plants.clear();
 		for (int i = 0; i < nPlants; i++) {
-			boolean looping = true;
-			while (looping == true) {
-				int startX = random.nextInt(Game.worldX);
-				int startY = random.nextInt(Game.worldY);
-				if (checkLake(startX, startY, -5) == false) {
+			while (true) {
+				int startX = random.nextInt(worldX);
+				int startY = random.nextInt(worldY);
+				if (checkLake(startX, startY, -5) < 0) {
 					if (i < seedPlants) {
 						addPlant(startX, startY);
-						looping = false;
+						break;
 					}
 					else {
-						if ((checkPlant(startX, startY, 100) == true && checkTree(startX, startY, 30) == false) || random.nextFloat() < 0.01){
+						if ((checkPlant(startX, startY, 100) >= 0 && checkTree(startX, startY, 30) < 0) || random.nextFloat() < 0.01){
 							addPlant(startX, startY);
-							looping = false;
+							break;
 						}
 					}
 				}
@@ -146,86 +144,92 @@ public class World {
 		plants.sort(Game.FloatbyY);
 		System.out.println("Plants Set!");
 		
+		// Set berries
+		berryBonus = 25;
+		berries.clear();
+		for (int i = 0; i < nBerries; i++) {
+			while (true) {
+				int startX = random.nextInt(worldX);
+				int startY = random.nextInt(worldY);
+				if (checkLake(startX, startY, -5) < 0) {
+					berries.add(new Point2D.Float(startX, startY));
+					berryStats.add(true);
+					break;
+				}
+			}
+		}
+		berries.sort(Game.FloatbyY);
+		System.out.println("Berries Set!");
+		
 		// Set wood
-		nWoods = 10;
-		rWood = 40;
-		woodSpawn = (float) 0.005;
+		rWood = 200;
 		
 		woods.clear();
 		for (int i = 0; i < nWoods; i++) {
-			boolean looping = true;
-			while (looping == true) {
-				int startX = random.nextInt(Game.worldX);
-				int startY = random.nextInt(Game.worldY);
-				if (checkLake(startX, startY, -5) == false && checkTree(startX, startY, rWood) == true) {
+			while (true) {
+				int startX = random.nextInt(worldX);
+				int startY = random.nextInt(worldY);
+				if (checkLake(startX, startY, -5) < 0 && checkTree(startX, startY, rWood) >= 0) {
 					woods.add(new Point2D.Float(startX, startY));
 					if (random.nextFloat() < 0.5)
 						woodStats.add(true);
 					else
 						woodStats.add(false);
-					looping = false;
+					break;
 				}
 			}
 		}
+		woods.sort(Game.FloatbyY);
 		System.out.println("Wood Set!");
 		
+		// Set stones
+		rStone = 40;		
+		stones.clear();
+		for (int i = 0; i < nStones; i++) {
+			while (true) {
+				int startX = random.nextInt(worldX);
+				int startY = random.nextInt(worldY);
+				if (checkLake(startX, startY, -5) < 0 && (checkRock(startX, startY, 300, false) >= 0 || random.nextFloat() < 0.05)) {
+					stones.add(new Point2D.Float(startX, startY));
+					break;
+				}
+			}
+		}		
+		stones.sort(Game.FloatbyY);
+		System.out.println("Stones Set!");
+		
 		// Set rocks
-		nRocks = 20;
 		seedRocks = 4;
 		pRock1 = (float) 0.7;
 		pRock2 = (float) 0.3;
 		
 		rocks.clear();
 		for (int i = 0; i < nRocks; i++) {
-			boolean looping = true;
-			while (looping == true) {
-				int startX = random.nextInt(Game.worldX);
-				int startY = random.nextInt(Game.worldY);
-				if (checkLake(startX, startY, -5) == false && checkTree(startX, startY, 60) == false && checkPlant(startX, startY, 60) == false) {
+			while (true) {
+				int startX = random.nextInt(worldX);
+				int startY = random.nextInt(worldY);
+				if (checkLake(startX, startY, -5) < 0 && checkTree(startX, startY, 60) < 0 && checkPlant(startX, startY, 60) < 0) {
 					if (i < seedRocks) {
 						addRock(startX, startY);
-						looping = false;
+						break;
 					}
-					else {
-						if ((checkRock(startX, startY, 200, false) == true && checkRock(startX, startY, 40, false) == false) || random.nextFloat() < 0.01){
-							addRock(startX, startY);
-							looping = false;
-						}
+					if ((checkRock(startX, startY, 200, false) >= 0 && checkRock(startX, startY, 40, false) < 0) || random.nextFloat() < 0.01){
+						addRock(startX, startY);
+						break;
 					}
 				}
 			}
 		}
 		rocks.sort(Game.FloatbyY);
-		System.out.println("Wocks Set!");
+		System.out.println("Rocks Set!");
 
-		// Set stones
-		nStones = 10;
-		rStone = 40;
-		stoneSpawn = (float) 0.001;
-		
-		stones.clear();
-		for (int i = 0; i < nStones; i++) {
-			boolean looping = true;
-			while (looping == true) {
-				int startX = random.nextInt(Game.worldX);
-				int startY = random.nextInt(Game.worldY);
-				if (checkLake(startX, startY, -5) == false && (checkRock(startX, startY, 300, false) || random.nextFloat() < 0.05)) {
-					stones.add(new Point2D.Float(startX, startY));
-					looping = false;
-				}
-			}
-		}		
-		stones.sort(Game.FloatbyY);
-		System.out.println("Stones Set!");
-
-		// Set wolve behaviour
-		nWolves = 3;
+		// Set wolve positions
 		wolves.clear();
 		for (int i = 0; i < nWolves; i++) {
 			while (true) {
-				float startX = Game.worldX * random.nextFloat();
-				float startY = Game.worldY * random.nextFloat();
-				if (checkLake(startX, startY, -5) == false) {
+				float startX = worldX * random.nextFloat();
+				float startY = worldY * random.nextFloat();
+				if (checkLake(startX, startY, -5) < 0) {
 					wolves.add(new Point2D.Float(startX, startY));
 					wolveSpeed.add(new Point2D.Float(random.nextFloat()-(float)0.5, random.nextFloat()-(float)0.5));
 					break;
@@ -234,16 +238,13 @@ public class World {
 		}
 		System.out.println("Wolves Set!");
 		
-		// Set rabbits
-		nRabbits = 10;
-		rabbitSpawn = (float) 0.001;
-		
+		// Set rabbits		
 		rabbits.clear();
 		for (int i = 0; i < nRabbits; i++) {
 			while (true) {
-				float startX = Game.worldX * random.nextFloat();
-				float startY = Game.worldY * random.nextFloat();
-				if (checkLake(startX, startY, -5) == false) {
+				float startX = worldX * random.nextFloat();
+				float startY = worldY * random.nextFloat();
+				if (checkLake(startX, startY, -5) < 0) {
 					rabbits.add(new Point2D.Float(startX, startY));
 					rabbitVel.add(new Point2D.Float(2*(random.nextFloat()-(float)0.5), 2*(random.nextFloat()-(float)0.5)));
 					rabbitStats.add(true);
@@ -254,15 +255,12 @@ public class World {
 		System.out.println("Rabbits Set!");
 		
 		// Set fishes
-		nFishes = 20;
-		fishSpawn = (float) 0.001;
-		
 		fishes.clear();
 		for (int i = 0; i < nFishes; i++) {
 			while (true) {
-				float startX = Game.worldX * random.nextFloat();
-				float startY = Game.worldY * random.nextFloat();
-				if (checkLake(startX, startY, 20) == true) {
+				float startX = worldX * random.nextFloat();
+				float startY = worldY * random.nextFloat();
+				if (checkLake(startX, startY, 20) >= 0 ) {
 					fishes.add(new Point2D.Float(startX, startY));
 					fishVel.add(new Point2D.Float(2*(random.nextFloat()-(float)0.5), 2*(random.nextFloat()-(float)0.5)));
 					fishStats.add(true);
@@ -273,7 +271,6 @@ public class World {
 		System.out.println("Fishes set!");
 		
 		// Set lilies
-		nLilies = 100;
 		seedLilies = 20;
 		pLily1 = (float) 0.4;
 		pLily2 = (float) 0.4;
@@ -282,18 +279,16 @@ public class World {
 		lilies.clear();
 		for (int i = 0; i < nLilies; i++) {
 			while (true) {
-				int startX = random.nextInt(Game.worldX);
-				int startY = random.nextInt(Game.worldY);
-				if (checkLake(startX, startY, 20) == true) {
+				int startX = random.nextInt(worldX);
+				int startY = random.nextInt(worldY);
+				if (checkLake(startX, startY, 20) >= 0) {
 					if (i < seedLilies) {
 						addLily(startX, startY);
 						break;
 					}
-					else {
-						if (checkLily(startX, startY, 40) == true || random.nextFloat() < 0.01){
-							addLily(startX, startY);
-							break;
-						}
+					if (checkLily(startX, startY, 40) >= 0 || random.nextFloat() < 0.01){
+						addLily(startX, startY);
+						break;
 					}
 				}
 			}
@@ -302,13 +297,12 @@ public class World {
 		System.out.println("Lilies Set!");
 		
 		// Set reeds
-		nReeds = 100;
 		reeds.clear();
 		for (int i = 0; i < nReeds; i++) {
 			while (true) {
-				int startX = random.nextInt(Game.worldX);
-				int startY = random.nextInt(Game.worldY);
-				if (checkLake(startX, startY, 20) == true && checkLake(startX, startY, 80) == false) {
+				int startX = random.nextInt(worldX);
+				int startY = random.nextInt(worldY);
+				if (checkLake(startX, startY, 20) >= 0 && checkLake(startX, startY, 80) < 0) {
 					reeds.add(new Point2D.Float(startX, startY));
 					break;
 				}
@@ -318,95 +312,146 @@ public class World {
 		System.out.println("Reeds Set!");
 	}
 	
-	public static int whichWolve(float x, float y) {
-		for (int i = 0; i < nWolves; i++) {
-			float dis_x = wolves.get(i).x - x;
-			float dis_y = wolves.get(i).y - y;
-			if (Math.sqrt(dis_x * dis_x + dis_y * dis_y) <= Wildlife.wolveRadius) {
+	public static void updateItems() {
+		// update fire burning down
+		if (Game.tick % 30 == 0 && random.nextFloat() < 0.5) { 
+			for (int i = 0; i < World.craftables.size(); i++) {
+				if (craftableType.get(i) == 1) {
+					craftableScore.set(i, Math.max(craftableScore.get(i) - 1, 0));
+				}
+			}
+		}
+	}
+	
+	public static void spawnItems() {
+		
+		// just spawn items every 100 ticks
+		if (Game.tick % 100 != 0) { return; }
+		
+		// grow berries in bushes
+		for (int i = 0; i < nBerries; i++) {
+			if (berryStats.get(i) == false && random.nextFloat() < berryRespawn)
+				berryStats.set(i, true);
+		}
+		
+		// spawn wood in world
+		if (random.nextFloat() < woodSpawn) {
+			nWoods += 1;
+			while (true) {
+				int startX = random.nextInt(worldX);
+				int startY = random.nextInt(worldY);
+				if (checkLake(startX, startY, -5) < 0 && checkTree(startX, startY, rWood) >= 0) {
+					woods.add(new Point2D.Float(startX, startY));
+					if (random.nextFloat() < 0.5)
+						woodStats.add(true);
+					else
+						woodStats.add(false);
+					break;
+				}
+			}
+			woods.sort(Game.FloatbyY);
+		}
+		
+		// spawn stone in world
+		if (random.nextFloat() < stoneSpawn) {
+			nStones += 1;
+			while (true) {
+				int startX = random.nextInt(worldX);
+				int startY = random.nextInt(worldY);
+				if (checkLake(startX, startY, -5) < 0 && checkRock(startX, startY, 300, false) >= 0 && checkRock(startX, startY, 30, false) < 0) {
+					stones.add(new Point2D.Float(startX, startY));
+					break;
+				}
+			}
+			stones.sort(Game.FloatbyY);
+		}
+		
+		// spawn new rabbits
+		if (random.nextFloat() < rabbitSpawn) {
+			for (int i = 0; i < rabbits.size(); i++) {
+				if (rabbitStats.get(i) == false) {
+					rabbitStats.set(i, true);
+					while (true) {
+						float startX = random.nextInt(worldX);
+						float startY = random.nextInt(worldY);
+						if (checkLake(startX, startY, -5) < 0 && checkRock(startX, startY, 40, true) < 0) {
+							rabbits.set(i, new Point2D.Float(startX, startY));
+							break;
+						}
+					}
+					break;
+				}
+			}
+		}
+		
+		// spawn new fishes
+		if (random.nextFloat() < fishSpawn) {
+			for (int i = 0; i < fishes.size(); i++) {
+				if (fishStats.get(i) == false) {
+					fishStats.set(i, true);
+					while (true) {
+						float startX = random.nextInt(worldX);
+						float startY = random.nextInt(worldY);
+						if (checkLake(startX, startY, 20) >= 0) {
+							fishes.set(i, new Point2D.Float(startX, startY));
+							break;
+						}
+					}
+					break;
+				}
+			}
+		}
+	}
+	
+	public static void addCraftable(int dis) {
+
+		if (Game.player.getDirection() == "Up")
+			craftables.add(new Point2D.Float((int) Game.player.getX(), (int) Game.player.getY() - dis));
+		else if (Game.player.getDirection() == "Down")
+			craftables.add(new Point2D.Float((int) Game.player.getX(), (int) Game.player.getY() + dis));
+		else if (Game.player.getDirection() == "Left")
+			craftables.add(new Point2D.Float((int) Game.player.getX() - dis, (int) Game.player.getY()));
+		else
+			craftables.add(new Point2D.Float((int) Game.player.getX() + dis, (int) Game.player.getY()));
+	}
+
+	public static int checkItem(float x, float y, float r, ArrayList<Point2D.Float> array) {
+		for (int i = 0; i < array.size(); i++) {
+			float dis_x = array.get(i).x - x;
+			float dis_y = array.get(i).y - y;
+			if (Math.sqrt(dis_x * dis_x + dis_y * dis_y) < r) {
 				return i;
 			}
 		}
 		return -1;
 	}
 	
-	public static boolean checkLake(float x, float y, float r) {
+	public static int checkWolve(float x, float y) { return checkItem(x, y, Wildlife.wolveRadius, wolves); }
+	
+	public static int checkBerry(float x, float y) { return checkItem(x, y, 20, berries); }
+	
+	public static int checkWood(float x, float y) { return checkItem(x, y, 20, woods); }
+
+	public static int checkStone(float x, float y) { return checkItem(x, y, 20, stones); }
+	
+	public static int checkTree(float x, float y, int r) { return checkItem(x, y, r, trees); }
+
+	public static int checkPlant(float x, float y, int r) { return checkItem(x, y, r, plants); }
+	
+	public static int checkLily(float x, float y, int r) { return checkItem(x, y, r, lilies); }
+	
+	public static int checkLake(float x, float y, float r) {
 		for (int i = 0; i < nLakes; i++) {
 			float dis_x = lakes.get(i).x - x;
 			float dis_y = lakes.get(i).y - y;		
 			if (Math.sqrt(dis_x * dis_x + 4 * dis_y * dis_y) < radiusLakes.get(i) - r) {
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	public static int checkBerry(float x, float y) {
-		for (int i = 0; i < nBerries; i++) {
-			float dis_x = berries.get(i).x - x;
-			float dis_y = berries.get(i).y - y;		
-			if (Math.sqrt(dis_x * dis_x + dis_y * dis_y) < 20) {
 				return i;
 			}
 		}
 		return -1;
 	}
 	
-	public static int checkWood(float x, float y) {
-		for (int i = 0; i < nWoods; i++) {
-			float dis_x = woods.get(i).x - x;
-			float dis_y = woods.get(i).y - y;		
-			if (Math.sqrt(dis_x * dis_x + dis_y * dis_y) < 20) {
-				return i;
-			}
-		}
-		return -1;
-	}
-	
-	public static int checkStone(float x, float y) {
-		for (int i = 0; i < nStones; i++) {
-			float dis_x = stones.get(i).x - x;
-			float dis_y = stones.get(i).y - y;		
-			if (Math.sqrt(dis_x * dis_x + dis_y * dis_y) < 20) {
-				return i;
-			}
-		}
-		return -1;
-	}
-	
-	public static boolean checkTree(float x, float y, int r) {
-		for (int i = 0; i < trees.size(); i++) {
-			float dis_x = trees.get(i).x - x;
-			float dis_y = trees.get(i).y - y;		
-			if (Math.sqrt(dis_x * dis_x + dis_y * dis_y) < r) {
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	public static boolean checkPlant(float x, float y, int r) {
-		for (int i = 0; i < plants.size(); i++) {
-			float dis_x = plants.get(i).x - x;
-			float dis_y = plants.get(i).y - y;		
-			if (Math.sqrt(dis_x * dis_x + dis_y * dis_y) < r) {
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	public static boolean checkLily(float x, float y, int r) {
-		for (int i = 0; i < lilies.size(); i++) {
-			float dis_x = lilies.get(i).x - x;
-			float dis_y = lilies.get(i).y - y;		
-			if (Math.sqrt(dis_x * dis_x + dis_y * dis_y) < r) {
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	public static boolean checkRock(float x, float y, int r, boolean collide) {
+	public static int checkRock(float x, float y, int r, boolean collide) {
 		float dis_x = 0, dis_y = 0;
 		for (int i = 0; i < rocks.size(); i++) {
 			if (collide == true) {
@@ -418,13 +463,13 @@ public class World {
 				dis_y = rocks.get(i).y - y;
 			}
 			if (Math.sqrt(dis_x * dis_x + dis_y * dis_y) < r) {
-				return true;
+				return i;
 			}
 		}
-		return false;
+		return -1;
 	}
 
-	public static boolean checkCraftable(float x, float y) {
+	public static int checkCraftable(float x, float y) {
 		for (int i = 0; i < craftables.size(); i++) {
 			float dis_x = craftables.get(i).x - x;
 			float dis_y = craftables.get(i).y - y;
@@ -436,9 +481,9 @@ public class World {
 			if (craftableType.get(i) == 4)
 				r = 45;
 			if (Math.sqrt(dis_x * dis_x + 20 * dis_y * dis_y) < r)
-				return true;
+				return i;
 		}
-		return false;
+		return -1;
 	}
 
 	public static void addTree(int x, int y) {

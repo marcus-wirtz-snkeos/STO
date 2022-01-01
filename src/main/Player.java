@@ -9,8 +9,9 @@ import java.util.Random;
 
 public class Player {
 
-	Game game = Game.game;
 	private Point2D.Float position;
+	public static float pTired = (float) 0.001;
+	public static float playerMovement = (float) 4;
 	private int condition, tired, hungry, thirsty;
 	public int woodCollected, stoneCollected, leaveCollected, lianaCollected, berryCollected, meatCollected, rawMeatCollected, fishCollected;
 	private boolean craft, cook, harvest, hidden;
@@ -58,9 +59,9 @@ public class Player {
 		int startX = 0;
 		int startY = 0;
 		while (true) {
-			startX = random.nextInt(Game.worldX / 3) + Game.worldX / 3;
-			startY = random.nextInt(Game.worldY / 3) + Game.worldY / 3;
-			if ((World.whichWolve(startX, startY) < 0 && World.checkLake(startX, startY, -5) == false) && World.checkRock(startX, startY, 50, true) == false)
+			startX = random.nextInt(World.worldX / 3) + World.worldX / 3;
+			startY = random.nextInt(World.worldY / 3) + World.worldY / 3;
+			if ((World.checkWolve(startX, startY) < 0 && World.checkLake(startX, startY, -5) < 0) && World.checkRock(startX, startY, 50, true) < 0)
 				break;
 		}
 		position = new Point2D.Float((float) startX, (float) startY);
@@ -136,8 +137,8 @@ public class Player {
 	
 	public void stats() {
 
-		if (World.checkLake(position.x - (Game.playerMovement + 1), position.y, 0) == true || World.checkLake(position.x + (Game.playerMovement + 1), position.y, 0) == true || 
-				World.checkLake(position.x, position.y + (Game.playerMovement + 1), 0) == true || World.checkLake(position.x, position.y - (Game.playerMovement + 1), 0) == true) {
+		if (World.checkLake(position.x - (playerMovement + 1), position.y, 0) >= 0|| World.checkLake(position.x + (playerMovement + 1), position.y, 0) >= 0 || 
+				World.checkLake(position.x, position.y + (playerMovement + 1), 0) >= 0|| World.checkLake(position.x, position.y - (playerMovement + 1), 0) >= 0) {
 			this.addThirsty(100);
 		}
 		
@@ -176,7 +177,7 @@ public class Player {
 		if (cook == true || craft == true || harvest == true || hidden == true || Game.keys[KeyEvent.VK_SPACE] == true)
 			return;
 
-		float movement = Game.playerMovement;
+		float movement = playerMovement;
 		movement -= (0.03 * stoneCollected + 0.01 * woodCollected + 0.001 * leaveCollected + 
 				0.002 * lianaCollected + 0.001 * berryCollected);
 
@@ -192,26 +193,26 @@ public class Player {
 				(Game.keys[KeyEvent.VK_LEFT] && Game.keys[KeyEvent.VK_DOWN]) || (Game.keys[KeyEvent.VK_DOWN] && Game.keys[KeyEvent.VK_RIGHT]))
 				movement /= Math.sqrt(2);
 		
-	    if((Game.keys[KeyEvent.VK_W] || Game.keys[KeyEvent.VK_UP]) && this.getY() > 0 && World.checkLake(this.getX(), this.getY() - movement, 0) == false
-	    	&& World.checkCraftable(this.getX(), this.getY() - movement) == false && World.checkRock(this.getX(), this.getY() - movement, 50, true) == false){
+	    if((Game.keys[KeyEvent.VK_W] || Game.keys[KeyEvent.VK_UP]) && this.getY() > 0 && World.checkLake(this.getX(), this.getY() - movement, 0) < 0
+	    	&& World.checkCraftable(this.getX(), this.getY() - movement) < 0 && World.checkRock(this.getX(), this.getY() - movement, 50, true) < 0){
 	    	this.setDirection("Up");
 	    	this.addY(-movement);
 	    }
 
-	    if((Game.keys[KeyEvent.VK_S] || Game.keys[KeyEvent.VK_DOWN]) && this.getY() < Game.worldY && World.checkLake(this.getX(), this.getY() + movement, 0) == false
-	    	&& World.checkCraftable(this.getX(), this.getY() + movement) == false && World.checkRock(this.getX(), this.getY() + movement, 50, true) == false){
+	    if((Game.keys[KeyEvent.VK_S] || Game.keys[KeyEvent.VK_DOWN]) && this.getY() < World.worldY && World.checkLake(this.getX(), this.getY() + movement, 0) < 0
+	    	&& World.checkCraftable(this.getX(), this.getY() + movement) < 0 && World.checkRock(this.getX(), this.getY() + movement, 50, true) < 0){
 	    	this.setDirection("Down");
 	    	this.addY(movement);
 	    }
 
-	    if((Game.keys[KeyEvent.VK_A] || Game.keys[KeyEvent.VK_LEFT]) && this.getX() > 0 && World.checkLake(this.getX() - movement, this.getY(), 0) == false
-	    	&& World.checkCraftable(this.getX() - movement, this.getY()) == false && World.checkRock(this.getX() - movement, this.getY(), 50, true) == false){
+	    if((Game.keys[KeyEvent.VK_A] || Game.keys[KeyEvent.VK_LEFT]) && this.getX() > 0 && World.checkLake(this.getX() - movement, this.getY(), 0) < 0
+	    	&& World.checkCraftable(this.getX() - movement, this.getY()) < 0 && World.checkRock(this.getX() - movement, this.getY(), 50, true) < 0){
 	    	this.setDirection("Left");
 	    	this.addX(-movement);
 	    }
 
-	    if((Game.keys[KeyEvent.VK_D] || Game.keys[KeyEvent.VK_RIGHT]) && this.getX() < Game.worldX && World.checkLake(this.getX() + movement, this.getY(), 0) == false
-	    	&& World.checkCraftable(this.getX() + movement, this.getY()) == false && World.checkRock(this.getX() + movement, this.getY(), 50, true) == false){
+	    if((Game.keys[KeyEvent.VK_D] || Game.keys[KeyEvent.VK_RIGHT]) && this.getX() < World.worldX && World.checkLake(this.getX() + movement, this.getY(), 0) < 0
+	    	&& World.checkCraftable(this.getX() + movement, this.getY()) < 0 && World.checkRock(this.getX() + movement, this.getY(), 50, true) < 0){
 	    	this.setDirection("Right");
 	    	this.addX(movement);
 	    }
@@ -351,7 +352,7 @@ public class Player {
 			stoneCollected -= 8;
 			World.craftableType.add(1);
 			World.craftableScore.add(100);
-			updateGame.addCraftable(30);
+			World.addCraftable(30);
 		}
 		
 		if (Game.keys[KeyEvent.VK_2] && woodCollected >= 3 && lianaCollected >= 1) {
@@ -361,19 +362,19 @@ public class Player {
 			lianaCollected -= 1;
 			World.craftableType.add(2);
 			World.craftableScore.add(100);
-			updateGame.addCraftable(30);
+			World.addCraftable(30);
 		}
 		
 		if (Game.keys[KeyEvent.VK_3] && woodCollected >= 3 && lianaCollected >= 8 ) {
 
-			if (World.checkLake(this.getX(), this.getY(), -20)) {
+			if (World.checkLake(this.getX(), this.getY(), -20) >= 0) {
 				craft = true;
 				
 				woodCollected -= 3;
 				lianaCollected -= 8;
 				World.craftableType.add(3);
 				World.craftableScore.add(100);
-				updateGame.addCraftable(40);
+				World.addCraftable(40);
 			}
 		}
 		
@@ -385,7 +386,7 @@ public class Player {
 				leaveCollected -= 10;
 				World.craftableType.add(4);
 				World.craftableScore.add(100);
-				updateGame.addCraftable(50);
+				World.addCraftable(50);
 		}
 	}
 	
@@ -438,39 +439,39 @@ public class Player {
 		
 		String str = "Condition: " + condition;
 		g.setColor(Color.WHITE);
-		g.drawString(str, Game.dim.width - 199, Game.dim.height - 169);
+		g.drawString(str, World.dim.width - 199, World.dim.height - 169);
 		if (this.getCondition() < 10)
 			g.setColor(Color.RED);
 		else
 			g.setColor(Color.BLACK);
-		g.drawString(str, Game.dim.width - 200, Game.dim.height - 170);
+		g.drawString(str, World.dim.width - 200, World.dim.height - 170);
 		
 		str = "Tired: " + tired;
 		g.setColor(Color.WHITE);
-		g.drawString(str, Game.dim.width - 199, Game.dim.height - 139);
+		g.drawString(str, World.dim.width - 199, World.dim.height - 139);
 		if (this.getTired() == 0)
 			g.setColor(Color.RED);
 		else
 			g.setColor(Color.BLACK);
-		g.drawString(str, Game.dim.width - 200, Game.dim.height - 140);	
+		g.drawString(str, World.dim.width - 200, World.dim.height - 140);	
 
 		str = "Hungry: " + hungry;
 		g.setColor(Color.WHITE);
-		g.drawString(str, Game.dim.width - 199, Game.dim.height - 109);
+		g.drawString(str, World.dim.width - 199, World.dim.height - 109);
 		if (this.getHungry() == 0)
 			g.setColor(Color.RED);
 		else
 			g.setColor(Color.BLACK);
-		g.drawString(str, Game.dim.width - 200, Game.dim.height - 110);
+		g.drawString(str, World.dim.width - 200, World.dim.height - 110);
 
 		str = "Thirsty: " + thirsty;
 		g.setColor(Color.WHITE);
-		g.drawString(str, Game.dim.width - 199, Game.dim.height - 79);
+		g.drawString(str, World.dim.width - 199, World.dim.height - 79);
 		if (this.getThirsty() == 0)
 			g.setColor(Color.RED);
 		else
 			g.setColor(Color.BLACK);
-		g.drawString(str, Game.dim.width - 200, Game.dim.height - 80);	
+		g.drawString(str, World.dim.width - 200, World.dim.height - 80);	
 		
 		// Draw Score
 		str = "Score: " + Game.score;
@@ -482,21 +483,21 @@ public class Player {
 	
 	public void drawInventory(Graphics g) {
 		String str = woodCollected + " x ";
-		g.drawString(str, 15, Game.dim.height - 200);
+		g.drawString(str, 15, World.dim.height - 200);
 		str = stoneCollected + " x ";
-		g.drawString(str, 15, Game.dim.height - 160);
+		g.drawString(str, 15, World.dim.height - 160);
 		str = leaveCollected + " x ";
-		g.drawString(str, 15, Game.dim.height - 120);
+		g.drawString(str, 15, World.dim.height - 120);
 		str = lianaCollected + " x ";
-		g.drawString(str, 15, Game.dim.height - 80);
+		g.drawString(str, 15, World.dim.height - 80);
 		str = berryCollected + " x           (e)";
-		g.drawString(str, 130, Game.dim.height - 200);
+		g.drawString(str, 130, World.dim.height - 200);
 		str = meatCollected + " x           (r)";
-		g.drawString(str, 130, Game.dim.height - 160);
+		g.drawString(str, 130, World.dim.height - 160);
 		str = rawMeatCollected + " x ";
-		g.drawString(str, 130, Game.dim.height - 120);
+		g.drawString(str, 130, World.dim.height - 120);
 		str = fishCollected + " x ";
-		g.drawString(str, 130, Game.dim.height - 80);
+		g.drawString(str, 130, World.dim.height - 80);
 	}
 	
 	public void showOptions(Graphics g) {
@@ -507,7 +508,7 @@ public class Player {
 					g.setColor(Color.BLACK);
 					if (World.craftableType.get(i) == 1) {
 						str = "Press [F] for fueling the fire";
-						g.drawString(str, Game.dim.width / 2 - 150, Game.dim.height - 160);
+						g.drawString(str, World.dim.width / 2 - 150, World.dim.height - 160);
 					}
 	
 					if (World.craftableType.get(i) == 1 && World.craftableScore.get(i) >= 1
@@ -522,7 +523,7 @@ public class Player {
 						str = "Press [Space] for hiding";
 					else
 						continue;
-					g.drawString(str, Game.dim.width / 2 - 150, Game.dim.height - 140);
+					g.drawString(str, World.dim.width / 2 - 150, World.dim.height - 140);
 				}
 			}
 		}
@@ -530,30 +531,30 @@ public class Player {
 		if (Game.keys[KeyEvent.VK_SPACE] && this.doingAction() == false) {
 			String str = "Searching...";
 			g.setColor(Color.WHITE);
-			g.drawString(str, Game.dim.width / 2 - 50, Game.dim.height - 100);
-			g.fillRect(Game.dim.width / 2 - 100, Game.dim.height - 90, (int) (5 * Game.tick % 200), 10);
+			g.drawString(str, World.dim.width / 2 - 50, World.dim.height - 100);
+			g.fillRect(World.dim.width / 2 - 100, World.dim.height - 90, (int) (5 * Game.tick % 200), 10);
 		}
 
 		if (hidden == true) {
 			String str = "Hidden in shelter!";
 			g.setColor(Color.WHITE);
-			g.drawString(str, Game.dim.width / 2 - 80, Game.dim.height - 100);
+			g.drawString(str, World.dim.width / 2 - 80, World.dim.height - 100);
 		}
 
 		if (craft == true) {
 			String str = "Crafting...";
 			g.setColor(Color.WHITE);
-			g.drawString(str, Game.dim.width / 2 - 70, Game.dim.height - 100);
+			g.drawString(str, World.dim.width / 2 - 70, World.dim.height - 100);
 			for (int i = 0; i < 400 - craftTime; i++)
-				g.fillRect(Game.dim.width / 2 - 200 + i, Game.dim.height - 90, 1, 10);
+				g.fillRect(World.dim.width / 2 - 200 + i, World.dim.height - 90, 1, 10);
 		}
 		
 		if (cook == true) {
 			String str = "Cooking...";
 			g.setColor(Color.WHITE);
-			g.drawString(str, Game.dim.width / 2 - 70, Game.dim.height - 100);
+			g.drawString(str, World.dim.width / 2 - 70, World.dim.height - 100);
 			for (int i = 0; i < 300-cookTime; i++)
-				g.fillRect(Game.dim.width / 2 - 200 + (int) ((float) 400 / 300) *i, Game.dim.height - 90, (int) ((float) 400 / 300), 10);
+				g.fillRect(World.dim.width / 2 - 200 + (int) ((float) 400 / 300) *i, World.dim.height - 90, (int) ((float) 400 / 300), 10);
 		}
 		
 		if (harvest == true) {
@@ -563,28 +564,28 @@ public class Player {
 			else
 				str = "Collecting fish...";
 			g.setColor(Color.WHITE);
-			g.drawString(str, Game.dim.width / 2 - 120, Game.dim.height - 100);
+			g.drawString(str, World.dim.width / 2 - 120, World.dim.height - 100);
 			for (int i = 0; i < 200-harvestTime; i++)
-				g.fillRect(Game.dim.width / 2 - 200 + 2*i, Game.dim.height - 90, 2, 10);
+				g.fillRect(World.dim.width / 2 - 200 + 2*i, World.dim.height - 90, 2, 10);
 		}
 		
 		if (Game.keys[KeyEvent.VK_SHIFT] && tired > 0) {
 			String str = "Running...";
 			g.setColor(Color.RED);
-			g.drawString(str, Game.dim.width / 2 - 70, Game.dim.height - 100);
+			g.drawString(str, World.dim.width / 2 - 70, World.dim.height - 100);
 		}
 		
 		if (Game.over == true) {
 			String str = "GAME OVER!";
 			g.setColor(Color.RED);
 			g.setFont(new Font("TimesRoman", Font.PLAIN, 30));
-			g.drawString(str, Game.dim.width / 2 - 8 * str.length(), Game.dim.height / 2 - 13);		
+			g.drawString(str, World.dim.width / 2 - 8 * str.length(), World.dim.height / 2 - 13);		
 			g.setColor(Color.BLACK);
-			g.drawString(str, Game.dim.width / 2 - 8 * str.length() + 1, Game.dim.height / 2 - 13 + 1);
+			g.drawString(str, World.dim.width / 2 - 8 * str.length() + 1, World.dim.height / 2 - 13 + 1);
 			
 			str = "Press 'R' for restart.";
 			g.setFont(new Font("TimesRoman", Font.PLAIN, 22));
-			g.drawString(str, Game.dim.width / 2 - 82, Game.dim.height / 2 + 10);
+			g.drawString(str, World.dim.width / 2 - 82, World.dim.height / 2 + 10);
 		}
 	}
 }

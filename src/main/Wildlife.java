@@ -6,7 +6,6 @@ import java.util.Random;
 public class Wildlife {
 	
 	static Random random = new Random();
-	static Game game = Game.game;
 	
 	// wolve setting
 	public static float changeSpeed = (float) 0.2;
@@ -56,9 +55,10 @@ public class Wildlife {
 				}
 			}
 			
-			if (wolveX + velX < 0 || wolveX + velX > Game.worldX || wolveY + velY > Game.worldY || wolveY + velY < 0 
-					|| World.checkLake(wolveX + 2*velX, wolveY + 2*velY, 0) == true || World.checkRock(wolveX + 2*velX, wolveY + 2*velY, 50, true) == true
-					|| World.checkCraftable(wolveX + 2*velX, wolveY + 2*velY) == true) {
+			if (wolveX + velX < 0 || wolveX + velX > World.worldX || wolveY + velY > World.worldY || wolveY + velY < 0 
+					|| World.checkLake(wolveX + 2*velX, wolveY + 2*velY, 0) >= 0 
+					|| World.checkRock(wolveX + 2*velX, wolveY + 2*velY, 50, true) >= 0
+					|| World.checkCraftable(wolveX + 2*velX, wolveY + 2*velY) >= 0) {
 				velX = -velX;
 				velY = -velY;
 			}
@@ -174,8 +174,9 @@ public class Wildlife {
 				}
 			}
 			
-			if (rabbitX + velX < 0 || rabbitX + velX > Game.worldX || rabbitY + velY > Game.worldY || rabbitY + velY < 0 
-					|| World.checkLake(rabbitX + 2*velX, rabbitY + 2*velY, 0) == true || World.checkRock(rabbitX + 2*velX, rabbitY + 2*velY, 50, true) == true) {
+			if (rabbitX + velX < 0 || rabbitX + velX > World.worldX || rabbitY + velY > World.worldY || rabbitY + velY < 0 
+					|| World.checkLake(rabbitX + 2*velX, rabbitY + 2*velY, 0) >= 0 
+					|| World.checkRock(rabbitX + 2*velX, rabbitY + 2*velY, 50, true) >= 0) {
 				if (flee == false) {
 					velX = -velX;
 					velY = -velY;
@@ -242,7 +243,7 @@ public class Wildlife {
 				
 			}
 
-			if (World.checkLake(fishX + 2*velX, fishY + 2*velY, 20) == false) {
+			if (World.checkLake(fishX + 2*velX, fishY + 2*velY, 20) < 0) {
 					velX = -velX;
 					velY = -velY;
 			}

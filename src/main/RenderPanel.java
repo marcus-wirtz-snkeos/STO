@@ -38,10 +38,10 @@ public class RenderPanel extends JPanel {
 		super.paintComponent(g);
 		
 		g.setColor(new Color(0, 204, 0, 150));
-		g.fillRect(0, 0, Game.dim.width, Game.dim.height);
+		g.fillRect(0, 0, World.dim.width, World.dim.height);
 		
-		int cornerX = (int) Math.min(Math.max(Game.player.getX() - Game.dim.width / 2, 0), Game.worldX - Game.dim.width);
-		int cornerY = (int) Math.min(Math.max(Game.player.getY() - Game.dim.height / 2, 0), Game.worldY - Game.dim.height);
+		int cornerX = (int) Math.min(Math.max(Game.player.getX() - World.dim.width / 2, 0), World.worldX - World.dim.width);
+		int cornerY = (int) Math.min(Math.max(Game.player.getY() - World.dim.height / 2, 0), World.worldY - World.dim.height);
 		
 		// Draw lakes
 		g.setColor(Color.BLUE);
@@ -124,7 +124,7 @@ public class RenderPanel extends JPanel {
 		}
 		
 		int treeInd = 0, plantInd = 0, stoneInd = 0, rockInd = 0, woodInd = 0, berryInd = 0, lilyInd = 0, reedInd = 0;
-		for (int pixY = Math.max(0, cornerY - 100); pixY < Math.min(Game.worldY, cornerY + Game.dim.height + 200); pixY++) {
+		for (int pixY = Math.max(0, cornerY - 100); pixY < Math.min(World.worldY, cornerY + World.dim.height + 200); pixY++) {
 
 			// Draw trees
 			if (treeInd == 0) {
@@ -134,7 +134,7 @@ public class RenderPanel extends JPanel {
 			if (treeInd < World.trees.size()) {
 				while (World.trees.get(treeInd).y == pixY) {
 					int x = (int) World.trees.get(treeInd).x;
-					if (x < cornerX - 100 || x > cornerX + Game.dim.width + 100) {
+					if (x < cornerX - 100 || x > cornerX + World.dim.width + 100) {
 						treeInd++;
 						if (treeInd == World.trees.size())
 							break;
@@ -178,7 +178,7 @@ public class RenderPanel extends JPanel {
 			if (woodInd < World.woods.size()) {
 				while (World.woods.get(woodInd).y == pixY) {
 					int x = (int) World.woods.get(woodInd).x;
-					if (x < cornerX - 100 || x > cornerX + Game.dim.width + 100) {
+					if (x < cornerX - 100 || x > cornerX + World.dim.width + 100) {
 						woodInd++;
 						if (woodInd == World.woods.size())
 							break;
@@ -202,7 +202,7 @@ public class RenderPanel extends JPanel {
 			if (plantInd < World.plants.size()) {
 				while (World.plants.get(plantInd).y == pixY) {
 					int x = (int) World.plants.get(plantInd).x;
-					if (x < cornerX -100 || x > cornerX + Game.dim.width + 100) {
+					if (x < cornerX -100 || x > cornerX + World.dim.width + 100) {
 						plantInd++;
 						if (plantInd == World.plants.size())
 							break;
@@ -230,7 +230,7 @@ public class RenderPanel extends JPanel {
 			if (stoneInd < World.stones.size()) {
 				while (World.stones.get(stoneInd).y == pixY) {
 					int x = (int) World.stones.get(stoneInd).x;
-					if (x < cornerX - 100 || x > cornerX + Game.dim.width + 100) {
+					if (x < cornerX - 100 || x > cornerX + World.dim.width + 100) {
 						stoneInd++;
 						if (stoneInd == World.stones.size())
 							break;
@@ -252,7 +252,7 @@ public class RenderPanel extends JPanel {
 			if (rockInd < World.rocks.size()) {			
 				while (World.rocks.get(rockInd).y == pixY) {
 					int x = (int) World.rocks.get(rockInd).x;
-					if (x < cornerX - 100 || x > cornerX + Game.dim.width + 100) {
+					if (x < cornerX - 100 || x > cornerX + World.dim.width + 100) {
 						rockInd++;
 						if (rockInd == World.rocks.size())
 							break;
@@ -276,7 +276,7 @@ public class RenderPanel extends JPanel {
 			if  (berryInd < World.berries.size()) {
 				while (World.berries.get(berryInd).y == pixY) {
 					int x = (int) World.berries.get(berryInd).x;
-					if (x < cornerX - 100 || x > cornerX + Game.dim.width + 100) {
+					if (x < cornerX - 100 || x > cornerX + World.dim.width + 100) {
 						berryInd++;
 						if (berryInd == World.berries.size())
 							break;
@@ -337,7 +337,7 @@ public class RenderPanel extends JPanel {
 			if (lilyInd < World.lilies.size()) {
 				while (World.lilies.get(lilyInd).y == pixY) {
 					int x = (int) World.lilies.get(lilyInd).x;
-					if (x < cornerX - 100 || x > cornerX + Game.dim.width + 100) {
+					if (x < cornerX - 100 || x > cornerX + World.dim.width + 100) {
 						lilyInd++;
 						if (lilyInd == World.lilies.size())
 							break;
@@ -363,7 +363,7 @@ public class RenderPanel extends JPanel {
 			if (reedInd < World.reeds.size()) {
 				while (World.reeds.get(reedInd).y == pixY) {
 					int x = (int) World.reeds.get(reedInd).x;
-					if (x < cornerX - 100 || x > cornerX + Game.dim.width + 100) {
+					if (x < cornerX - 100 || x > cornerX + World.dim.width + 100) {
 						reedInd++;
 						if (reedInd == World.reeds.size())
 							break;
@@ -424,14 +424,13 @@ public class RenderPanel extends JPanel {
 			}
 			
 			// Draw figure
-			if ((int) Game.player.getY() == pixY) {
+			if ((int) Game.player.getY() == pixY && Game.player.isHidden() == false) {
 				try {
 					figure = ImageIO.read(new File(imagePath + "woman_" + Game.player.getDirection() + ".gif"));
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-				if (Game.player.isHidden() == false)
-					g.drawImage(figure, (int) Game.player.getX() - cornerX - figure.getWidth() / 2, (int) Game.player.getY() - cornerY - figure.getHeight() + 5, this);
+				g.drawImage(figure, (int) Game.player.getX() - cornerX - figure.getWidth() / 2, (int) Game.player.getY() - cornerY - figure.getHeight() + 5, this);
 			}
 		}
 		
@@ -446,32 +445,32 @@ public class RenderPanel extends JPanel {
 		Game.player.drawStats(g);
 		// Draw inventory
 		Game.player.drawInventory(g);
-		g.drawImage(wood, 60, Game.dim.height - 224, this);
-		g.drawImage(stone, 65, Game.dim.height - 182, this);
-		g.drawImage(leafe, 65, Game.dim.height - 142, this);
-		g.drawImage(liana, 63, Game.dim.height - 96, this);
-		g.drawImage(berry, 184, Game.dim.height - 224, this);
-		g.drawImage(cooked_meat, 180, Game.dim.height - 182, this);
-		g.drawImage(raw_meat, 180, Game.dim.height - 142, this);
-		g.drawImage(fish, 180, Game.dim.height - 96, this);
+		g.drawImage(wood, 60, World.dim.height - 224, this);
+		g.drawImage(stone, 65, World.dim.height - 182, this);
+		g.drawImage(leafe, 65, World.dim.height - 142, this);
+		g.drawImage(liana, 63, World.dim.height - 96, this);
+		g.drawImage(berry, 184, World.dim.height - 224, this);
+		g.drawImage(cooked_meat, 180, World.dim.height - 182, this);
+		g.drawImage(raw_meat, 180, World.dim.height - 142, this);
+		g.drawImage(fish, 180, World.dim.height - 96, this);
 
 		// Draw craftable system
 		if (Game.player.woodCollected >= 5 && Game.player.stoneCollected >= 8)
-			g.drawImage(button1, Game.dim.width / 2 - 200, 20, this);
+			g.drawImage(button1, World.dim.width / 2 - 200, 20, this);
 		else
-			g.drawImage(button1_low, Game.dim.width / 2 - 200, 20, this);
+			g.drawImage(button1_low, World.dim.width / 2 - 200, 20, this);
 		if (Game.player.woodCollected >= 3 && Game.player.lianaCollected >= 1)
-			g.drawImage(button2, Game.dim.width / 2 - 100, 20, this);
+			g.drawImage(button2, World.dim.width / 2 - 100, 20, this);
 		else
-			g.drawImage(button2_low, Game.dim.width / 2 - 100, 20, this);
+			g.drawImage(button2_low, World.dim.width / 2 - 100, 20, this);
 		if (Game.player.woodCollected >= 3 && Game.player.lianaCollected >= 8)
-			g.drawImage(button3, Game.dim.width / 2, 20, this);
+			g.drawImage(button3, World.dim.width / 2, 20, this);
 		else
-			g.drawImage(button3_low, Game.dim.width / 2, 20, this);
+			g.drawImage(button3_low, World.dim.width / 2, 20, this);
 		if (Game.player.woodCollected >= 8 && Game.player.lianaCollected >= 4 && Game.player.leaveCollected >= 10)
-			g.drawImage(button4, Game.dim.width / 2 + 100, 20, this);
+			g.drawImage(button4, World.dim.width / 2 + 100, 20, this);
 		else
-			g.drawImage(button4_low, Game.dim.width / 2 + 100, 20, this);
+			g.drawImage(button4_low, World.dim.width / 2 + 100, 20, this);
 		
 		// Show options
 		Game.player.showOptions(g);
@@ -482,7 +481,7 @@ public class RenderPanel extends JPanel {
 				g.setColor(Color.BLACK);
 			else
 				g.setColor(Color.WHITE);
-			g.drawString((String) "Paused", Game.dim.width / 2 - 40, Game.dim.height / 2 + 50);
+			g.drawString((String) "Paused", World.dim.width / 2 - 40, World.dim.height / 2 + 50);
 		}
 	}
 }
