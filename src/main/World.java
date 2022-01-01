@@ -50,8 +50,8 @@ public class World {
 	public static ArrayList<Boolean> berryStats = new ArrayList<Boolean>();
 	public static ArrayList<Point2D.Float> woods = new ArrayList<Point2D.Float>();
 	public static ArrayList<Boolean> woodStats = new ArrayList<Boolean>();
-	
 	public static ArrayList<Point2D.Float> stones = new ArrayList<Point2D.Float>();
+
 	public static ArrayList<Point2D.Float> trees = new ArrayList<Point2D.Float>();
 	public static ArrayList<Integer> treeType = new ArrayList<Integer>();
 	public static ArrayList<Point2D.Float> rocks = new ArrayList<Point2D.Float>();

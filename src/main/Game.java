@@ -94,7 +94,6 @@ public class Game implements ActionListener, KeyListener {
 		player.cooking();
 		player.harvesting();
 		player.crafting();
-		player.hideShelter();
 		player.searching();
 		player.move();
 		
@@ -114,6 +113,7 @@ public class Game implements ActionListener, KeyListener {
 		if (e.getKeyCode() == 69) { player.eatBerry(); }
 		if (e.getKeyCode() == 82) { player.eatMeat(); }
 		if (e.getKeyCode() == 70) { player.fuelFire(); }
+		if (e.getKeyCode() == KeyEvent.VK_SPACE) { player.hideShelter(); }
 		if (e.getKeyCode() == 80) { pauseGame(); }
 		if (e.getKeyCode() == KeyEvent.VK_ESCAPE) { player.abortAction(); }
 		

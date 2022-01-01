@@ -415,7 +415,7 @@ public class RenderPanel extends JPanel {
 						else
 							g.drawImage(fish_trap_shot, x - cornerX - fish_trap_shot.getWidth() / 2, pixY - cornerY - fish_trap_shot.getHeight(), this);
 					if (World.craftableType.get(craftInd) == 4) {
-						if (Game.player.isHidden())
+						if (!Game.player.isHidden())
 							g.drawImage(shelter, x - cornerX - shelter.getWidth() / 2, pixY - cornerY - shelter.getHeight(), this);
 						else
 							g.drawImage(shelter_hidden, x - cornerX - shelter.getWidth() / 2, pixY - cornerY - shelter.getHeight(), this);

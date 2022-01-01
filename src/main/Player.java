@@ -414,7 +414,7 @@ public class Player {
 	}
 
 	public void hideShelter() {
-		if (Game.keys[KeyEvent.VK_SPACE] && cook == false && craft == false && harvest == false) {
+		if (cook == false && craft == false && harvest == false) {
 			if (hidden == true) {
 				hidden = false;
 				return;
@@ -440,8 +440,12 @@ public class Player {
 		String str = "Condition: " + condition;
 		g.setColor(Color.WHITE);
 		g.drawString(str, World.dim.width - 199, World.dim.height - 169);
-		if (this.getCondition() < 10)
-			g.setColor(Color.RED);
+		if (this.getCondition() < 10) {
+			if (Game.tick % 10 < 4)
+				g.setColor(Color.BLACK);
+			else
+				g.setColor(Color.RED);
+		}
 		else
 			g.setColor(Color.BLACK);
 		g.drawString(str, World.dim.width - 200, World.dim.height - 170);
@@ -458,8 +462,12 @@ public class Player {
 		str = "Hungry: " + hungry;
 		g.setColor(Color.WHITE);
 		g.drawString(str, World.dim.width - 199, World.dim.height - 109);
-		if (this.getHungry() == 0)
-			g.setColor(Color.RED);
+		if (this.getHungry() == 0) {
+			if (Game.tick % 10 < 4)
+				g.setColor(Color.BLACK);
+			else
+				g.setColor(Color.RED);
+		}
 		else
 			g.setColor(Color.BLACK);
 		g.drawString(str, World.dim.width - 200, World.dim.height - 110);
@@ -467,8 +475,12 @@ public class Player {
 		str = "Thirsty: " + thirsty;
 		g.setColor(Color.WHITE);
 		g.drawString(str, World.dim.width - 199, World.dim.height - 79);
-		if (this.getThirsty() == 0)
-			g.setColor(Color.RED);
+		if (this.getThirsty() == 0) {
+			if (Game.tick % 10 < 4)
+				g.setColor(Color.BLACK);
+			else
+				g.setColor(Color.RED);
+		}
 		else
 			g.setColor(Color.BLACK);
 		g.drawString(str, World.dim.width - 200, World.dim.height - 80);	
