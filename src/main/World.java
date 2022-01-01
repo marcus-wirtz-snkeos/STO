@@ -415,6 +415,12 @@ public class World {
 			craftables.add(new Point2D.Float((int) Game.player.getX() + dis, (int) Game.player.getY()));
 	}
 
+	public static void removeCraftable(int idx) {
+		craftables.remove(idx);
+		craftableType.remove(idx);
+		craftableScore.remove(idx);
+	}
+	
 	public static int checkItem(float x, float y, float r, ArrayList<Point2D.Float> array) {
 		for (int i = 0; i < array.size(); i++) {
 			float dis_x = array.get(i).x - x;

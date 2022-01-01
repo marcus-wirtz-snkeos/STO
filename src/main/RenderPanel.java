@@ -477,7 +477,7 @@ public class RenderPanel extends JPanel {
 		
 		// game paused
 		if (Game.paused) {
-			if (Game.tick % 10 < 4)
+			if (Game.tick % 10 < 5)
 				g.setColor(Color.BLACK);
 			else
 				g.setColor(Color.WHITE);
