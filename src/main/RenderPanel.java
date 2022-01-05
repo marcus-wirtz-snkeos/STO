@@ -146,7 +146,7 @@ public class RenderPanel extends JPanel {
 					else
 						g.drawImage(Pine1, x - cornerX - Pine1.getWidth() / 2, pixY - cornerY - Pine1.getHeight(), this);
 				}
-				if (World.treeType.get(treeInd) == 1) {
+				else if (World.treeType.get(treeInd) == 1) {
 					if (World.treeDeath.get(treeInd) == true)
 						g.drawImage(Pine2_Death, x - cornerX - Pine2_Death.getWidth() / 2, pixY - cornerY - Pine2_Death.getHeight(), this);
 					else
@@ -167,19 +167,19 @@ public class RenderPanel extends JPanel {
 				treeInd++;
 			}
 			
-			// Draw woods
-			woodInd = this.getFirstObjectIndexInY(pixY, woodInd, World.woods);
-			while (woodInd < World.woods.size() && World.woods.get(woodInd).y == pixY) {
-				int x = (int) World.woods.get(woodInd).x;
-				if (x < cornerX - 100 || x > cornerX + World.dim.width + 100) {	woodInd++; continue; }
-				
-				int x_draw = x - cornerX - wood1.getWidth() / 2;
-				int y_draw = pixY - cornerY - wood1.getHeight() / 2;
-				if (World.woodStats.get(woodInd) == true) { g.drawImage(wood1, x_draw, y_draw, this); }
-				else { g.drawImage(wood2, x_draw, y_draw, this); }
-				woodInd++;
+			// Draw rocks
+			rockInd = this.getFirstObjectIndexInY(pixY, rockInd, World.rocks);	
+			while (rockInd < World.rocks.size() && World.rocks.get(rockInd).y == pixY) {
+				int x = (int) World.rocks.get(rockInd).x;
+				if (x < cornerX - 100 || x > cornerX + World.dim.width + 100) { rockInd++; continue; }
+
+				if (World.rockType.get(rockInd) == 1)
+					g.drawImage(rock1, x - cornerX - rock1.getWidth() / 2, pixY - cornerY - rock1.getHeight(), this);
+				else
+					g.drawImage(rock2, x - cornerX - rock2.getWidth() / 2, pixY - cornerY - rock2.getHeight(), this);
+				rockInd++;
 			}
-			
+
 			// Draw plants
 			plantInd = this.getFirstObjectIndexInY(pixY, plantInd, World.plants);
 			while (plantInd < World.plants.size() && World.plants.get(plantInd).y == pixY) {
@@ -196,6 +196,19 @@ public class RenderPanel extends JPanel {
 					g.drawImage(plant4, x - cornerX - plant4.getWidth() / 2, pixY - cornerY - plant4.getHeight(), this);
 				plantInd++;
 			}
+
+			// Draw woods
+			woodInd = this.getFirstObjectIndexInY(pixY, woodInd, World.woods);
+			while (woodInd < World.woods.size() && World.woods.get(woodInd).y == pixY) {
+				int x = (int) World.woods.get(woodInd).x;
+				if (x < cornerX - 100 || x > cornerX + World.dim.width + 100) {	woodInd++; continue; }
+				
+				int x_draw = x - cornerX - wood1.getWidth() / 2;
+				int y_draw = pixY - cornerY - wood1.getHeight() / 2;
+				if (World.woodStats.get(woodInd) == true) { g.drawImage(wood1, x_draw, y_draw, this); }
+				else { g.drawImage(wood2, x_draw, y_draw, this); }
+				woodInd++;
+			}
 			
 			// Draw stones
 			stoneInd = this.getFirstObjectIndexInY(pixY, stoneInd, World.stones);
@@ -206,19 +219,6 @@ public class RenderPanel extends JPanel {
 				stoneInd++;
 			}
 			
-			// Draw rocks
-			rockInd = this.getFirstObjectIndexInY(pixY, rockInd, World.rocks);	
-			while (rockInd < World.rocks.size() && World.rocks.get(rockInd).y == pixY) {
-				int x = (int) World.rocks.get(rockInd).x;
-				if (x < cornerX - 100 || x > cornerX + World.dim.width + 100) { rockInd++; continue; }
-
-				if (World.rockType.get(rockInd) == 1)
-					g.drawImage(rock1, x - cornerX - rock1.getWidth() / 2, pixY - cornerY - rock1.getHeight(), this);
-				else
-					g.drawImage(rock2, x - cornerX - rock2.getWidth() / 2, pixY - cornerY - rock2.getHeight(), this);
-				rockInd++;
-			}
-
 			// Draw berries
 			berryInd = this.getFirstObjectIndexInY(pixY, berryInd, World.berries);
 			while (berryInd < World.berries.size() && World.berries.get(berryInd).y == pixY) {
