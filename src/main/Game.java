@@ -89,13 +89,7 @@ public class Game implements ActionListener, KeyListener {
 		World.updateItems();
 		
 		// Update player
-		player.collectItems();
-		player.stats();
-		player.cooking();
-		player.harvesting();
-		player.crafting();
-		player.searching();
-		player.move();
+		player.update();
 		
 		if (tick % 100 == 0)
 			score += 1;
@@ -114,10 +108,10 @@ public class Game implements ActionListener, KeyListener {
 		if (e.getKeyCode() == 82) { player.eatMeat(); }
 		if (e.getKeyCode() == 70) { player.fuelFire(); }
 		if (e.getKeyCode() == KeyEvent.VK_SPACE) { player.hideShelter(); }
-		if (e.getKeyCode() == 80) { pauseGame(); }
 		if (e.getKeyCode() == KeyEvent.VK_ESCAPE) { player.abortAction(); }
-		
+		if (e.getKeyCode() == 80) { pauseGame(); }
 	    keys[e.getKeyCode()] = true;
+
 		if (over == true && keys[KeyEvent.VK_R])
 			startGame();	
 	}

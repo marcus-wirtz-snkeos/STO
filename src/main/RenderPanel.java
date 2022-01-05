@@ -1,10 +1,13 @@
 package main;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Random;
 
 import javax.imageio.ImageIO;
@@ -32,24 +35,9 @@ public class RenderPanel extends JPanel {
 	public BufferedImage button1, button2, button3, button4, button1_low, button2_low, button3_low, button4_low;
 	
 	public String imagePath = System.getProperty("user.dir") + "/img/";
+	
+	private void readImages(Graphics g) {
 
-	protected void paintComponent(Graphics g) {
-
-		super.paintComponent(g);
-		
-		g.setColor(new Color(0, 204, 0, 150));
-		g.fillRect(0, 0, World.dim.width, World.dim.height);
-		
-		int cornerX = (int) Math.min(Math.max(Game.player.getX() - World.dim.width / 2, 0), World.worldX - World.dim.width);
-		int cornerY = (int) Math.min(Math.max(Game.player.getY() - World.dim.height / 2, 0), World.worldY - World.dim.height);
-		
-		// Draw lakes
-		g.setColor(Color.BLUE);
-		for (int i = 0; i < World.nLakes; i++) {
-			int radius = World.radiusLakes.get(i);
-			g.fillOval((int) World.lakes.get(i).x - radius - cornerX, (int) World.lakes.get(i).y - radius / 2 - cornerY, 2 * radius, radius);
-		}
-		
 		try {
 			Pine1 = ImageIO.read(new File(imagePath + "pine1.gif"));
 			Pine1_Death = ImageIO.read(new File(imagePath + "pine1_death.gif"));;
@@ -96,7 +84,7 @@ public class RenderPanel extends JPanel {
 			cooked_meat = ImageIO.read(new File(imagePath + "cooked_meat.gif"));
 			raw_meat = ImageIO.read(new File(imagePath + "raw_meat.gif"));
 			fish = ImageIO.read(new File(imagePath + "fish.gif"));
-
+	
 			button1 = ImageIO.read(new File(imagePath + "button1.png"));
 			button2 = ImageIO.read(new File(imagePath + "button2.png"));
 			button3 = ImageIO.read(new File(imagePath + "button3.png"));
@@ -122,174 +110,151 @@ public class RenderPanel extends JPanel {
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
+	}
+
+	protected void paintComponent(Graphics g) {
+		
+		this.readImages(g);
+
+		super.paintComponent(g);
+		
+		g.setColor(new Color(0, 204, 0, 150));
+		g.fillRect(0, 0, World.dim.width, World.dim.height);
+		
+		int cornerX = (int) Math.min(Math.max(Game.player.getX() - World.dim.width / 2, 0), World.worldX - World.dim.width);
+		int cornerY = (int) Math.min(Math.max(Game.player.getY() - World.dim.height / 2, 0), World.worldY - World.dim.height);
+		
+		// Draw lakes
+		g.setColor(Color.BLUE);
+		for (int i = 0; i < World.nLakes; i++) {
+			int radius = World.radiusLakes.get(i);
+			g.fillOval((int) World.lakes.get(i).x - radius - cornerX, (int) World.lakes.get(i).y - radius / 2 - cornerY, 2 * radius, radius);
+		}
 		
 		int treeInd = 0, plantInd = 0, stoneInd = 0, rockInd = 0, woodInd = 0, berryInd = 0, lilyInd = 0, reedInd = 0;
 		for (int pixY = Math.max(0, cornerY - 100); pixY < Math.min(World.worldY, cornerY + World.dim.height + 200); pixY++) {
 
 			// Draw trees
-			if (treeInd == 0) {
-				while (World.trees.get(treeInd).y < pixY)
-					treeInd++;
-			}
-			if (treeInd < World.trees.size()) {
-				while (World.trees.get(treeInd).y == pixY) {
-					int x = (int) World.trees.get(treeInd).x;
-					if (x < cornerX - 100 || x > cornerX + World.dim.width + 100) {
-						treeInd++;
-						if (treeInd == World.trees.size())
-							break;
-						continue;
-					}
-					if (World.treeType.get(treeInd) == 0) {
-						if (World.treeDeath.get(treeInd) == true)
-							g.drawImage(Pine1_Death, x - cornerX - Pine1_Death.getWidth() / 2, pixY - cornerY - Pine1_Death.getHeight(), this);
-						else
-							g.drawImage(Pine1, x - cornerX - Pine1.getWidth() / 2, pixY - cornerY - Pine1.getHeight(), this);
-					}
-					if (World.treeType.get(treeInd) == 1) {
-						if (World.treeDeath.get(treeInd) == true)
-							g.drawImage(Pine2_Death, x - cornerX - Pine2_Death.getWidth() / 2, pixY - cornerY - Pine2_Death.getHeight(), this);
-						else
-							g.drawImage(Pine2, x - cornerX - Pine2.getWidth() / 2, pixY - cornerY - Pine2.getHeight(), this);
-					}
-					else if (World.treeType.get(treeInd) == 2) {
-						g.drawImage(Fir1, x - cornerX - Fir1.getWidth() / 2, pixY - cornerY - Fir1.getHeight(), this);
-					}
-					else if (World.treeType.get(treeInd) == 3) {
-						g.drawImage(Fir2, x - cornerX - Fir1.getWidth() / 2, pixY - cornerY - Fir2.getHeight(), this);
-					}
-					else{
-						if (World.treeDeath.get(treeInd) == true)
-							g.drawImage(Tree_Death, x - cornerX - Tree_Death.getWidth() / 2, pixY - cornerY - Tree_Death.getHeight(), this);
-						else
-							g.drawImage(Tree, x - cornerX - Tree.getWidth() / 2, pixY - cornerY - Tree.getHeight(), this);
-					}
-					treeInd++;
-					if (treeInd == World.trees.size())
-						break;
+			treeInd = this.getFirstObjectIndexInY(pixY, treeInd, World.trees);
+			while (treeInd < World.trees.size() && World.trees.get(treeInd).y == pixY) {
+				int x = (int) World.trees.get(treeInd).x;
+				if (x < cornerX - 100 || x > cornerX + World.dim.width + 100) { treeInd++; continue; }
+
+				if (World.treeType.get(treeInd) == 0) {
+					if (World.treeDeath.get(treeInd) == true)
+						g.drawImage(Pine1_Death, x - cornerX - Pine1_Death.getWidth() / 2, pixY - cornerY - Pine1_Death.getHeight(), this);
+					else
+						g.drawImage(Pine1, x - cornerX - Pine1.getWidth() / 2, pixY - cornerY - Pine1.getHeight(), this);
 				}
+				if (World.treeType.get(treeInd) == 1) {
+					if (World.treeDeath.get(treeInd) == true)
+						g.drawImage(Pine2_Death, x - cornerX - Pine2_Death.getWidth() / 2, pixY - cornerY - Pine2_Death.getHeight(), this);
+					else
+						g.drawImage(Pine2, x - cornerX - Pine2.getWidth() / 2, pixY - cornerY - Pine2.getHeight(), this);
+				}
+				else if (World.treeType.get(treeInd) == 2) {
+					g.drawImage(Fir1, x - cornerX - Fir1.getWidth() / 2, pixY - cornerY - Fir1.getHeight(), this);
+				}
+				else if (World.treeType.get(treeInd) == 3) {
+					g.drawImage(Fir2, x - cornerX - Fir1.getWidth() / 2, pixY - cornerY - Fir2.getHeight(), this);
+				}
+				else{
+					if (World.treeDeath.get(treeInd) == true)
+						g.drawImage(Tree_Death, x - cornerX - Tree_Death.getWidth() / 2, pixY - cornerY - Tree_Death.getHeight(), this);
+					else
+						g.drawImage(Tree, x - cornerX - Tree.getWidth() / 2, pixY - cornerY - Tree.getHeight(), this);
+				}
+				treeInd++;
 			}
 			
 			// Draw woods
-			if (woodInd == 0) {
-				while (World.woods.get(woodInd).y < pixY)
-					woodInd++;
-			}
-			if (woodInd < World.woods.size()) {
-				while (World.woods.get(woodInd).y == pixY) {
-					int x = (int) World.woods.get(woodInd).x;
-					if (x < cornerX - 100 || x > cornerX + World.dim.width + 100) {
-						woodInd++;
-						if (woodInd == World.woods.size())
-							break;
-						continue;
-					}
-					if (World.woodStats.get(woodInd) == true)
-						g.drawImage(wood1, x - cornerX - wood1.getWidth() / 2, pixY - cornerY - wood1.getHeight(), this);
-					else
-						g.drawImage(wood2, x - cornerX - wood2.getWidth() / 2, pixY - cornerY - wood2.getWidth() / 2, this);
-					woodInd++;
-					if (woodInd == World.woods.size())
-						break;
-				}
+			woodInd = this.getFirstObjectIndexInY(pixY, woodInd, World.woods);
+			while (woodInd < World.woods.size() && World.woods.get(woodInd).y == pixY) {
+				int x = (int) World.woods.get(woodInd).x;
+				if (x < cornerX - 100 || x > cornerX + World.dim.width + 100) {	woodInd++; continue; }
+				
+				int x_draw = x - cornerX - wood1.getWidth() / 2;
+				int y_draw = pixY - cornerY - wood1.getHeight() / 2;
+				if (World.woodStats.get(woodInd) == true) { g.drawImage(wood1, x_draw, y_draw, this); }
+				else { g.drawImage(wood2, x_draw, y_draw, this); }
+				woodInd++;
 			}
 			
 			// Draw plants
-			if (plantInd == 0) {
-				while (World.plants.get(plantInd).y < pixY)
-					plantInd++;
-			}
-			if (plantInd < World.plants.size()) {
-				while (World.plants.get(plantInd).y == pixY) {
-					int x = (int) World.plants.get(plantInd).x;
-					if (x < cornerX -100 || x > cornerX + World.dim.width + 100) {
-						plantInd++;
-						if (plantInd == World.plants.size())
-							break;
-						continue;
-					}
-					if (World.plantType.get(plantInd) == 1)
-						g.drawImage(plant1, x - cornerX - plant1.getWidth() / 2, pixY - cornerY - plant1.getHeight(), this);
-					if (World.plantType.get(plantInd) == 2)
-						g.drawImage(plant2, x - cornerX - plant2.getWidth() / 2, pixY - cornerY - plant2.getHeight(), this);
-					if (World.plantType.get(plantInd) == 3)
-						g.drawImage(plant3, x - cornerX - plant3.getWidth() / 2, pixY - cornerY - plant3.getHeight(), this);
-					if (World.plantType.get(plantInd) == 4)
-						g.drawImage(plant4, x - cornerX - plant4.getWidth() / 2, pixY - cornerY - plant4.getHeight(), this);
-					plantInd++;
-					if (plantInd == World.plants.size())
-						break;
-				}
+			plantInd = this.getFirstObjectIndexInY(pixY, plantInd, World.plants);
+			while (plantInd < World.plants.size() && World.plants.get(plantInd).y == pixY) {
+				int x = (int) World.plants.get(plantInd).x;
+				if (x < cornerX -100 || x > cornerX + World.dim.width + 100) { plantInd++; continue; }
+
+				if (World.plantType.get(plantInd) == 1)
+					g.drawImage(plant1, x - cornerX - plant1.getWidth() / 2, pixY - cornerY - plant1.getHeight(), this);
+				if (World.plantType.get(plantInd) == 2)
+					g.drawImage(plant2, x - cornerX - plant2.getWidth() / 2, pixY - cornerY - plant2.getHeight(), this);
+				if (World.plantType.get(plantInd) == 3)
+					g.drawImage(plant3, x - cornerX - plant3.getWidth() / 2, pixY - cornerY - plant3.getHeight(), this);
+				if (World.plantType.get(plantInd) == 4)
+					g.drawImage(plant4, x - cornerX - plant4.getWidth() / 2, pixY - cornerY - plant4.getHeight(), this);
+				plantInd++;
 			}
 			
 			// Draw stones
-			if (stoneInd == 0) {
-				while (World.stones.get(stoneInd).y < pixY)
-					stoneInd++;
-			}
-			if (stoneInd < World.stones.size()) {
-				while (World.stones.get(stoneInd).y == pixY) {
-					int x = (int) World.stones.get(stoneInd).x;
-					if (x < cornerX - 100 || x > cornerX + World.dim.width + 100) {
-						stoneInd++;
-						if (stoneInd == World.stones.size())
-							break;
-						continue;
-					}
-					g.drawImage(stone, x - cornerX - stone.getWidth() / 2, pixY - cornerY - stone.getHeight(), this);
-					stoneInd++;
-					if (stoneInd == World.stones.size())
-						break;
-				}
+			stoneInd = this.getFirstObjectIndexInY(pixY, stoneInd, World.stones);
+			while (stoneInd < World.stones.size() && World.stones.get(stoneInd).y == pixY) {
+				int x = (int) World.stones.get(stoneInd).x;
+				if (x < cornerX - 100 || x > cornerX + World.dim.width + 100) {	stoneInd++;	continue; }
+				g.drawImage(stone, x - cornerX - stone.getWidth() / 2, pixY - cornerY - stone.getHeight(), this);
+				stoneInd++;
 			}
 			
 			// Draw rocks
-			if (rockInd == 0) {
-				while (World.rocks.get(rockInd).y < pixY) {
-					rockInd++;
-				}
-			}
-			if (rockInd < World.rocks.size()) {			
-				while (World.rocks.get(rockInd).y == pixY) {
-					int x = (int) World.rocks.get(rockInd).x;
-					if (x < cornerX - 100 || x > cornerX + World.dim.width + 100) {
-						rockInd++;
-						if (rockInd == World.rocks.size())
-							break;
-						continue;
-					}
-					if (World.rockType.get(rockInd) == 1)
-						g.drawImage(rock1, x - cornerX - rock1.getWidth() / 2, pixY - cornerY - rock1.getHeight(), this);
-					else
-						g.drawImage(rock2, x - cornerX - rock2.getWidth() / 2, pixY - cornerY - rock2.getHeight(), this);
-					rockInd++;
-					if (rockInd == World.rocks.size())
-						break;
-				}
+			rockInd = this.getFirstObjectIndexInY(pixY, rockInd, World.rocks);	
+			while (rockInd < World.rocks.size() && World.rocks.get(rockInd).y == pixY) {
+				int x = (int) World.rocks.get(rockInd).x;
+				if (x < cornerX - 100 || x > cornerX + World.dim.width + 100) { rockInd++; continue; }
+
+				if (World.rockType.get(rockInd) == 1)
+					g.drawImage(rock1, x - cornerX - rock1.getWidth() / 2, pixY - cornerY - rock1.getHeight(), this);
+				else
+					g.drawImage(rock2, x - cornerX - rock2.getWidth() / 2, pixY - cornerY - rock2.getHeight(), this);
+				rockInd++;
 			}
 
 			// Draw berries
-			if (berryInd == 0) {
-				while (World.berries.get(berryInd).y < pixY)
-					berryInd++;
+			berryInd = this.getFirstObjectIndexInY(pixY, berryInd, World.berries);
+			while (berryInd < World.berries.size() && World.berries.get(berryInd).y == pixY) {
+				int x = (int) World.berries.get(berryInd).x;
+				if (x < cornerX - 100 || x > cornerX + World.dim.width + 100) {	berryInd++;	continue; }
+
+				if (World.berryStats.get(berryInd) == true)
+					g.drawImage(berryFull, x - cornerX - berryFull.getWidth() / 2, pixY - cornerY - berryFull.getHeight(), this);
+				else
+					g.drawImage(berryEmpty, x - cornerX - berryEmpty.getWidth() / 2, pixY - cornerY - berryEmpty.getHeight(), this);
+				berryInd++;
 			}
-			if  (berryInd < World.berries.size()) {
-				while (World.berries.get(berryInd).y == pixY) {
-					int x = (int) World.berries.get(berryInd).x;
-					if (x < cornerX - 100 || x > cornerX + World.dim.width + 100) {
-						berryInd++;
-						if (berryInd == World.berries.size())
-							break;
-						continue;
-					}
-					if (World.berryStats.get(berryInd) == true)
-						g.drawImage(berryFull, x - cornerX - berryFull.getWidth() / 2, pixY - cornerY - berryFull.getHeight(), this);
-					else
-						g.drawImage(berryEmpty, x - cornerX - berryEmpty.getWidth() / 2, pixY - cornerY - berryEmpty.getHeight(), this);
-					berryInd++;
-					if (berryInd == World.berries.size())
-						break;
-				}
+			
+			// Draw lilies
+			lilyInd = this.getFirstObjectIndexInY(pixY, lilyInd, World.lilies);
+			while (lilyInd < World.lilies.size() && World.lilies.get(lilyInd).y == pixY) {
+				int x = (int) World.lilies.get(lilyInd).x;
+				if (x < cornerX - 100 || x > cornerX + World.dim.width + 100) {	lilyInd++; continue; }
+
+				if (World.lilyType.get(lilyInd) == 1)
+					g.drawImage(lily1, x - cornerX - lily1.getWidth() / 2, pixY - cornerY - lily1.getHeight(), this);
+				if (World.lilyType.get(lilyInd) == 2)
+					g.drawImage(lily2, x - cornerX - lily2.getWidth() / 2, pixY - cornerY - lily2.getHeight(), this);
+				if (World.lilyType.get(lilyInd) == 3)
+					g.drawImage(lily3, x - cornerX - lily3.getWidth() / 2, pixY - cornerY - lily3.getHeight(), this);
+				lilyInd++;
+			}
+
+			// Draw reeds
+			reedInd = this.getFirstObjectIndexInY(pixY, reedInd, World.reeds);
+			while (reedInd < World.reeds.size() && World.reeds.get(reedInd).y == pixY) {
+				int x = (int) World.reeds.get(reedInd).x;
+				if (x < cornerX - 100 || x > cornerX + World.dim.width + 100) {	reedInd++; continue; }
+
+				g.drawImage(reed, x - cornerX - reed.getWidth() / 2 + 20, pixY - cornerY - reed.getHeight() + 20, this);
+				reedInd++;
 			}
 			
 			// Draw wolves
@@ -326,53 +291,6 @@ public class RenderPanel extends JPanel {
 						g.drawImage(fish_left, fishX - cornerX - fish_left.getWidth() / 2, fishY - cornerY - fish_left.getHeight(), this);
 					else
 						g.drawImage(fish_right, fishX  - cornerX - fish_right.getWidth() / 2, fishY - cornerY - fish_right.getHeight(), this);
-				}
-			}
-			
-			// Draw lilies
-			if (lilyInd == 0) {
-				while (World.lilies.get(lilyInd).y < pixY)
-					lilyInd++;
-			}
-			if (lilyInd < World.lilies.size()) {
-				while (World.lilies.get(lilyInd).y == pixY) {
-					int x = (int) World.lilies.get(lilyInd).x;
-					if (x < cornerX - 100 || x > cornerX + World.dim.width + 100) {
-						lilyInd++;
-						if (lilyInd == World.lilies.size())
-							break;
-						continue;
-					}
-					if (World.lilyType.get(lilyInd) == 1)
-						g.drawImage(lily1, x - cornerX - lily1.getWidth() / 2, pixY - cornerY - lily1.getHeight(), this);
-					if (World.lilyType.get(lilyInd) == 2)
-						g.drawImage(lily2, x - cornerX - lily2.getWidth() / 2, pixY - cornerY - lily2.getHeight(), this);
-					if (World.lilyType.get(lilyInd) == 3)
-						g.drawImage(lily3, x - cornerX - lily3.getWidth() / 2, pixY - cornerY - lily3.getHeight(), this);
-					lilyInd++;
-					if (lilyInd == World.lilies.size())
-						break;
-				}
-			}
-
-			// Draw reeds
-			if (reedInd == 0) {
-				while (World.reeds.get(reedInd).y < pixY)
-					reedInd++;
-			}
-			if (reedInd < World.reeds.size()) {
-				while (World.reeds.get(reedInd).y == pixY) {
-					int x = (int) World.reeds.get(reedInd).x;
-					if (x < cornerX - 100 || x > cornerX + World.dim.width + 100) {
-						reedInd++;
-						if (reedInd == World.reeds.size())
-							break;
-						continue;
-					}
-					g.drawImage(reed, x - cornerX - reed.getWidth() / 2 + 20, pixY - cornerY - reed.getHeight() + 20, this);
-					reedInd++;
-					if (reedInd == World.reeds.size())
-						break;
 				}
 			}
 			
@@ -442,9 +360,7 @@ public class RenderPanel extends JPanel {
 		*/
 		
 		// Draw stats
-		Game.player.drawStats(g);
-		// Draw inventory
-		Game.player.drawInventory(g);
+		Game.player.renderStatsInventoryOptions(g);
 		g.drawImage(wood, 60, World.dim.height - 224, this);
 		g.drawImage(stone, 65, World.dim.height - 182, this);
 		g.drawImage(leafe, 65, World.dim.height - 142, this);
@@ -455,25 +371,36 @@ public class RenderPanel extends JPanel {
 		g.drawImage(fish, 180, World.dim.height - 96, this);
 
 		// Draw craftable system
-		if (Game.player.woodCollected >= 5 && Game.player.stoneCollected >= 8)
+		if (Game.player.getWoodCollected() >= 5 && Game.player.getStoneCollected() >= 8)
 			g.drawImage(button1, World.dim.width / 2 - 200, 20, this);
 		else
 			g.drawImage(button1_low, World.dim.width / 2 - 200, 20, this);
-		if (Game.player.woodCollected >= 3 && Game.player.lianaCollected >= 1)
+		if (Game.player.getWoodCollected() >= 3 && Game.player.getLianaCollected() >= 1)
 			g.drawImage(button2, World.dim.width / 2 - 100, 20, this);
 		else
 			g.drawImage(button2_low, World.dim.width / 2 - 100, 20, this);
-		if (Game.player.woodCollected >= 3 && Game.player.lianaCollected >= 8)
+		if (Game.player.getWoodCollected() >= 3 && Game.player.getLianaCollected() >= 8)
 			g.drawImage(button3, World.dim.width / 2, 20, this);
 		else
 			g.drawImage(button3_low, World.dim.width / 2, 20, this);
-		if (Game.player.woodCollected >= 8 && Game.player.lianaCollected >= 4 && Game.player.leaveCollected >= 10)
+		if (Game.player.getWoodCollected() >= 8 && Game.player.getLianaCollected() >= 4 && Game.player.getLeaveCollected() >= 10)
 			g.drawImage(button4, World.dim.width / 2 + 100, 20, this);
 		else
 			g.drawImage(button4_low, World.dim.width / 2 + 100, 20, this);
-		
-		// Show options
-		Game.player.showOptions(g);
+			
+		// show Game over screen
+		if (Game.over == true) {
+			String str = "GAME OVER!";
+			g.setColor(Color.RED);
+			g.setFont(new Font("TimesRoman", Font.PLAIN, 30));
+			g.drawString(str, World.dim.width / 2 - 8 * str.length(), World.dim.height / 2 - 13);		
+			g.setColor(Color.BLACK);
+			g.drawString(str, World.dim.width / 2 - 8 * str.length() + 1, World.dim.height / 2 - 13 + 1);
+			
+			str = "Press 'R' for restart.";
+			g.setFont(new Font("TimesRoman", Font.PLAIN, 22));
+			g.drawString(str, World.dim.width / 2 - 82, World.dim.height / 2 + 10);
+		}
 		
 		// game paused
 		if (Game.paused) {
@@ -483,5 +410,12 @@ public class RenderPanel extends JPanel {
 				g.setColor(Color.WHITE);
 			g.drawString((String) "Paused", World.dim.width / 2 - 40, World.dim.height / 2 + 50);
 		}
+	}
+	
+	private int getFirstObjectIndexInY(int pixYStart, int arrayInd, ArrayList<Point2D.Float> array) {
+		if (arrayInd == 0) {
+			while (arrayInd < array.size() && array.get(arrayInd).y < pixYStart) {	arrayInd++; }
+		}
+		return arrayInd;
 	}
 }

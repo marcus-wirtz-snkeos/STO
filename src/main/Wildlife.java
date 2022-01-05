@@ -112,7 +112,7 @@ public class Wildlife {
 			float velX = World.rabbitVel.get(i).x, velY = World.rabbitVel.get(i).y;
 			
 			for (int j = 0; j < World.craftables.size(); j++) {
-				if (World.craftableType.get(j) == 2 && World.craftableScore.get(j) >= 1) {
+				if (World.craftableType.get(j) == 2 && World.craftableScore.get(j) == 100) {
 					float xdir = rabbitX - World.craftables.get(j).x;
 					float ydir = rabbitY - World.craftables.get(j).y;
 					if (Math.sqrt(xdir * xdir + ydir * ydir) < 20) {
@@ -192,7 +192,7 @@ public class Wildlife {
 			float velX = World.fishVel.get(i).x, velY = World.fishVel.get(i).y;
 			
 			for (int j = 0; j < World.craftables.size(); j++) {
-				if (World.craftableType.get(j) == 3 && World.craftableScore.get(j) >= 1) {
+				if (World.craftableType.get(j) == 3 && World.craftableScore.get(j) == 100) {
 					float xdir = fishX - World.craftables.get(j).x;
 					float ydir = fishY - World.craftables.get(j).y;
 					if (Math.sqrt(xdir * xdir + ydir * ydir) < 20) {

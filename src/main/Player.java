@@ -10,90 +10,99 @@ import java.util.Random;
 public class Player {
 
 	private Point2D.Float position;
-	public static float pTired = (float) 0.001;
-	public static float playerMovement = (float) 4;
+	private static float playerMovement = (float) 4;
 	private int condition, tired, hungry, thirsty;
-	public int woodCollected, stoneCollected, leaveCollected, lianaCollected, berryCollected, meatCollected, rawMeatCollected, fishCollected;
+	private int woodCollected, stoneCollected, leaveCollected, lianaCollected;
+	private int berryCollected, meatCollected, rawMeatCollected, fishCollected;
 	private boolean craft, cook, harvest, hidden;
 	private int craftableAction;
 	private int craftTime, harvestTime, cookTime;
 	private String direction;
 	
-	static Random random =  new Random();
+	private static Random random =  new Random();
 	
-	public Player() {
-
+	Player() {
+		
 		// Set initial stats
-		condition = 100;
-		tired = 100;
-		hungry = 100;
-		thirsty = 100;
+		this.condition = 100;
+		this.tired = 100;
+		this.hungry = 100;
+		this.thirsty = 100;
 		
 		// Set inventory
-		woodCollected = 0;
-		stoneCollected = 0;
-		leaveCollected = 0;
-		lianaCollected = 0;
-		berryCollected = 0;
-		meatCollected = 0;
-		rawMeatCollected = 0;
-		fishCollected = 0;
+		this.woodCollected = 0;
+		this.stoneCollected = 0;
+		this.leaveCollected = 0;
+		this.lianaCollected = 0;
+		this.berryCollected = 0;
+		this.meatCollected = 0;
+		this.rawMeatCollected = 0;
+		this.fishCollected = 0;
 		
 		// define actions
-		craftableAction = 1;
+		this.craftableAction = 1;
 		
 		// time to finish actions
-		resetCooking();
-		resetHarvesting();
-		resetCrafting();
-		hidden = false;
+		this.resetCooking();
+		this.resetHarvesting();
+		this.resetCrafting();
+		this.hidden = false;
 	}
 
 	public void initPosition() {
 		// Set player start
-		direction = "Down";
+		this.direction = "Down";
 		int startX = 0;
 		int startY = 0;
 		while (true) {
-			startX = random.nextInt(World.worldX / 3) + World.worldX / 3;
-			startY = random.nextInt(World.worldY / 3) + World.worldY / 3;
+			startX = Player.random.nextInt(World.worldX / 3) + World.worldX / 3;
+			startY = Player.random.nextInt(World.worldY / 3) + World.worldY / 3;
 			if ((World.checkWolve(startX, startY) < 0 && 
 				 World.checkLake(startX, startY, -5) < 0) && 
 				 World.checkRock(startX, startY, 50, true) < 0)
 				break;
 		}
-		position = new Point2D.Float((float) startX, (float) startY);
+		this.position = new Point2D.Float((float) startX, (float) startY);
 	}
+	
+	// public getter function to access variables from outside
+	public float getX() { return this.position.x; }
+	public float getY() { return this.position.y; }
+	public String getDirection() { return this.direction; }
+	public float getCondition() { return this.condition; }
+	public float getTired() { return this.tired; }
+	public float getHungry() { return this.hungry; }
+	public float getThirsty() { return this.thirsty; }
+	
+	public int getWoodCollected() { return this.woodCollected; }
+	public int getStoneCollected() { return this.stoneCollected; }
+	public int getLianaCollected() { return this.lianaCollected; }
+	public int getLeaveCollected() { return this.leaveCollected; }
+	
+	public boolean doingAction() { return (this.hidden == true || this.cook == true || this.craft == true || this.harvest == true); }
+	public boolean isHidden() { return this.hidden; }
+	
+	// private functions which are only used within the class
+	private void addCondition(int add) { this.condition = Math.max(0, Math.min(this.condition + add, 100)); }
+	private void addTired(int add) { this.tired = Math.max(0, Math.min(this.tired + add, 100)); }
+	private void addHungry(int add) { this.hungry = Math.max(0, Math.min(this.hungry + add, 100)); }
+	private void addThirsty(int add) { this.thirsty = Math.max(0, Math.min(this.thirsty + add, 100)); }
 
-	public float getX() { return position.x; }
-	public float getY() { return position.y; }
-	public void addX(float x) { position.x += x; }
-	public void addY(float y) { position.y += y; }
-	public float getCondition() { return condition; }
-	public float getTired() { return tired; }
-	public float getHungry() { return hungry; }
-	public float getThirsty() { return thirsty; }
-	public String getDirection() { return direction; }
-	public void setDirection(String dir) { direction = dir; }
+	private void addX(float x) { this.position.x += x; }
+	private void addY(float y) { this.position.y += y; }
+	private void setDirection(String dir) { this.direction = dir; }
 	
-	public void addCondition(int add) { condition = Math.max(0, Math.min(condition + add, 100)); }
-	public void addTired(int add) { tired = Math.max(0, Math.min(tired + add, 100)); }
-	public void addHungry(int add) { hungry = Math.max(0, Math.min(hungry + add, 100)); }
-	public void addThirsty(int add) { thirsty = Math.max(0, Math.min(thirsty + add, 100)); }
-
-	public void resetHarvesting() { harvest = false; harvestTime = 200; }
-	public void resetCooking() { cook = false; cookTime = 300; }
-	public void resetCrafting() { craft = false; craftTime = 400; }
+	private void resetHarvesting() { this.harvest = false; this.harvestTime = 200; }
+	private void resetCooking() { this.cook = false; this.cookTime = 300; }
+	private void resetCrafting() { this.craft = false; this.craftTime = 400; }
 	
-	public boolean doingAction() { return (hidden == true || cook == true || craft == true || harvest == true); }
-	public boolean isHidden() { return hidden; }
-	
+	// functions that are executed upon key hits
 	public void fuelFire() {
-		if (this.doingAction() == false && woodCollected >= 1) {
+		if (this.doingAction() == false && this.woodCollected >= 1) {
 			for (int i = 0; i < World.craftables.size(); i++) {
 				if (World.craftableType.get(i) == 1) {
 					if (this.checkDistance(World.craftables.get(i), (float) 50)) {
-						woodCollected -= 1;
+						this.woodCollected -= 1;
 						World.craftableScore.set(i, Math.min(100, World.craftableScore.get(i) + 20));
 					}
 				}
@@ -102,16 +111,16 @@ public class Player {
 	}
 	
 	public void eatBerry() {
-		if (this.doingAction() == false && berryCollected > 0) {
-			berryCollected -= 1;
+		if (this.doingAction() == false && this.berryCollected > 0) {
+			this.berryCollected -= 1;
 			this.addHungry(5);
 			this.addThirsty(1);
 		}
 	}
 	
 	public void eatMeat() {
-		if (this.doingAction() == false && meatCollected > 0) {
-			meatCollected -= 1;
+		if (this.doingAction() == false && this.meatCollected > 0) {
+			this.meatCollected -= 1;
 			this.addHungry(40);
 			this.addThirsty(-5);
 		}
@@ -124,7 +133,7 @@ public class Player {
 			return;
 		}
 		
-		if (craft == true) {
+		if (this.craft == true) {
 			int idx = World.craftables.size() - 1;
 			World.removeCraftable(idx);
 		}
@@ -133,17 +142,41 @@ public class Player {
 		this.resetCrafting();
 	}
 	
+	public void hideShelter() {
+		if (this.cook == false && this.craft == false && this.harvest == false) {
+			if (this.hidden == true) { this.hidden = false; }
+			else {
+				for (int i = 0; i < World.craftables.size(); i++) {
+					if (World.craftableType.get(i) == 4) {
+						if (this.checkDistance(World.craftables.get(i), 50))
+							this.hidden = true;
+					}
+				}
+			}
+		}
+	}
 	
-	public void stats() {
+	// update function for the game
+	public void update() {
+		this.stats();
+		this.collectItems();
+		this.cooking();
+		this.harvesting();
+		this.crafting();
+		this.searching();
+		this.move();
+	}
+	
+	private void stats() {
 
 		// drink
 		Point2D.Float dir;
-		dir = this.newDirection(playerMovement);
+		dir = this.newDirection(Player.playerMovement);
 		if (World.checkLake(dir.x, dir.y, 0) >= 0) { this.addThirsty(1); }
 		
 		// get hungrier / thirstier
 		if (Game.tick % 30 == 0) {
-			if (random.nextFloat() < 0.4){
+			if (Player.random.nextFloat() < 0.4){
 				if (this.getHungry() > 0) { this.addHungry(-1); }
 				else { this.addCondition(-1); }
 			}
@@ -154,7 +187,7 @@ public class Player {
 		}
 		
 		if (Game.tick % 100 == 0 && this.getTired() > 50 && this.getHungry() > 50 && this.getThirsty() > 50)
-			if (hidden == false) { this.addCondition(1); }
+			if (this.hidden == false) { this.addCondition(1); }
 			else { this.addCondition(2); }
 
 		if (Game.tick % 5 == 0 && Game.keys[KeyEvent.VK_SHIFT] && this.getTired() > 0)
@@ -166,40 +199,171 @@ public class Player {
 		if (this.getCondition() == 0)
 			Game.over = true;
 	}
-	
-	public Point2D.Float newDirection(float movement) {
 
-		float move_to_x = this.getX();
-		float move_to_y = this.getY();
-		if (this.getDirection() == "Up") { move_to_y -= movement;	}
-		if (this.getDirection() == "Down") { move_to_y += movement; }
-		if (this.getDirection() == "Left") { move_to_x -= movement; }
-		if (this.getDirection() == "Right") { move_to_x += movement; }
-		return new Point2D.Float((float) move_to_x, (float) move_to_y);
+	private void collectItems() {
+		int berryIndex = World.checkBerry(this.getX(), this.getY());
+		if (berryIndex >= 0 && World.berryStats.get(berryIndex) == true) {
+			World.berryStats.set(berryIndex, false);
+			this.berryCollected += 3;
+		}
+		
+		int woodIndex = World.checkWood(this.getX(), this.getY());
+		if (woodIndex >= 0) {
+			World.nWoods -= 1;
+			World.woods.remove(woodIndex);
+			World.woodStats.remove(woodIndex);
+			this.woodCollected += 1;
+		}
+		
+		int stoneIndex = World.checkStone(this.getX(), this.getY());
+		if (stoneIndex >= 0) {
+			World.nStones -= 1;
+			World.stones.remove(stoneIndex);
+			this.stoneCollected += 1;
+		}
 	}
 	
-	public boolean directionBlocked(float movement) {
+	private void cooking() {
 
-		Point2D.Float dir;
-		dir = this.newDirection(movement);
-		boolean end_world = dir.x < 5 || dir.x > World.worldX - 5 || dir.y < 5 || dir.y > World.worldY - 5;
-		boolean hit_lake = World.checkLake(dir.x, dir.y, 0) >= 0;
-		boolean hit_craft = World.checkCraftable(dir.x, dir.y) >= 0;
-		boolean hit_rock = World.checkRock(dir.x, dir.y, 50, true) >= 0;
-
-		return end_world || hit_lake || hit_craft || hit_rock;
+		if (this.cook) {
+			if (this.cookTime > 0 && World.craftableScore.get(this.craftableAction) >= 1) { this.cookTime -= 1; }	// still cooking
+			else {
+				this.resetCooking();
+				if (World.craftableScore.get(this.craftableAction) >= 1) { this.meatCollected += 1; }
+			}
+		}
+		
+		if (Game.keys[KeyEvent.VK_SPACE] && this.doingAction() == false) {
+			for (int i = 0; i < World.craftables.size(); i++) {
+				if (World.craftableType.get(i) == 1 && World.craftableScore.get(i) >= 1 && (this.rawMeatCollected > 0 || this.fishCollected > 0)) {
+					if (this.checkDistance(World.craftables.get(i), 50)) {
+						this.cook = true;
+						this.craftableAction = i;
+						if (this.rawMeatCollected > 0) { this.rawMeatCollected -= 1; }
+						else if (this.fishCollected > 0) { this.fishCollected -= 1; }
+					}
+				}
+			}
+		}
 	}
 	
-	public void move() {
+	private void harvesting() {
+		
+		if (this.harvest) {
+			if (this.harvestTime > 0) {	this.harvestTime -= 1; return; }  // still harvesting
+			this.resetHarvesting();
+
+			if (World.craftableType.get(this.craftableAction) == 2) { this.rawMeatCollected += 1; }
+			else if (World.craftableType.get(this.craftableAction) == 3) { this.fishCollected += 1; }
+
+			if (Player.random.nextFloat() < 0.2) { World.removeCraftable(this.craftableAction); }
+			else {World.craftableScore.set(this.craftableAction, 100); }
+		}
+
+		if (Game.keys[KeyEvent.VK_SPACE] && !this.doingAction()) {
+			for (int i = 0; i < World.craftables.size(); i++) {
+				float disx = World.craftables.get(i).x - this.getX();
+				float disy = World.craftables.get(i).y - this.getY();
+				if ((World.craftableType.get(i) == 2 || World.craftableType.get(i) == 3) && 
+						World.craftableScore.get(i) == 0 && Math.sqrt(disx * disx + disy * disy) < 50) {
+					this.harvest = true;
+					this.craftableAction = i;
+				}
+			}
+		}			
+	}
+	
+	private void crafting() {
+		
+		if (this.craft) {
+			if (this.craftTime > 0) { this.craftTime -= 1; return; } // still crafting
+			this.resetCrafting();
+			World.craftableScore.set(World.craftableScore.size()-1, 100);
+		}
+		
+		// craft campfire
+		if (Game.keys[KeyEvent.VK_1] && this.woodCollected >= 5 && this.stoneCollected >= 8) {
+			this.craft = true;
+			this.woodCollected -= 5;
+			this.stoneCollected -= 8;
+			World.addCraftable(30);
+			World.craftableType.add(1);
+			World.craftableScore.add(0);
+		}
+		// craft snare
+		else if (Game.keys[KeyEvent.VK_2] && this.woodCollected >= 3 && this.lianaCollected >= 1) {
+			this.craft = true;
+			this.woodCollected -= 3;
+			this.lianaCollected -= 1;
+			World.addCraftable(30);
+			World.craftableType.add(2);
+			World.craftableScore.add(1);
+		}
+		// craft fish trap
+		else if (Game.keys[KeyEvent.VK_3] && this.woodCollected >= 3 && this.lianaCollected >= 8 ) {
+
+			Point2D.Float test_dir = this.newDirection(Player.playerMovement);
+			if (World.checkLake(test_dir.x, test_dir.y, 0) >= 0) {
+				this.craft = true;
+				this.woodCollected -= 3;
+				this.lianaCollected -= 8;
+				World.addCraftable(40);
+				World.craftableType.add(3);
+				World.craftableScore.add(1);
+			}
+		}
+		else if (Game.keys[KeyEvent.VK_4] && this.woodCollected >= 8 && this.lianaCollected >= 4 && this.leaveCollected >= 10) {
+				this.craft = true;
+				
+				this.woodCollected -= 8;
+				this.lianaCollected -= 4;
+				this.leaveCollected -= 10;
+				World.addCraftable(50);
+				World.craftableType.add(4);
+				World.craftableScore.add(1);
+		}
+	}
+	
+	private void searching() {
+		
+		if (Game.keys[KeyEvent.VK_SPACE] && !this.doingAction()) {
+			float pWood = 0, pLiana = 0;
+			for (int i = 0; i < World.trees.size(); i++) {
+				if (this.checkDistance(World.trees.get(i), 50)) {
+					if (World.treeDeath.get(i) == true) { pWood += 0.003; pLiana += 0.001; }
+					else { pWood += 0.001; pLiana += 0.002;	}
+				}
+			}
+			
+			if (Player.random.nextFloat() < pWood) { this.woodCollected += 1; }
+			if (Player.random.nextFloat() < pLiana) { this.lianaCollected += 1; }
+			
+			// search stones
+			float pStones = 0;
+			for (int i = 0; i < World.rocks.size(); i++) {
+				if (this.checkDistance(World.rocks.get(i), 50)) { pStones += 0.003; }
+			}
+			if (Player.random.nextFloat() < pStones) { this.stoneCollected += 1; }
+			
+			// search leaves
+			float pLeave = 0;
+			for (int i = 0; i < World.plants.size(); i++) {
+				if (this.checkDistance(World.plants.get(i), 50)) { pLeave += 0.004; }
+			}
+			if (Player.random.nextFloat() < pLeave) { this.leaveCollected += 1; }
+		}
+	}
+	
+	private void move() {
 		if (this.doingAction() || Game.keys[KeyEvent.VK_SPACE] == true)
 			return;
 
-		float movement = playerMovement;
-		movement -= (0.03 * stoneCollected + 0.01 * woodCollected + 0.001 * leaveCollected + 
-				0.002 * lianaCollected + 0.001 * berryCollected);
-		movement = Math.max(movement, playerMovement / 10);
+		float movement = Player.playerMovement;
+		movement -= (0.03 * this.stoneCollected + 0.01 * this.woodCollected + 0.001 * this.leaveCollected + 
+				0.002 * this.lianaCollected + 0.001 * this.berryCollected);
+		movement = Math.max(movement, Player.playerMovement / 10);
 
-		if (Game.keys[KeyEvent.VK_SHIFT] && this.getTired() > 0) 
+		if (Game.keys[KeyEvent.VK_SHIFT] && this.tired > 0) 
 			movement *= 1.5;
 		
 		if((Game.keys[KeyEvent.VK_W] && Game.keys[KeyEvent.VK_A]) || (Game.keys[KeyEvent.VK_W] && Game.keys[KeyEvent.VK_D]) || 
@@ -234,193 +398,51 @@ public class Player {
 	    }
 	}
 	
-	public void cooking() {
-
-		if (Game.keys[KeyEvent.VK_SPACE] && cook == false && craft == false && harvest == false && hidden == false) {
-			for (int i = 0; i < World.craftables.size(); i++) {
-				if (World.craftableType.get(i) == 1 && World.craftableScore.get(i) >= 1 && (rawMeatCollected > 0 || fishCollected > 0)) {
-					if (this.checkDistance(World.craftables.get(i), 50)) {
-						cook = true;
-						craftableAction = i;
-						if (rawMeatCollected > 0) {	rawMeatCollected -= 1; }
-						else if (fishCollected > 0) { fishCollected -= 1; }
-					}
-				}
-			}
-		}
-		else if (cook == true) {			
-			if (cookTime > 0 && World.craftableScore.get(craftableAction) >= 1) { cookTime -= 1; }
-			else {
-				this.resetCooking();
-				if (World.craftableScore.get(craftableAction) >= 1)
-					meatCollected += 1;	
-			}
-		}
-	}
 	
-	public void harvesting() {
-
-		if (Game.keys[KeyEvent.VK_SPACE] && !this.doingAction()) {
-			for (int i = 0; i < World.craftables.size(); i++) {
-				float disx = World.craftables.get(i).x - this.getX();
-				float disy = World.craftables.get(i).y - this.getY();
-				if ((World.craftableType.get(i) == 2 || World.craftableType.get(i) == 3) && 
-						World.craftableScore.get(i) == 0 && Math.sqrt(disx * disx + disy * disy) < 50) {
-					harvest = true;
-					craftableAction = i;
-				}
-			}
-		}
-		else if (harvest == true) {
-			
-			if (harvestTime > 0) {
-				// still harvesting
-				harvestTime -= 1;
-				return;
-			}
-
-			this.resetHarvesting();
-
-			if (World.craftableType.get(craftableAction) == 2) 
-				rawMeatCollected += 1;
-			else if (World.craftableType.get(craftableAction) == 3)
-				fishCollected += 1;
-
-			if (random.nextFloat() < 0.2) { World.removeCraftable(craftableAction); }
-			else {World.craftableScore.set(craftableAction, 100); }
-		}
-	}
-	
-	public void searching() {
-		
-		if (Game.keys[KeyEvent.VK_SPACE] && !this.doingAction()) {
-			float pWood = 0, pLiana = 0;
-			for (int i = 0; i < World.trees.size(); i++) {
-				if (this.checkDistance(World.trees.get(i), 50)) {
-					if (World.treeDeath.get(i) == true) { pWood += 0.003; pLiana += 0.001; }
-					else { pWood += 0.001; pLiana += 0.002;	}
-				}
-			}
-			
-			if (random.nextFloat() < pWood) { woodCollected += 1; }
-			if (random.nextFloat() < pLiana) { lianaCollected += 1; }
-			
-			// search stones
-			float pStones = 0;
-			for (int i = 0; i < World.rocks.size(); i++) {
-				if (this.checkDistance(World.rocks.get(i), 50)) { pStones += 0.003; }
-			}
-			if (random.nextFloat() < pStones) { stoneCollected += 1; }
-			
-			// search leaves
-			float pLeave = 0;
-			for (int i = 0; i < World.plants.size(); i++) {
-				if (this.checkDistance(World.plants.get(i), 50)) { pLeave += 0.004; }
-			}
-			if (random.nextFloat() < pLeave) { leaveCollected += 1; }
-		}
-	}
-	
-	public void crafting() {
-		
-		if (craft == true) {
-			if (craftTime > 0) {
-				craftTime -= 1;
-				return;
-			}
-			this.resetCrafting();
-		}
-	
-		if (Game.keys[KeyEvent.VK_1] && woodCollected >= 5 && stoneCollected >= 8) {
-			craft = true;
-			woodCollected -= 5;
-			stoneCollected -= 8;
-			World.addCraftable(30);
-			World.craftableType.add(1);
-			World.craftableScore.add(100);
-		}
-		else if (Game.keys[KeyEvent.VK_2] && woodCollected >= 3 && lianaCollected >= 1) {
-			craft = true;
-			woodCollected -= 3;
-			lianaCollected -= 1;
-			World.addCraftable(30);
-			World.craftableType.add(2);
-			World.craftableScore.add(100);
-		}
-		else if (Game.keys[KeyEvent.VK_3] && woodCollected >= 3 && lianaCollected >= 8 ) {
-
-			if (World.checkLake(this.getX(), this.getY(), -20) >= 0) {
-				craft = true;
-				woodCollected -= 3;
-				lianaCollected -= 8;
-				World.addCraftable(40);
-				World.craftableType.add(3);
-				World.craftableScore.add(100);
-			}
-		}
-		else if (Game.keys[KeyEvent.VK_4] && woodCollected >= 8 && lianaCollected >= 4 && leaveCollected >= 10) {
-				craft = true;
-				
-				woodCollected -= 8;
-				lianaCollected -= 4;
-				leaveCollected -= 10;
-				World.addCraftable(50);
-				World.craftableType.add(4);
-				World.craftableScore.add(100);
-		}
-	}
-	
-	public void collectItems() {
-		int berryIndex = World.checkBerry(Game.player.getX(), Game.player.getY());
-		if (berryIndex >= 0 && World.berryStats.get(berryIndex) == true) {
-			World.berryStats.set(berryIndex, false);
-			berryCollected += 3;
-		}
-		
-		int woodIndex = World.checkWood(Game.player.getX(), Game.player.getY());
-		if (woodIndex >= 0) {
-			World.nWoods -= 1;
-			World.woods.remove(woodIndex);
-			World.woodStats.remove(woodIndex);
-			woodCollected += 1;
-		}
-		
-		int stoneIndex = World.checkStone(Game.player.getX(), Game.player.getY());
-		if (stoneIndex >= 0) {
-			World.nStones -= 1;
-			World.stones.remove(stoneIndex);
-			stoneCollected += 1;
-		}
-	}
-
-	public void hideShelter() {
-		if (cook == false && craft == false && harvest == false) {
-			if (hidden == true) {
-				hidden = false;
-				return;
-			}
-			for (int i = 0; i < World.craftables.size(); i++) {
-				if (World.craftableType.get(i) == 4) {
-					if (this.checkDistance(World.craftables.get(i), 50))
-						hidden = true;
-				}
-			}
-		}
-	}
-	
-	public Boolean checkDistance(Point2D.Float point, float distance) {
-		float disx = point.x - position.x;
-		float disy = point.y - position.y;
+	private Boolean checkDistance(Point2D.Float point, float distance) {
+		float disx = point.x - this.getX();
+		float disy = point.y - this.getY();
 		return Math.sqrt(disx * disx + disy * disy) < distance;
 	}
 	
-	public void drawStats(Graphics g) {
+	
+	private Point2D.Float newDirection(float movement) {
+		
+		Point2D.Float test_position = new Point2D.Float(this.getX(), this.getY());
+		if (this.direction == "Up") { test_position.y -= movement;	}
+		if (this.direction == "Down") { test_position.y += movement; }
+		if (this.direction == "Left") { test_position.x -= movement; }
+		if (this.direction == "Right") { test_position.x += movement; }
+		return test_position;
+	}
+	
+	
+	private boolean directionBlocked(float movement) {
+
+		Point2D.Float dir;
+		dir = this.newDirection(movement);
+		boolean end_world = dir.x < 5 || dir.x > World.worldX - 5 || dir.y < 5 || dir.y > World.worldY - 5;
+		boolean hit_lake = World.checkLake(dir.x, dir.y, 0) >= 0;
+		boolean hit_craft = World.checkCraftable(dir.x, dir.y) >= 0;
+		boolean hit_rock = World.checkRock(dir.x, dir.y, 50, true) >= 0;
+
+		return end_world || hit_lake || hit_craft || hit_rock;
+	}
+	
+	// painting functions
+	public void renderStatsInventoryOptions(Graphics g) {
+		this.drawStats(g);
+		this.drawInventory(g);
+		this.showOptions(g);
+	}
+	
+	private void drawStats(Graphics g) {
 		g.setFont(new Font("TimesRoman", Font.PLAIN, 22));
 		
-		String str = "Condition: " + condition;
+		String str = "Condition: " + this.condition;
 		g.setColor(Color.WHITE);
 		g.drawString(str, World.dim.width - 199, World.dim.height - 169);
-		if (this.getCondition() < 10) {
+		if (this.condition < 10) {
 			if (Game.tick % 15 < 5)
 				g.setColor(Color.BLACK);
 			else
@@ -430,37 +452,37 @@ public class Player {
 			g.setColor(Color.BLACK);
 		g.drawString(str, World.dim.width - 200, World.dim.height - 170);
 		
-		str = "Tired: " + tired;
+		str = "Tired: " + this.tired;
 		g.setColor(Color.WHITE);
 		g.drawString(str, World.dim.width - 199, World.dim.height - 139);
-		if (this.getTired() == 0) { g.setColor(Color.RED); }
-		else if (this.getTired() < 50 && this.getCondition() < 100) { g.setColor(Color.YELLOW); }
+		if (this.tired == 0) { g.setColor(Color.RED); }
+		else if (this.tired < 50 && this.condition < 100) { g.setColor(Color.YELLOW); }
 		else { g.setColor(Color.BLACK); }
 		g.drawString(str, World.dim.width - 200, World.dim.height - 140);	
 
-		str = "Hungry: " + hungry;
+		str = "Hungry: " + this.hungry;
 		g.setColor(Color.WHITE);
 		g.drawString(str, World.dim.width - 199, World.dim.height - 109);
-		if (this.getHungry() == 0) {
+		if (this.hungry == 0) {
 			if (Game.tick % 15 < 5)
 				g.setColor(Color.BLACK);
 			else
 				g.setColor(Color.RED);
 		}
-		else if (this.getHungry() < 50 && this.getCondition() < 100) { g.setColor(Color.YELLOW); }
+		else if (this.hungry < 50 && this.condition < 100) { g.setColor(Color.YELLOW); }
 		else { g.setColor(Color.BLACK); }
 		g.drawString(str, World.dim.width - 200, World.dim.height - 110);
 
-		str = "Thirsty: " + thirsty;
+		str = "Thirsty: " + this.thirsty;
 		g.setColor(Color.WHITE);
 		g.drawString(str, World.dim.width - 199, World.dim.height - 79);
-		if (this.getThirsty() == 0) {
+		if (this.thirsty == 0) {
 			if (Game.tick % 15 < 5)
 				g.setColor(Color.BLACK);
 			else
 				g.setColor(Color.RED);
 		}
-		else if (this.getThirsty() < 50 && this.getCondition() < 100) { g.setColor(Color.YELLOW); }
+		else if (this.thirsty < 50 && this.condition < 100) { g.setColor(Color.YELLOW); }
 		else { g.setColor(Color.BLACK); }
 		g.drawString(str, World.dim.width - 200, World.dim.height - 80);	
 		
@@ -472,38 +494,38 @@ public class Player {
 		g.drawString(str, 10, 20);
 	}
 	
-	public void drawInventory(Graphics g) {
-		String str = woodCollected + " x ";
+	private void drawInventory(Graphics g) {
+		String str = this.woodCollected + " x ";
 		g.drawString(str, 15, World.dim.height - 200);
-		str = stoneCollected + " x ";
+		str = this.stoneCollected + " x ";
 		g.drawString(str, 15, World.dim.height - 160);
-		str = leaveCollected + " x ";
+		str = this.leaveCollected + " x ";
 		g.drawString(str, 15, World.dim.height - 120);
-		str = lianaCollected + " x ";
+		str = this.lianaCollected + " x ";
 		g.drawString(str, 15, World.dim.height - 80);
-		str = berryCollected + " x           (e)";
+		str = this.berryCollected + " x           (e)";
 		g.drawString(str, 130, World.dim.height - 200);
-		str = meatCollected + " x           (r)";
+		str = this.meatCollected + " x           (r)";
 		g.drawString(str, 130, World.dim.height - 160);
-		str = rawMeatCollected + " x ";
+		str = this.rawMeatCollected + " x ";
 		g.drawString(str, 130, World.dim.height - 120);
-		str = fishCollected + " x ";
+		str = this.fishCollected + " x ";
 		g.drawString(str, 130, World.dim.height - 80);
 	}
 	
-	public void showOptions(Graphics g) {
+	private void showOptions(Graphics g) {
 		if (this.doingAction() == false) {
 			for (int i = 0; i < World.craftables.size(); i++) {
 				if (this.checkDistance(World.craftables.get(i), 50)) {
 					String str;
 					g.setColor(Color.BLACK);
-					if (World.craftableType.get(i) == 1) {
+					if (World.craftableType.get(i) == 1 && this.woodCollected > 0) {
 						str = "Press [F] for fueling the fire";
 						g.drawString(str, World.dim.width / 2 - 150, World.dim.height - 160);
 					}
 	
 					if (World.craftableType.get(i) == 1 && World.craftableScore.get(i) >= 1
-							&& (rawMeatCollected > 0 || fishCollected > 0)) {
+							&& (this.rawMeatCollected > 0 || this.fishCollected > 0)) {
 						str = "Press [Space] for cooking";
 					}
 					else if (World.craftableType.get(i) == 2 && World.craftableScore.get(i) < 1)
@@ -523,32 +545,32 @@ public class Player {
 			String str = "Searching...";
 			g.setColor(Color.WHITE);
 			g.drawString(str, World.dim.width / 2 - 50, World.dim.height - 100);
-			g.fillRect(World.dim.width / 2 - 100, World.dim.height - 90, (int) (5 * Game.tick % 200), 10);
+			g.fillRect(World.dim.width / 2 - 100, World.dim.height - 90, (int) (5 * Game.tick % 220), 10);
 		}
 
-		if (hidden == true) {
+		if (this.hidden == true) {
 			String str = "Hidden in shelter!";
 			g.setColor(Color.WHITE);
 			g.drawString(str, World.dim.width / 2 - 80, World.dim.height - 100);
 		}
 
-		if (craft == true) {
+		if (this.craft == true) {
 			String str = "Crafting...";
 			g.setColor(Color.WHITE);
 			g.drawString(str, World.dim.width / 2 - 70, World.dim.height - 100);
-			for (int i = 0; i < 400 - craftTime; i++)
+			for (int i = 0; i < 400 - this.craftTime; i++)
 				g.fillRect(World.dim.width / 2 - 200 + i, World.dim.height - 90, 1, 10);
 		}
 		
-		if (cook == true) {
+		if (this.cook == true) {
 			String str = "Cooking...";
 			g.setColor(Color.WHITE);
 			g.drawString(str, World.dim.width / 2 - 70, World.dim.height - 100);
-			for (int i = 0; i < 300-cookTime; i++)
+			for (int i = 0; i < 300 - this.cookTime; i++)
 				g.fillRect(World.dim.width / 2 - 200 + (int) ((float) 400 / 300) *i, World.dim.height - 90, (int) ((float) 400 / 300), 10);
 		}
 		
-		if (harvest == true) {
+		if (this.harvest == true) {
 			String str = "";
 			if (World.craftableType.get(craftableAction) == 2)
 				str = "Harvesting rabbit...";
@@ -560,23 +582,11 @@ public class Player {
 				g.fillRect(World.dim.width / 2 - 200 + 2*i, World.dim.height - 90, 2, 10);
 		}
 		
-		if (Game.keys[KeyEvent.VK_SHIFT] && tired > 0) {
+		if (Game.keys[KeyEvent.VK_SHIFT] && this.tired > 0) {
 			String str = "Running...";
 			g.setColor(Color.RED);
 			g.drawString(str, World.dim.width / 2 - 70, World.dim.height - 100);
 		}
 		
-		if (Game.over == true) {
-			String str = "GAME OVER!";
-			g.setColor(Color.RED);
-			g.setFont(new Font("TimesRoman", Font.PLAIN, 30));
-			g.drawString(str, World.dim.width / 2 - 8 * str.length(), World.dim.height / 2 - 13);		
-			g.setColor(Color.BLACK);
-			g.drawString(str, World.dim.width / 2 - 8 * str.length() + 1, World.dim.height / 2 - 13 + 1);
-			
-			str = "Press 'R' for restart.";
-			g.setFont(new Font("TimesRoman", Font.PLAIN, 22));
-			g.drawString(str, World.dim.width / 2 - 82, World.dim.height / 2 + 10);
-		}
 	}
 }

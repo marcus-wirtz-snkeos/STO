@@ -21,7 +21,7 @@ public class World {
 	
 	public static int nLakes = 10;
 	public static int nBerries = 15, nStones = 10, nWoods = 10;
-	public static int nWolves = 3, nRabbits = 10, nFishes = 20;
+	public static int nWolves = 2, nRabbits = 10, nFishes = 20;
 	public static int nTrees = 400, nPlants = 100, nRocks = 20, nLilies = 100, nReeds = 100;
 	public static float pPine1, pPine2, pFir1, pFir2, pTree, pDeath, pPlant1, pPlant2, pPlant3, pPlant4, pRock1, pRock2, pLily1, pLily2, pLily3;
 	
