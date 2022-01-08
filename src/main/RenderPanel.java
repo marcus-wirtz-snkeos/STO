@@ -72,11 +72,11 @@ public class RenderPanel extends JPanel {
 			fish_right = ImageIO.read(new File(imagePath + "fish_right.png"));
 			
 			stone = ImageIO.read(new File(imagePath + "stone.gif"));
+			// stone = ImageIO.read(new File(imagePath + "stone2.gif"));
 			rock1 = ImageIO.read(new File(imagePath + "rock1.gif"));
 			rock2 = ImageIO.read(new File(imagePath + "rock2.gif"));
 			
 			wood = ImageIO.read(new File(imagePath + "wood.gif"));
-			stone = ImageIO.read(new File(imagePath + "stone2.gif"));
 			leafe = ImageIO.read(new File(imagePath + "leafe.gif"));
 			liana = ImageIO.read(new File(imagePath + "liana.gif"));
 			
@@ -131,14 +131,14 @@ public class RenderPanel extends JPanel {
 			g.fillOval((int) World.lakes.get(i).x - radius - cornerX, (int) World.lakes.get(i).y - radius / 2 - cornerY, 2 * radius, radius);
 		}
 		
-		int treeInd = 0, plantInd = 0, stoneInd = 0, rockInd = 0, woodInd = 0, berryInd = 0, lilyInd = 0, reedInd = 0;
+		int treeInd = 0, plantInd = 0, rockInd = 0, berryInd = 0, woodInd = 0, stoneInd = 0, lilyInd = 0, reedInd = 0;
 		for (int pixY = Math.max(0, cornerY - 100); pixY < Math.min(World.worldY, cornerY + World.dim.height + 200); pixY++) {
 
 			// Draw trees
 			treeInd = this.getFirstObjectIndexInY(pixY, treeInd, World.trees);
-			while (treeInd < World.trees.size() && World.trees.get(treeInd).y == pixY) {
+			while (this.checkIterateOnY(pixY, treeInd, World.trees)) {
 				int x = (int) World.trees.get(treeInd).x;
-				if (x < cornerX - 100 || x > cornerX + World.dim.width + 100) { treeInd++; continue; }
+				if (this.checkOutOfWindow(x, cornerX)) { treeInd++; continue; }
 
 				if (World.treeType.get(treeInd) == 0) {
 					if (World.treeDeath.get(treeInd) == true)
@@ -169,9 +169,9 @@ public class RenderPanel extends JPanel {
 			
 			// Draw rocks
 			rockInd = this.getFirstObjectIndexInY(pixY, rockInd, World.rocks);	
-			while (rockInd < World.rocks.size() && World.rocks.get(rockInd).y == pixY) {
+			while (this.checkIterateOnY(pixY, rockInd, World.rocks)) {
 				int x = (int) World.rocks.get(rockInd).x;
-				if (x < cornerX - 100 || x > cornerX + World.dim.width + 100) { rockInd++; continue; }
+				if (this.checkOutOfWindow(x, cornerX)) { rockInd++; continue; }
 
 				if (World.rockType.get(rockInd) == 1)
 					g.drawImage(rock1, x - cornerX - rock1.getWidth() / 2, pixY - cornerY - rock1.getHeight(), this);
@@ -182,9 +182,9 @@ public class RenderPanel extends JPanel {
 
 			// Draw plants
 			plantInd = this.getFirstObjectIndexInY(pixY, plantInd, World.plants);
-			while (plantInd < World.plants.size() && World.plants.get(plantInd).y == pixY) {
+			while (this.checkIterateOnY(pixY, plantInd, World.plants)) {
 				int x = (int) World.plants.get(plantInd).x;
-				if (x < cornerX -100 || x > cornerX + World.dim.width + 100) { plantInd++; continue; }
+				if (this.checkOutOfWindow(x, cornerX)) { plantInd++; continue; }
 
 				if (World.plantType.get(plantInd) == 1)
 					g.drawImage(plant1, x - cornerX - plant1.getWidth() / 2, pixY - cornerY - plant1.getHeight(), this);
@@ -197,11 +197,24 @@ public class RenderPanel extends JPanel {
 				plantInd++;
 			}
 
+			// Draw berries
+			berryInd = this.getFirstObjectIndexInY(pixY, berryInd, World.berries);
+			while (this.checkIterateOnY(pixY, berryInd, World.berries)) {
+				int x = (int) World.berries.get(berryInd).x;
+				if (this.checkOutOfWindow(x, cornerX)) { berryInd++; continue; }
+
+				if (World.berryStats.get(berryInd) == true)
+					g.drawImage(berryFull, x - cornerX - berryFull.getWidth() / 2, pixY - cornerY - berryFull.getHeight(), this);
+				else
+					g.drawImage(berryEmpty, x - cornerX - berryEmpty.getWidth() / 2, pixY - cornerY - berryEmpty.getHeight(), this);
+				berryInd++;
+			}
+
 			// Draw woods
 			woodInd = this.getFirstObjectIndexInY(pixY, woodInd, World.woods);
-			while (woodInd < World.woods.size() && World.woods.get(woodInd).y == pixY) {
+			while (this.checkIterateOnY(pixY, woodInd, World.woods)) {
 				int x = (int) World.woods.get(woodInd).x;
-				if (x < cornerX - 100 || x > cornerX + World.dim.width + 100) {	woodInd++; continue; }
+				if (this.checkOutOfWindow(x, cornerX)) { woodInd++; continue; }
 				
 				int x_draw = x - cornerX - wood1.getWidth() / 2;
 				int y_draw = pixY - cornerY - wood1.getHeight() / 2;
@@ -212,31 +225,20 @@ public class RenderPanel extends JPanel {
 			
 			// Draw stones
 			stoneInd = this.getFirstObjectIndexInY(pixY, stoneInd, World.stones);
-			while (stoneInd < World.stones.size() && World.stones.get(stoneInd).y == pixY) {
+			while (this.checkIterateOnY(pixY, stoneInd, World.stones)) {
+				if ((int) World.stones.get(stoneInd).y != pixY) { continue; }
 				int x = (int) World.stones.get(stoneInd).x;
-				if (x < cornerX - 100 || x > cornerX + World.dim.width + 100) {	stoneInd++;	continue; }
+				if (this.checkOutOfWindow(x, cornerX)) { stoneInd++; continue; }
+
 				g.drawImage(stone, x - cornerX - stone.getWidth() / 2, pixY - cornerY - stone.getHeight(), this);
 				stoneInd++;
 			}
 			
-			// Draw berries
-			berryInd = this.getFirstObjectIndexInY(pixY, berryInd, World.berries);
-			while (berryInd < World.berries.size() && World.berries.get(berryInd).y == pixY) {
-				int x = (int) World.berries.get(berryInd).x;
-				if (x < cornerX - 100 || x > cornerX + World.dim.width + 100) {	berryInd++;	continue; }
-
-				if (World.berryStats.get(berryInd) == true)
-					g.drawImage(berryFull, x - cornerX - berryFull.getWidth() / 2, pixY - cornerY - berryFull.getHeight(), this);
-				else
-					g.drawImage(berryEmpty, x - cornerX - berryEmpty.getWidth() / 2, pixY - cornerY - berryEmpty.getHeight(), this);
-				berryInd++;
-			}
-			
 			// Draw lilies
 			lilyInd = this.getFirstObjectIndexInY(pixY, lilyInd, World.lilies);
-			while (lilyInd < World.lilies.size() && World.lilies.get(lilyInd).y == pixY) {
+			while (this.checkIterateOnY(pixY, lilyInd, World.lilies)) {
 				int x = (int) World.lilies.get(lilyInd).x;
-				if (x < cornerX - 100 || x > cornerX + World.dim.width + 100) {	lilyInd++; continue; }
+				if (this.checkOutOfWindow(x, cornerX)) { lilyInd++; continue; }
 
 				if (World.lilyType.get(lilyInd) == 1)
 					g.drawImage(lily1, x - cornerX - lily1.getWidth() / 2, pixY - cornerY - lily1.getHeight(), this);
@@ -249,9 +251,9 @@ public class RenderPanel extends JPanel {
 
 			// Draw reeds
 			reedInd = this.getFirstObjectIndexInY(pixY, reedInd, World.reeds);
-			while (reedInd < World.reeds.size() && World.reeds.get(reedInd).y == pixY) {
+			while (this.checkIterateOnY(pixY, reedInd, World.reeds)) {
 				int x = (int) World.reeds.get(reedInd).x;
-				if (x < cornerX - 100 || x > cornerX + World.dim.width + 100) {	reedInd++; continue; }
+				if (this.checkOutOfWindow(x, cornerX)) { reedInd++; continue; }
 
 				g.drawImage(reed, x - cornerX - reed.getWidth() / 2 + 20, pixY - cornerY - reed.getHeight() + 20, this);
 				reedInd++;
@@ -329,9 +331,9 @@ public class RenderPanel extends JPanel {
 					}
 					if (World.craftableType.get(craftInd) == 3)
 						if (World.craftableScore.get(craftInd) >= 1)
-							g.drawImage(fish_trap, x - cornerX - fish_trap.getWidth() / 2, pixY - cornerY - fish_trap.getHeight(), this);
+							g.drawImage(fish_trap, x - cornerX - fish_trap.getWidth() / 2, pixY - cornerY - fish_trap.getHeight() / 2, this);
 						else
-							g.drawImage(fish_trap_shot, x - cornerX - fish_trap_shot.getWidth() / 2, pixY - cornerY - fish_trap_shot.getHeight(), this);
+							g.drawImage(fish_trap_shot, x - cornerX - fish_trap_shot.getWidth() / 2, pixY - cornerY - fish_trap_shot.getHeight() / 2, this);
 					if (World.craftableType.get(craftInd) == 4) {
 						if (!Game.player.isHidden())
 							g.drawImage(shelter, x - cornerX - shelter.getWidth() / 2, pixY - cornerY - shelter.getHeight(), this);
@@ -375,14 +377,17 @@ public class RenderPanel extends JPanel {
 			g.drawImage(button1, World.dim.width / 2 - 200, 20, this);
 		else
 			g.drawImage(button1_low, World.dim.width / 2 - 200, 20, this);
+		
 		if (Game.player.getWoodCollected() >= 3 && Game.player.getLianaCollected() >= 1)
 			g.drawImage(button2, World.dim.width / 2 - 100, 20, this);
 		else
 			g.drawImage(button2_low, World.dim.width / 2 - 100, 20, this);
+
 		if (Game.player.getWoodCollected() >= 3 && Game.player.getLianaCollected() >= 8)
 			g.drawImage(button3, World.dim.width / 2, 20, this);
 		else
 			g.drawImage(button3_low, World.dim.width / 2, 20, this);
+
 		if (Game.player.getWoodCollected() >= 8 && Game.player.getLianaCollected() >= 4 && Game.player.getLeaveCollected() >= 10)
 			g.drawImage(button4, World.dim.width / 2 + 100, 20, this);
 		else
@@ -414,8 +419,17 @@ public class RenderPanel extends JPanel {
 	
 	private int getFirstObjectIndexInY(int pixYStart, int arrayInd, ArrayList<Point2D.Float> array) {
 		if (arrayInd == 0) {
-			while (arrayInd < array.size() && array.get(arrayInd).y < pixYStart) {	arrayInd++; }
+			while (arrayInd < array.size() && array.get(arrayInd).y < pixYStart) { arrayInd++; }
 		}
 		return arrayInd;
 	}
+	
+	private boolean checkIterateOnY(int pixY, int arrayInd, ArrayList<Point2D.Float> array) {
+		return (arrayInd < array.size() && array.get(arrayInd).y == pixY);
+	}
+	
+	private boolean checkOutOfWindow(int x, int cornerX) {
+		return (x < cornerX - 100 || x > cornerX + World.dim.width + 100);
+	}
+	
 }

@@ -201,12 +201,13 @@ public class Player {
 	}
 
 	private void collectItems() {
+		
 		int berryIndex = World.checkBerry(this.getX(), this.getY());
 		if (berryIndex >= 0 && World.berryStats.get(berryIndex) == true) {
 			World.berryStats.set(berryIndex, false);
 			this.berryCollected += 3;
 		}
-		
+
 		int woodIndex = World.checkWood(this.getX(), this.getY());
 		if (woodIndex >= 0) {
 			World.nWoods -= 1;
@@ -331,7 +332,7 @@ public class Player {
 			for (int i = 0; i < World.trees.size(); i++) {
 				if (this.checkDistance(World.trees.get(i), 50)) {
 					if (World.treeDeath.get(i) == true) { pWood += 0.003; pLiana += 0.001; }
-					else { pWood += 0.001; pLiana += 0.002;	}
+					else { pWood += 0.002; pLiana += 0.002;	}
 				}
 			}
 			
@@ -559,7 +560,7 @@ public class Player {
 			g.setColor(Color.WHITE);
 			g.drawString(str, World.dim.width / 2 - 70, World.dim.height - 100);
 			for (int i = 0; i < 400 - this.craftTime; i++)
-				g.fillRect(World.dim.width / 2 - 200 + i, World.dim.height - 90, 1, 10);
+				g.fillRect((int) (World.dim.width / 2 - 200 + 0.8 * i), World.dim.height - 90, 1, 10);
 		}
 		
 		if (this.cook == true) {
@@ -567,7 +568,7 @@ public class Player {
 			g.setColor(Color.WHITE);
 			g.drawString(str, World.dim.width / 2 - 70, World.dim.height - 100);
 			for (int i = 0; i < 300 - this.cookTime; i++)
-				g.fillRect(World.dim.width / 2 - 200 + (int) ((float) 400 / 300) *i, World.dim.height - 90, (int) ((float) 400 / 300), 10);
+				g.fillRect(World.dim.width / 2 - 200 + (int) ((float) 400 / 300) * i, World.dim.height - 90, (int) ((float) 400 / 300), 10);
 		}
 		
 		if (this.harvest == true) {
@@ -578,8 +579,8 @@ public class Player {
 				str = "Collecting fish...";
 			g.setColor(Color.WHITE);
 			g.drawString(str, World.dim.width / 2 - 120, World.dim.height - 100);
-			for (int i = 0; i < 200-harvestTime; i++)
-				g.fillRect(World.dim.width / 2 - 200 + 2*i, World.dim.height - 90, 2, 10);
+			for (int i = 0; i < 200 - this.harvestTime; i++)
+				g.fillRect((int) (World.dim.width / 2 - 200 + 1.7*i), World.dim.height - 90, 2, 10);
 		}
 		
 		if (Game.keys[KeyEvent.VK_SHIFT] && this.tired > 0) {

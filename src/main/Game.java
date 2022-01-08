@@ -66,8 +66,7 @@ public class Game implements ActionListener, KeyListener {
 		tick++;
 		if (!paused) {
 			
-			if (over == true)
-				timer.stop();
+			if (over == true) { timer.stop(); }
 					
 			// Update game
 			update();
@@ -97,7 +96,7 @@ public class Game implements ActionListener, KeyListener {
 		if (tick == 10000)
 			tick = 0;
 	}
-		
+	
 	public static void main(String[] args){
 		game = new Game();
 	}

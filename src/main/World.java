@@ -23,13 +23,14 @@ public class World {
 	public static int nBerries = 15, nStones = 10, nWoods = 10;
 	public static int nWolves = 2, nRabbits = 10, nFishes = 20;
 	public static int nTrees = 400, nPlants = 100, nRocks = 20, nLilies = 100, nReeds = 100;
-	public static float pPine1, pPine2, pFir1, pFir2, pTree, pDeath, pPlant1, pPlant2, pPlant3, pPlant4, pRock1, pRock2, pLily1, pLily2, pLily3;
+	private static float pPine1, pPine2, pFir1, pFir2, pDeath;
+	private static float pPlant1, pPlant2, pPlant3;
+	private static float pLily1, pLily2, pRock1;
 	
-	public static int berryBonus;
 	public static int rWood, rStone;
 	public static int seedForests, seedRocks, seedPlants, seedLilies;
-	public static float berryRespawn = (float) 0.001, woodSpawn = (float) 0.001, stoneSpawn = (float) 0.001;
-	public static float	rabbitSpawn = (float) 0.001, fishSpawn = (float) 0.001;
+	protected static float berryRespawn = (float) 0.001, woodSpawn = (float) 0.001, stoneSpawn = (float) 0.001;
+	protected static float rabbitSpawn = (float) 0.001, fishSpawn = (float) 0.001;
 
 	public static int nCraft = 4;
 	public static boolean[] craftStats = new boolean[nCraft];
@@ -45,7 +46,7 @@ public class World {
 	
 	public static ArrayList<Point2D.Float> lakes = new ArrayList<Point2D.Float>();
 	public static ArrayList<Integer> radiusLakes = new ArrayList<Integer>();
-	
+
 	public static ArrayList<Point2D.Float> berries = new ArrayList<Point2D.Float>();
 	public static ArrayList<Boolean> berryStats = new ArrayList<Boolean>();
 	public static ArrayList<Point2D.Float> woods = new ArrayList<Point2D.Float>();
@@ -83,14 +84,12 @@ public class World {
 		}
 		System.out.println("Lakes Set!");
 
-		
 		// Set trees
 		seedForests = 20;
 		pPine1 = (float) 0.3;
 		pPine2 = (float) 0.2;
 		pFir1 = (float) 0.2;
 		pFir2 = (float) 0.2;
-		pTree = (float) 0.1;
 		pDeath = (float) 0.1;
 		
 		trees.clear();
@@ -120,7 +119,6 @@ public class World {
 		pPlant1 = (float) 0.6;
 		pPlant2 = (float) 0.35;
 		pPlant3 = (float) 0.04;
-		pPlant4 = (float) 0.01;
 		
 		plants.clear();
 		for (int i = 0; i < nPlants; i++) {
@@ -145,7 +143,6 @@ public class World {
 		System.out.println("Plants Set!");
 		
 		// Set berries
-		berryBonus = 25;
 		berries.clear();
 		for (int i = 0; i < nBerries; i++) {
 			while (true) {
@@ -160,10 +157,9 @@ public class World {
 		}
 		berries.sort(Game.FloatbyY);
 		System.out.println("Berries Set!");
-		
+
 		// Set wood
 		rWood = 200;
-		
 		woods.clear();
 		for (int i = 0; i < nWoods; i++) {
 			while (true) {
@@ -201,7 +197,6 @@ public class World {
 		// Set rocks
 		seedRocks = 4;
 		pRock1 = (float) 0.7;
-		pRock2 = (float) 0.3;
 		
 		rocks.clear();
 		for (int i = 0; i < nRocks; i++) {
@@ -274,7 +269,6 @@ public class World {
 		seedLilies = 20;
 		pLily1 = (float) 0.4;
 		pLily2 = (float) 0.4;
-		pLily3 = (float) 0.2;
 		
 		lilies.clear();
 		for (int i = 0; i < nLilies; i++) {
@@ -327,13 +321,12 @@ public class World {
 		
 		// just spawn items every 100 ticks
 		if (Game.tick % 100 != 0) { return; }
-		
-		// grow berries in bushes
-		for (int i = 0; i < nBerries; i++) {
-			if (berryStats.get(i) == false && random.nextFloat() < berryRespawn)
-				berryStats.set(i, true);
+
+		// grow berries
+		for (int i = 0; i < berryStats.size(); i++) {
+			if (berryStats.get(i) == false && random.nextFloat() < berryRespawn) { berryStats.set(i, true); }
 		}
-		
+
 		// spawn wood in world
 		if (random.nextFloat() < woodSpawn) {
 			nWoods += 1;
@@ -433,13 +426,13 @@ public class World {
 	}
 	
 	public static int checkWolve(float x, float y) { return checkItem(x, y, Wildlife.wolveRadius, wolves); }
-	
+		
 	public static int checkBerry(float x, float y) { return checkItem(x, y, 20, berries); }
-	
+
 	public static int checkWood(float x, float y) { return checkItem(x, y, 20, woods); }
 
 	public static int checkStone(float x, float y) { return checkItem(x, y, 20, stones); }
-	
+		
 	public static int checkTree(float x, float y, int r) { return checkItem(x, y, r, trees); }
 
 	public static int checkPlant(float x, float y, int r) { return checkItem(x, y, r, plants); }
@@ -492,7 +485,7 @@ public class World {
 		return -1;
 	}
 
-	public static void addTree(int x, int y) {
+	private static void addTree(int x, int y) {
 		
 		trees.add(new Point2D.Float(x, y));
 		float pCheck = random.nextFloat();
@@ -512,7 +505,7 @@ public class World {
 			treeDeath.add(false);
 	}
 	
-	public static void addPlant(int x, int y) {
+	private static void addPlant(int x, int y) {
 		
 		plants.add(new Point2D.Float(x, y));
 		float pCheck = random.nextFloat();
@@ -526,7 +519,7 @@ public class World {
 			plantType.add(4);
 	}
 	
-	public static void addLily(int x, int y) {
+	private static void addLily(int x, int y) {
 		
 		lilies.add(new Point2D.Float(x, y));
 		float pCheck = random.nextFloat();
@@ -538,7 +531,7 @@ public class World {
 			lilyType.add(3);
 	}
 	
-	public static void addRock(int x, int y) {
+	private static void addRock(int x, int y) {
 		
 		rocks.add(new Point2D.Float(x, y));
 		float pCheck = random.nextFloat();
